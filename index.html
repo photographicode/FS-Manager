@@ -50,13 +50,10 @@
         }
         #toast.show { transform: translateY(0) scale(1); opacity: 1; }
 
-        body.public-mode {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e2e8f0 100%) !important;
-            color: #0f172a !important;
-        }
         body.public-mode #app-header { display: none !important; }
         body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh;}
-        body.public-mode #tab-s4 { display: flex !important; width: 100%; }
+        body.public-mode .tab-content:not(#tab-s4) { display: none !important; }
+        body.public-mode #tab-s4 { display: block !important; width: 100%; }
         
         input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
             background: rgba(0,0,0,0.2);
@@ -1561,10 +1558,11 @@
 
         window.addEventListener('load', () => window.db.initPublicS4OrLogin());
 
+        // Setup the initial load logic explicitly
         window.db.initPublicS4OrLogin = () => {
             if(window.auth.check()) {
                 const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('cong') && !localStorage.getItem('fs_auth')) {
+                if (urlParams.get('cong')) {
                     window.db.initPublicS4(urlParams.get('cong'));
                 } else {
                     const type = localStorage.getItem('fs_auth_type');
