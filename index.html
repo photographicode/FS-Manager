@@ -52,18 +52,11 @@
 
         body.public-mode #app-header { display: none !important; }
         body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh;}
-        body.public-mode .tab-content:not(#tab-s4) { display: none !important; }
-        body.public-mode #tab-s4 { display: flex !important; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; width: 100%; padding: 1rem; box-sizing: border-box; }
+        body.public-mode #tab-s4 { display: flex !important; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh;}
         
-        .custom-select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 1rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
+        /* New lighter theme specifically for the body in public mode to match the mockup */
+        body.public-mode {
+            background: #eef2f6; /* Lighter background */
         }
         
         input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
@@ -78,24 +71,10 @@
             outline: none;
         }
         
-        body.public-mode input, body.public-mode select, body.public-mode textarea {
-            background: rgba(255,255,255,0.8);
-            border: 1px solid #cbd5e1;
-            color: #1e293b !important;
-        }
-        body.public-mode input:focus, body.public-mode select:focus, body.public-mode textarea:focus {
-            border-color: #14b8a6;
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
-        }
-
         input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
             -webkit-box-shadow: 0 0 0 30px #020617 inset !important;
             -webkit-text-fill-color: white !important;
             transition: background-color 5000s ease-in-out 0s;
-        }
-        body.public-mode input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 30px white inset !important;
-            -webkit-text-fill-color: #1e293b !important;
         }
 
         .analytics-table { width: 100%; min-width: 600px; border: 2px solid #000; background: #fff; color: #000; font-family: Arial, sans-serif; font-size: 14px; margin-bottom: 24px; border-collapse: collapse; }
@@ -120,6 +99,212 @@
             background: #fff;
             transform-origin: top center;
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        /* --- Custom styles specifically for the new S-4 form design --- */
+        .s4-modern-wrapper {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .s4-modern-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,1);
+            padding: 40px 32px;
+            color: #1e293b;
+        }
+
+        .s4-modern-card h2 {
+            color: #0f172a;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .s4-modern-card p.subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 24px;
+        }
+
+        .s4-form-group {
+            margin-bottom: 24px;
+        }
+
+        .s4-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .s4-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: #1e293b !important;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .s4-input:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+            outline: none;
+        }
+
+        .s4-input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Custom dropdown arrow for standard select styling */
+        select.s4-input {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            text-align-last: center; /* Center the selected text */
+        }
+        
+        select.s4-input option {
+            text-align: left; /* Keep options left-aligned in the dropdown */
+        }
+
+        .s4-checkbox-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            background: #ffffff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .s4-checkbox-text-area {
+            padding-right: 16px;
+        }
+        
+        .s4-checkbox-title {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .s4-checkbox-desc {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* Custom Checkbox */
+        .s4-custom-check {
+            position: relative;
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .s4-custom-check input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .s4-checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 28px;
+            width: 28px;
+            background-color: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .s4-custom-check input:checked ~ .s4-checkmark {
+            background-color: #14b8a6;
+            border-color: #14b8a6;
+        }
+
+        .s4-checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 9px;
+            top: 5px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .s4-custom-check input:checked ~ .s4-checkmark:after {
+            display: block;
+        }
+
+        .s4-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .s4-input-center {
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .s4-help-text {
+            display: block;
+            text-align: center;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .s4-submit-btn {
+            width: 100%;
+            background: #2dd4bf;
+            color: #022c22;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(45, 212, 191, 0.2);
+            margin-top: 8px;
+        }
+
+        .s4-submit-btn:hover {
+            background: #14b8a6;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(20, 184, 166, 0.3);
         }
     </style>
 </head>
@@ -264,7 +449,10 @@
             <div class="glass-panel rounded-2xl overflow-hidden mt-6">
                 <div class="bg-black/30 px-4 sm:px-6 py-4 border-b border-white/10 flex justify-between items-center">
                     <h3 class="font-semibold text-white">Monthly Submissions Log</h3>
-                    <span class="text-[10px] sm:text-xs font-mono text-teal-300 bg-teal-900/40 px-2 py-1 rounded flex items-center gap-1">☁️ SaaS Sync</span>
+                    <div class="flex gap-2">
+                        <button onclick="window.ui.openMissingReportsModal()" class="bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 px-3 py-1 rounded flex items-center gap-1 text-[10px] sm:text-xs transition-colors">📱 Remind Missing</button>
+                        <span class="text-[10px] sm:text-xs font-mono text-teal-300 bg-teal-900/40 px-2 py-1 rounded flex items-center gap-1">☁️ SaaS Sync</span>
+                    </div>
                 </div>
                 <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
                     <table class="w-full text-left text-sm whitespace-nowrap relative">
@@ -302,11 +490,6 @@
                 <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
                     <select id="s21-year-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm"></select>
                     <select id="s21-publisher-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm max-w-[250px]"></select>
-                    
-                    <button onclick="window.ui.openMissingReportsModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2">
-                        📱 Remind Missing
-                    </button>
-                    
                     <button onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)] flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> 
                         Print Cards
@@ -382,70 +565,70 @@
             </div>
         </div>
 
-        <div id="tab-s4" class="tab-content h-full w-full flex-col items-center justify-center p-4">
-            
-            <div id="s4-success-msg" class="hidden flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
-                    <span class="text-4xl sm:text-5xl">✅</span>
+        <div id="tab-s4" class="tab-content">
+            <div id="s4-success-msg" class="hidden flex flex-col items-center justify-center min-h-[60vh] text-center px-4 w-full">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-teal-500/20 rounded-full flex items-center justify-center mb-6 border-2 border-teal-500 shadow-[0_0_30px_rgba(20,184,166,0.3)]">
+                    <span class="text-4xl sm:text-5xl text-teal-400">✓</span>
                 </div>
-                <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 mb-4 drop-shadow-sm">Report Submitted Successfully</h2>
-                <p class="text-slate-600 text-base sm:text-lg">Thank you. Your field service report has been securely recorded.</p>
-                <button onclick="location.reload()" class="mt-8 px-6 py-3 bg-slate-200 hover:bg-slate-300 rounded-xl transition-all text-slate-800 font-bold shadow-sm">Submit Another Report</button>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">Report Submitted Successfully</h2>
+                <p class="text-teal-100/80 text-base mb-8">Thank you. Your field service report has been securely recorded.</p>
+                <button onclick="location.reload()" class="px-8 py-3 bg-slate-100 hover:bg-white rounded-xl transition-all text-slate-800 font-bold shadow-lg">Submit Another Report</button>
             </div>
         
-            <div id="s4-form-area" class="w-full max-w-lg bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.1)] rounded-3xl p-6 sm:p-8 text-slate-800">
-                <h2 class="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Field Service Report</h2>
-                <p class="text-sm text-slate-600 mb-6 font-medium">Securely submit your monthly activity below.</p>
+            <div id="s4-form-area" class="s4-modern-wrapper">
+                <div class="s4-modern-card">
+                    <h2>Field Service Report</h2>
+                    <p class="subtitle">Securely submit your monthly activity below.</p>
 
-                <hr class="border-slate-300/50 mb-6">
-
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Publisher Name</label>
-                        <select id="s4-pub-select" onchange="window.ui.loadS4()" class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:ring-2 focus:ring-teal-500 outline-none transition-all custom-select cursor-pointer"></select>
+                    <div class="s4-form-group">
+                        <label class="s4-label">Publisher Name</label>
+                        <select id="s4-pub-select" onchange="window.ui.loadS4()" class="s4-input cursor-pointer"></select>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Reporting Month</label>
-                        <input id="s4-month-display" type="text" readonly class="w-full px-4 py-3 bg-slate-100/80 border border-slate-300 rounded-xl text-slate-800 font-medium cursor-not-allowed">
+                    <div class="s4-form-group">
+                        <label class="s4-label">Reporting Month</label>
+                        <input id="s4-month-display" type="text" readonly class="s4-input bg-slate-50 text-slate-600 cursor-default" style="background:#f8fafc; color:#475569 !important;">
                     </div>
 
-                    <div class="bg-white/80 border border-slate-300 rounded-xl p-4 flex items-center justify-between gap-4 transition-all focus-within:ring-2 focus-within:ring-teal-500">
+                    <div class="s4-form-group">
+                        <div class="s4-checkbox-card">
+                            <div class="s4-checkbox-text-area cursor-pointer" onclick="document.getElementById('s4-ministry').click()">
+                                <span class="s4-checkbox-title">Shared in the ministry</span>
+                                <span class="s4-checkbox-desc">Check this box if you shared in any form of the ministry during the month.</span>
+                            </div>
+                            <label class="s4-custom-check">
+                                <input type="checkbox" id="s4-ministry" checked onchange="window.ui.enforceS4Logic()">
+                                <span class="s4-checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="s4-form-group s4-grid-2">
                         <div>
-                            <label for="s4-ministry" class="font-bold text-slate-800 text-sm cursor-pointer">Shared in the ministry</label>
-                            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 cursor-pointer select-none">Check this box if you shared in any form of the ministry during the month.</p>
-                        </div>
-                        <div class="shrink-0 flex items-center justify-center">
-                            <input type="checkbox" id="s4-ministry" checked onchange="window.ui.enforceS4Logic()" class="w-6 h-6 text-teal-500 bg-white border-slate-300 rounded focus:ring-teal-500 cursor-pointer accent-teal-500 shadow-sm transition-transform hover:scale-105">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Bible Studies</label>
-                            <input id="s4-studies" type="number" min="0" step="1" value="0" class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-center text-slate-800 font-bold focus:ring-2 focus:ring-teal-500 outline-none transition-all">
-                            <p class="text-[10px] text-slate-500 text-center mt-2 font-medium">Number of different studies conducted</p>
+                            <label class="s4-label">Bible Studies</label>
+                            <input id="s4-studies" type="number" min="0" step="1" value="0" class="s4-input s4-input-center">
+                            <span class="s4-help-text">Number of different studies conducted</span>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Hours</label>
-                            <input id="s4-hours" type="number" min="0" step="0.25" value="0" class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-center text-slate-800 font-bold focus:ring-2 focus:ring-teal-500 outline-none transition-all">
-                            <p class="text-[10px] text-slate-500 text-center mt-2 font-medium">If auxiliary, regular, special pioneer or missionary</p>
+                            <label class="s4-label">Hours</label>
+                            <input id="s4-hours" type="number" min="0" step="0.25" value="0" class="s4-input s4-input-center">
+                            <span class="s4-help-text">If auxiliary, regular, special pioneer or missionary</span>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Comments</label>
-                        <textarea id="s4-comments" rows="3" placeholder="Any additional remarks..." class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-teal-500 outline-none transition-all resize-none"></textarea>
+                    <div class="s4-form-group">
+                        <label class="s4-label">Comments</label>
+                        <textarea id="s4-comments" rows="3" placeholder="Any additional remarks..." class="s4-input resize-none"></textarea>
                     </div>
-                </div>
 
-                <div class="mt-8">
-                    <button onclick="window.ui.saveS4()" class="w-full bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-slate-900 px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-[0_8px_20px_rgba(20,184,166,0.3)] hover:shadow-[0_12px_25px_rgba(20,184,166,0.4)] transform hover:-translate-y-0.5">Submit Report</button>
+                    <button onclick="window.ui.saveS4()" class="s4-submit-btn">Submit Report</button>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Modals -->
+    <!-- Super Admin: Add Congregation -->
     <div id="modal-add-cong" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30">
             <div class="bg-black/40 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
@@ -475,6 +658,7 @@
         </div>
     </div>
 
+    <!-- Super Admin: Edit Congregation -->
     <div id="modal-edit-cong" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30">
             <div class="bg-black/40 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
@@ -514,6 +698,7 @@
         </div>
     </div>
 
+    <!-- Admin: Change Password -->
     <div id="modal-change-password" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-white/20">
             <div class="bg-black/40 px-6 py-5 flex justify-between items-center border-b border-white/10">
@@ -539,6 +724,7 @@
         </div>
     </div>
 
+    <!-- Add/Edit Publisher -->
     <div id="modal-add-publisher" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
             <div class="bg-black/40 px-6 sm:px-8 py-4 sm:py-5 flex justify-between items-center border-b border-white/10 shrink-0">
@@ -613,7 +799,7 @@
             </div>
         </div>
     </div>
-
+    
     <div id="modal-missing-reports" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/20 max-h-[80vh] flex flex-col">
             <div class="bg-black/40 px-6 py-5 flex justify-between items-center border-b border-white/10 shrink-0">
@@ -656,6 +842,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const congParam = urlParams.get('cong');
                 
+                // If a congregation ID is present in the URL, this is a public link. Bypass admin login.
                 if (congParam) { 
                     window.currentCongId = congParam;
                     document.body.classList.add('public-mode'); 
@@ -665,6 +852,7 @@
                     return true; 
                 }
                 
+                // If local storage says logged in, check if it has the new SaaS keys.
                 if (localStorage.getItem('fs_auth') === 'true') { 
                     const type = localStorage.getItem('fs_auth_type');
                     if (!type) {
@@ -718,7 +906,7 @@
                 localStorage.removeItem('fs_auth_type');
                 localStorage.removeItem('fs_cong_id');
                 localStorage.removeItem('fs_cong_name');
-                location.href = window.location.href.split('?')[0];
+                location.href = window.location.href.split('?')[0]; // Strip URL params on logout
             }
         };
 
@@ -1342,7 +1530,7 @@
                 const area = document.getElementById('analytics-roster'); if(!area) return;
                 const sy = parseInt(document.getElementById('analytics-year').value); const month = parseInt(document.getElementById('analytics-month').value);
                 const pubs = window.db.getPublishers(); const reports = window.db.getReports(sy, month); 
-                let rps=[], aps=[], inactives=[];
+                let rps=[], aps=[], inactives=[], normals=[];
                 
                 pubs.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => {
                     const r = reports.find(x => x.pubId === p.id);
@@ -1355,6 +1543,8 @@
                                 rps.push(trHtml); 
                             } else if (r.isAP) {
                                 aps.push(trHtml);
+                            } else {
+                                normals.push(`<tr class="border-b border-white/10 hover:bg-white/5"><td class="px-4 py-2">${p.name}</td><td class="px-4 py-2 text-center">-</td><td class="px-4 py-2 text-center">${s||'-'}</td></tr>`);
                             }
                         } else {
                             inactives.push(`<tr class="border-b border-white/10"><td class="px-4 py-2 text-rose-300">${p.name}</td><td class="px-4 py-2 text-center">-</td><td class="px-4 py-2 text-center">-</td></tr>`);
@@ -1363,7 +1553,7 @@
                 });
                 
                 const box = (title, rows, color) => `<div class="bg-black/30 border border-${color}-500/30 rounded-xl overflow-hidden"><div class="bg-black/60 text-${color}-300 font-bold px-4 py-3 text-sm flex justify-between"><span>${title}</span><span>${rows.length}</span></div><table class="w-full text-left text-sm text-white"><thead class="bg-black/40 text-${color}-100/50 text-xs uppercase"><tr><th class="px-4 py-2">Name</th><th class="px-4 py-2 text-center w-20">Hours</th><th class="px-4 py-2 text-center w-20">Studies</th></tr></thead><tbody>${rows.length ? rows.join('') : `<tr><td colspan="3" class="px-4 py-3 text-center text-white/30 italic">None</td></tr>`}</tbody></table></div>`;
-                area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${box('Inactive (Marked No)', inactives, 'rose')} ${box('Regular Pioneers', rps, 'cyan')} ${box('Auxiliary Pioneers', aps, 'teal')}</div>`;
+                area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">${box('Inactive (Marked No)', inactives, 'rose')} ${box('Regular Pioneers', rps, 'cyan')} ${box('Auxiliary Pioneers', aps, 'teal')} ${box('Publishers', normals, 'slate')}</div>`;
             },
 
             setupS21Tab: () => {
@@ -1573,7 +1763,7 @@
         window.db.initPublicS4OrLogin = () => {
             if(window.auth.check()) {
                 const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('cong')) {
+                if (urlParams.get('cong') && !localStorage.getItem('fs_auth')) {
                     window.db.initPublicS4(urlParams.get('cong'));
                 } else {
                     const type = localStorage.getItem('fs_auth_type');
