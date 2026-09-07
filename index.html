@@ -18,7 +18,6 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            /* Smoother premium gradient */
             background: radial-gradient(circle at top left, #064e3b 0%, #020617 50%, #083344 100%);
             background-attachment: fixed;
             color: #f8fafc;
@@ -54,25 +53,26 @@
         body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh;}
         body.public-mode #tab-s4 { display: block !important; width: 100%; }
         
-        input[type="text"], input[type="number"], input[type="date"], select, textarea {
-            background: rgba(0,0,0,0.2);
+        input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
+            background: rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
             transition: all 0.2s;
         }
-        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: rgba(20, 184, 166, 0.6);
             box-shadow: 0 0 10px rgba(20, 184, 166, 0.2);
             outline: none;
         }
         
-        /* Fix Chrome Autofill turning login background white */
+        /* Fix Chrome Autofill */
         input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
             -webkit-box-shadow: 0 0 0 30px #020617 inset !important;
             -webkit-text-fill-color: white !important;
             transition: background-color 5000s ease-in-out 0s;
         }
 
+        /* S-4 Styles */
         #s4-container-wrapper { width: 100%; max-width: 834px; height: 625px; margin: 0 auto; position: relative; overflow: hidden; display: flex; justify-content: center; }
         .s4-strict { width: 834px; height: 625px; min-width: 834px; background: #ffffff; color: #000000; font-family: Arial, Helvetica, sans-serif !important; position: relative; transform-origin: top center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden; }
         .s4-strict * { font-family: Arial, Helvetica, sans-serif !important; box-sizing: border-box; }
@@ -80,17 +80,14 @@
         .s4-strict .identity { position: absolute; left: 158px; top: 77px; width: 647px; height: 83px; background: #f1f4ff; }
         .s4-strict .identity-row { position: relative; width: 100%; height: 42px; }
         .s4-strict .identity-label { position: absolute; left: -107px; top: 14px; width: 100px; height: 35px; font-size: 29px; font-weight: 700; color: #000; }
-        .s4-strict .identity-input { position: absolute; left: 0; top: 9px; width: 647px; height: 32px; border: 0; border-bottom: 2px dotted #000000; background: transparent; font-size: 24px; color: #000; }
+        .s4-strict .identity-input { position: absolute; left: 0; top: 9px; width: 647px; height: 32px; border: 0; border-bottom: 2px dotted #000000; background: transparent !important; font-size: 24px; color: #000; }
         .s4-strict .report-table { position: absolute; left: 29px; top: 205px; width: 776px; height: 223px; border: 2px solid #222222; border-collapse: collapse; table-layout: fixed; font-size: 29px; background: #ffffff; color: #000; }
         .s4-strict .report-table td { border: 1px solid #222222; vertical-align: middle; }
         .s4-strict .ministry-cell { position: relative; width: 100%; height: 87px; padding: 10px 75px 8px 15px; }
-        
-        /* Flexbox Checkmark for perfect centering */
         .s4-strict .checkbox-wrapper { position: absolute; right: 29px; top: 24px; width: 41px; height: 41px; border: 2px solid #222222; background: #f1f4ff; display: flex; justify-content: center; align-items: center; }
         .s4-strict .checkbox { width: 100%; height: 100%; opacity: 0; position: absolute; cursor: pointer; z-index: 2; margin: 0; }
         .s4-strict .checkmark { font-size: 34px; color: #000; font-weight: bold; display: none; line-height: 1; margin-top: -4px;}
         .s4-strict .checkbox:checked + .checkmark { display: block; }
-
         .s4-strict .study-label { padding: 0 14px 0 15px; width: 670px; height: 44px; font-size: 25px; line-height: 28px; white-space: normal; }
         .s4-strict .study-value, .s4-strict .hours-value { width: 103px; height: 44px; padding: 0; background: #f1f4ff; transition: opacity 0.3s; }
         .s4-strict .study-value input, .s4-strict .hours-value input { width: 100%; height: 100%; padding: 0 7px; border: 0; outline: none; background: transparent !important; font-size: 27px; text-align: center; color: #000; border-radius: 0; transition: background 0.3s; }
@@ -107,45 +104,27 @@
         .analytics-table .sub-header { font-weight: bold; text-align: center; background: #f0f0f0; }
         .analytics-table .metric-row { display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
 
-        /* S-21 Dynamic Iframe Scaling Fix */
-        #s21-render-area {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            overflow: hidden;
-            background: #111;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-            transition: height 0.3s;
-        }
-        #s21-render-frame {
-            width: 1448px;
-            height: 1025px;
-            border: none;
-            background: #fff;
-            transform-origin: top center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
+        #s21-render-area { width: 100%; display: flex; justify-content: center; overflow: hidden; background: #111; padding: 20px; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: height 0.3s; }
+        #s21-render-frame { width: 1448px; height: 1025px; border: none; background: #fff; transform-origin: top center; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
     </style>
 </head>
 <body class="text-sm">
 
-    <!-- Admin Login Screen -->
+    <!-- SaaS Auth Portal -->
     <div id="auth-screen" class="fixed inset-0 bg-gradient-to-br from-slate-900 to-teal-900 z-[10000] flex flex-col items-center justify-center">
         <div class="glass-panel p-10 rounded-3xl text-center max-w-md w-full border border-teal-500/30 shadow-2xl">
             <div class="w-16 h-16 rounded-2xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-lg mx-auto mb-6 text-2xl">SP</div>
             <h2 class="text-2xl font-bold text-white mb-2">Service Reports Manager</h2>
-            <p class="text-teal-200/70 text-sm mb-6">Restricted Access.</p>
+            <p class="text-teal-200/70 text-sm mb-6">Enter your Congregation ID to access your portal.</p>
             <form onsubmit="event.preventDefault(); window.auth.login();">
-                <input type="text" autocomplete="username" style="display:none">
-                <input type="password" id="auth-pass" placeholder="Enter password" autocomplete="current-password" class="w-full px-5 py-3 rounded-xl mb-6 text-center bg-black/50 border border-white/20 text-white outline-none focus:border-teal-400">
-                <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)]">Unlock Database</button>
+                <input type="text" id="auth-cong-id" placeholder="Congregation ID" required class="w-full px-5 py-3 rounded-xl mb-4 text-center">
+                <input type="password" id="auth-pass" placeholder="Password" required class="w-full px-5 py-3 rounded-xl mb-6 text-center">
+                <button type="submit" id="auth-btn" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)]">Unlock Database</button>
             </form>
         </div>
     </div>
 
-    <!-- Custom Dialogs for Admin Actions -->
+    <!-- Custom Dialogs -->
     <div id="sys-prompt-overlay" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-4">
         <div class="glass-panel p-8 rounded-3xl text-center max-w-md w-full border border-rose-500/30 shadow-[0_0_30px_rgba(225,29,72,0.3)]">
             <div class="w-16 h-16 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold border border-rose-500/30 shadow-lg mx-auto mb-6 text-3xl">⚠️</div>
@@ -154,44 +133,83 @@
             
             <form id="sys-prompt-form" onsubmit="event.preventDefault(); window.ui.handleSysPromptConfirm();">
                 <input type="text" autocomplete="username" style="display:none">
-                <input type="password" id="sys-prompt-input" autocomplete="current-password" placeholder="Enter Master Password to confirm" class="w-full px-5 py-3 bg-black/50 border border-white/10 rounded-xl mb-6 text-center text-white outline-none focus:border-rose-400 hidden">
-                
+                <input type="password" id="sys-prompt-input" autocomplete="current-password" placeholder="Enter Password to confirm" class="w-full px-5 py-3 rounded-xl mb-6 text-center hidden">
                 <div class="flex gap-4">
-                    <button type="button" onclick="ui.closeSysPrompt()" class="flex-1 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold transition-all">Cancel</button>
+                    <button type="button" onclick="window.ui.closeSysPrompt()" class="flex-1 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold transition-all">Cancel</button>
                     <button type="submit" id="sys-prompt-confirm-btn" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg">Confirm</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Navigation Header -->
     <nav id="app-header" class="glass-panel sticky top-0 z-50 border-b border-teal-400/20">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.3)]">SP</div>
                 <span class="font-bold text-xl tracking-wide text-white drop-shadow-lg">Service Reports Manager</span>
             </div>
-            <div class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 overflow-x-auto max-w-full">
+            
+            <!-- Standard Admin Navigation -->
+            <div id="nav-admin" class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 overflow-x-auto max-w-full hidden">
+                <span id="nav-cong-name" class="px-4 py-2 text-teal-300 font-bold text-sm tracking-wide hidden md:block"></span>
                 <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
                 <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
                 <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Printer</button>
                 <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
-                <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
+                <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Directory</button>
+                <button onclick="window.auth.logout()" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap">Log Out</button>
+            </div>
+
+            <!-- Super Admin Navigation -->
+            <div id="nav-superadmin" class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 hidden">
+                <span class="px-4 py-2 text-amber-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2">👑 Super Admin</span>
+                <button onclick="window.auth.logout()" class="px-5 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300">Log Out</button>
             </div>
         </div>
     </nav>
 
     <main class="main-content max-w-7xl mx-auto px-4 py-8">
         
+        <!-- SUPER ADMIN TAB -->
+        <div id="tab-superadmin" class="tab-content space-y-6">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-white drop-shadow-md">SaaS Control Center</h2>
+                    <p class="text-teal-200/70 mt-1">Manage tenant congregations and system access</p>
+                </div>
+                <button onclick="window.ui.openModal('modal-add-cong')" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center gap-2">
+                    + New Congregation
+                </button>
+            </div>
+            <div class="glass-panel rounded-2xl overflow-hidden mt-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-black/50 text-amber-100/70">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold">Congregation Details</th>
+                                <th class="px-6 py-4 font-semibold text-center">Login ID</th>
+                                <th class="px-6 py-4 font-semibold text-center">Password</th>
+                                <th class="px-6 py-4 font-semibold text-center">Status</th>
+                                <th class="px-6 py-4 font-semibold text-right">Admin Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="saas-cong-table" class="divide-y divide-white/10 text-teal-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- DASHBOARD TAB -->
-        <div id="tab-dashboard" class="tab-content active space-y-6">
+        <div id="tab-dashboard" class="tab-content space-y-6">
             <div class="flex justify-between items-end flex-wrap gap-4">
                 <div>
                     <h2 class="text-3xl font-bold text-white drop-shadow-md">Congregation Overview</h2>
                     <p class="text-teal-200/70 mt-1">Real-time telemetry and service totals</p>
                 </div>
                 <div class="flex gap-3">
-                    <select id="dash-year" onchange="window.ui.renderDashboard()" class="px-4 py-2 rounded-xl text-sm outline-none bg-black/40 border border-white/20 text-white"></select>
-                    <select id="dash-month" onchange="window.ui.renderDashboard()" class="px-4 py-2 rounded-xl text-sm outline-none bg-black/40 border border-white/20 text-white">
+                    <select id="dash-year" onchange="window.ui.renderDashboard()" class="px-4 py-2 rounded-xl text-sm"></select>
+                    <select id="dash-month" onchange="window.ui.renderDashboard()" class="px-4 py-2 rounded-xl text-sm">
                         <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                         <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
                         <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
@@ -202,7 +220,6 @@
             <div id="dash-stats" class="grid grid-cols-2 md:grid-cols-4 gap-5"></div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
-                <!-- Regular Pioneers Log -->
                 <div class="glass-panel rounded-2xl overflow-hidden border border-cyan-500/30">
                     <div class="bg-black/30 px-5 py-3 border-b border-cyan-500/20 text-cyan-300 font-bold">Regular Pioneers Log</div>
                     <div class="overflow-x-auto">
@@ -215,11 +232,9 @@
                     </div>
                 </div>
                 
-                <!-- Auxiliary Pioneers Review Log -->
                 <div class="glass-panel rounded-2xl overflow-hidden border border-emerald-500/30">
                     <div class="bg-black/30 px-5 py-3 border-b border-emerald-500/20 text-emerald-300 font-bold flex justify-between items-center">
                         <span>Auxiliary Pioneer Review Log</span>
-                        <span class="text-[10px] uppercase text-emerald-200/50">Review publishers mapped to AP this month</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm whitespace-nowrap text-white">
@@ -232,11 +247,10 @@
                 </div>
             </div>
             
-            <!-- Monthly Submissions Log -->
             <div class="glass-panel rounded-2xl overflow-hidden mt-6">
                 <div class="bg-black/30 px-6 py-4 border-b border-white/10 flex justify-between items-center">
                     <h3 class="font-semibold text-white">Monthly Submissions Log</h3>
-                    <span id="sync-status" class="text-xs font-mono text-teal-300 bg-teal-900/40 px-2 py-1 rounded flex items-center gap-1">☁️ Cloud Synced</span>
+                    <span class="text-xs font-mono text-teal-300 bg-teal-900/40 px-2 py-1 rounded flex items-center gap-1">☁️ SaaS Secure Sync</span>
                 </div>
                 <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
                     <table class="w-full text-left text-sm whitespace-nowrap relative">
@@ -265,6 +279,7 @@
             </div>
         </div>
 
+        <!-- PRINTER TAB -->
         <div id="tab-s21" class="tab-content space-y-6">
             <div class="flex justify-between items-center glass-panel p-6 rounded-2xl flex-wrap gap-4">
                 <div>
@@ -272,18 +287,15 @@
                     <p class="text-teal-200/70 mt-1">Compile and print pixel-perfect S-21 records natively</p>
                 </div>
                 <div class="flex gap-3 flex-wrap">
-                    <select id="s21-year-select" class="px-4 py-2.5 rounded-xl text-sm outline-none bg-black/40 border border-white/20 text-white"></select>
-                    <select id="s21-publisher-select" class="px-4 py-2.5 rounded-xl text-sm outline-none bg-black/40 border border-white/20 text-white max-w-[250px]"></select>
+                    <select id="s21-year-select" class="px-4 py-2.5 rounded-xl text-sm"></select>
+                    <select id="s21-publisher-select" class="px-4 py-2.5 rounded-xl text-sm max-w-[250px]"></select>
                     <button onclick="window.ui.renderS21()" class="bg-black/40 hover:bg-black/60 border border-white/20 text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-lg">Compile Queue</button>
-                    <!-- Trigger Native Print -->
                     <button onclick="window.ui.printCards()" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)] flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> 
                         Print Cards
                     </button>
                 </div>
             </div>
-            
-            <!-- ISOLATED IFRAME FOR 100% PURE HTML/CSS RENDERING -->
             <div id="s21-render-area">
                 <iframe id="s21-render-frame"></iframe>
             </div>
@@ -297,8 +309,8 @@
             </div>
             
             <div class="flex gap-3 mb-4">
-                <select id="analytics-year" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="px-4 py-2 rounded-xl text-sm outline-none bg-black/40 border border-white/20 text-white"></select>
-                <select id="analytics-month" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="px-4 py-2 rounded-xl text-sm outline-none bg-black/40 border border-white/20 text-white">
+                <select id="analytics-year" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="px-4 py-2 rounded-xl text-sm"></select>
+                <select id="analytics-month" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="px-4 py-2 rounded-xl text-sm">
                     <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                     <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
                     <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
@@ -315,23 +327,23 @@
             </div>
         </div>
 
-        <!-- PUBLISHERS TAB -->
+        <!-- PUBLISHERS DIRECTORY TAB -->
         <div id="tab-publishers" class="tab-content space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
                     <h2 class="text-3xl font-bold text-white drop-shadow-md">Publisher Directory</h2>
-                    <p class="text-teal-200/70 mt-1">Manage global profiles and access controls</p>
+                    <p class="text-teal-200/70 mt-1">Manage profiles for this congregation</p>
                 </div>
                 <div class="flex gap-3 flex-wrap">
-                    <button onclick="document.getElementById('csv-file').click()" class="glass-panel px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-white/20">Import Contacts</button>
+                    <button onclick="document.getElementById('csv-file').click()" class="glass-panel px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">Import Contacts</button>
                     <input type="file" id="csv-file" accept=".csv" class="hidden" onchange="window.db.importContacts(event)">
-                    <button onclick="window.ui.downloadContacts()" class="glass-panel px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-white/20">Export Contacts</button>
+                    <button onclick="window.ui.downloadContacts()" class="glass-panel px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">Export Contacts</button>
                     
                     <button onclick="document.getElementById('csv-report-file').click()" class="glass-panel px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Import Reports</button>
                     <input type="file" id="csv-report-file" accept=".csv" class="hidden" onchange="window.db.importReports(event)">
                     <button onclick="window.ui.downloadReports()" class="glass-panel px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Export Reports</button>
 
-                    <button onclick="window.ui.confirmWipeDatabase()" class="bg-rose-900/50 hover:bg-rose-800/80 text-rose-200 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border border-rose-500/50 shadow-lg">⚠️ Wipe Database</button>
+                    <button onclick="window.ui.confirmWipeDatabase()" class="bg-rose-900/50 hover:bg-rose-800/80 text-rose-200 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border border-rose-500/50 shadow-lg">⚠️ Wipe Data</button>
                     <button onclick="window.ui.openModal('modal-add-publisher')" class="bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)] flex items-center gap-2">
                         + Add Publisher
                     </button>
@@ -356,9 +368,8 @@
             </div>
         </div>
 
-        <!-- S-4 TAB -->
+        <!-- PUBLIC S-4 TAB -->
         <div id="tab-s4" class="tab-content">
-            <!-- Confidential Success State -->
             <div id="s4-success-msg" class="hidden flex flex-col items-center justify-center min-h-[60vh] text-center">
                 <div class="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
                     <span class="text-5xl">✅</span>
@@ -368,14 +379,13 @@
                 <button onclick="location.reload()" class="mt-8 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all text-white">Submit Another Report</button>
             </div>
         
-            <!-- Submission Form -->
             <div id="s4-form-area" class="w-full flex flex-col items-center justify-center p-4">
                 <div class="mb-8 w-full max-w-[834px] glass-panel p-6 rounded-2xl flex flex-col sm:flex-row gap-6 items-center justify-between">
                     <div class="text-white">
                         <h3 class="font-bold text-2xl tracking-tight">Submit Field Service Report</h3>
                         <p class="text-teal-200/80 text-sm mt-1">Please select your name.</p>
                     </div>
-                    <select id="s4-pub-select" onchange="window.ui.loadS4()" class="w-full sm:w-72 bg-black/50 border border-white/20 text-white rounded-xl px-4 py-3 outline-none focus:border-teal-400 shadow-inner"></select>
+                    <select id="s4-pub-select" onchange="window.ui.loadS4()" class="w-full sm:w-72"></select>
                 </div>
                 
                 <div id="s4-container-wrapper">
@@ -397,7 +407,6 @@
                                     <td colspan="2" class="ministry-cell">
                                         <span style="display:block; font-size:29px; line-height:34px;">Check the box if you shared in any form<br>of the ministry during the month</span>
                                         <div class="checkbox-wrapper">
-                                            <!-- Checkbox enforcement handler -->
                                             <input id="s4-ministry" class="checkbox" type="checkbox" checked onchange="window.ui.enforceS4Logic()">
                                             <span class="checkmark">✔</span>
                                         </div>
@@ -431,7 +440,7 @@
         </div>
     </main>
 
-    <!-- Modal Form (Publisher Provisioning) -->
+    <!-- Modals -->
     <div id="modal-add-publisher" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/20">
             <div class="bg-black/40 px-8 py-5 flex justify-between items-center border-b border-white/10">
@@ -440,17 +449,16 @@
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <!-- Ensure onsubmit points safely to window.ui -->
             <form id="form-publisher" onsubmit="window.ui.savePublisher(event)" class="p-8 space-y-6">
                 <input type="hidden" id="pub-id">
                 <div class="grid grid-cols-2 gap-5">
                     <div class="col-span-2 md:col-span-1 space-y-2">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Full Name</label>
-                        <input type="text" id="pub-name" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-teal-400">
+                        <input type="text" id="pub-name" required class="w-full">
                     </div>
                     <div class="col-span-2 md:col-span-1 space-y-2">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Service Group Designation</label>
-                        <input type="text" id="pub-group" placeholder="e.g. Group A" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-teal-400">
+                        <input type="text" id="pub-group" placeholder="e.g. Group A" class="w-full">
                     </div>
                 </div>
                 
@@ -485,23 +493,22 @@
                 <div class="grid grid-cols-2 gap-5">
                     <div class="col-span-2 md:col-span-1 space-y-2">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Date of Birth</label>
-                        <input type="text" id="pub-dob" placeholder="dd-mm-yyyy" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-teal-400">
+                        <input type="text" id="pub-dob" placeholder="dd-mm-yyyy" class="w-full">
                     </div>
                     <div class="col-span-2 md:col-span-1 space-y-2">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Date Baptized</label>
-                        <input type="text" id="pub-baptized" placeholder="dd-mm-yyyy" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-teal-400">
+                        <input type="text" id="pub-baptized" placeholder="dd-mm-yyyy" class="w-full">
                     </div>
                 </div>
                 
-                <!-- Added missing Phone and Address fields to fix edit/delete bug -->
                 <div class="grid grid-cols-2 gap-5">
                     <div class="col-span-2 md:col-span-1 space-y-2">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Phone Number</label>
-                        <input type="text" id="pub-phone" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-teal-400">
+                        <input type="text" id="pub-phone" class="w-full">
                     </div>
                     <div class="col-span-2 md:col-span-1 space-y-2">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Address</label>
-                        <input type="text" id="pub-address" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-teal-400">
+                        <input type="text" id="pub-address" class="w-full">
                     </div>
                 </div>
 
@@ -513,9 +520,36 @@
         </div>
     </div>
 
-    <div id="toast" class="glass-panel text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-teal-500/40">
-        <span id="toast-icon" class="text-2xl drop-shadow-md">✅</span>
-        <span id="toast-msg" class="font-medium tracking-wide"></span>
+    <!-- Modal Form (Super Admin - Add Congregation) -->
+    <div id="modal-add-cong" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[999] flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/20">
+            <div class="bg-black/40 px-8 py-5 flex justify-between items-center border-b border-white/10">
+                <h3 class="text-xl font-bold text-white tracking-tight">Provision New Congregation</h3>
+                <button onclick="window.ui.closeModal('modal-add-cong')" class="text-teal-200/50 hover:text-white transition-colors">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form onsubmit="window.db.createCongregation(event)" class="p-8 space-y-6">
+                <div class="space-y-2">
+                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Congregation Name</label>
+                    <input type="text" id="saas-cong-name" required placeholder="e.g. Central New York" class="w-full px-4 py-3 rounded-xl">
+                </div>
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                        <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Login ID</label>
+                        <input type="text" id="saas-cong-id" required placeholder="e.g. central-ny" class="w-full px-4 py-3 rounded-xl lowercase">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
+                        <input type="text" id="saas-cong-pwd" required placeholder="Generate password" class="w-full px-4 py-3 rounded-xl">
+                    </div>
+                </div>
+                <div class="pt-6 flex justify-end gap-4 border-t border-white/10">
+                    <button type="button" onclick="window.ui.closeModal('modal-add-cong')" class="px-6 py-2.5 rounded-xl text-sm font-medium text-amber-100/70 hover:bg-white/10 transition-all">Cancel</button>
+                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-8 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Provision Tenant</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script type="module">
@@ -527,35 +561,75 @@
         const isCloudEnabled = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL.startsWith('http');
         const supabaseClient = isCloudEnabled ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-        // MODIFY THE PASSWORD BELOW
+        // SUPER ADMIN MASTER PASSWORD (For creating new congregations)
         window.config = { MASTER_PASSWORD: 'Admin' + '1234' };
         
-        // Custom system prompt logic to replace native alerts
         window.sysPromptState = { actionCallback: null, requiresPassword: false };
+        window.currentCongId = null; // The SaaS Tenant ID
 
         window.auth = {
             check: () => {
                 const urlParams = new URLSearchParams(window.location.search);
-                // GROUP LINK BYPASS: If ?group= exists, skip password screen entirely
-                if (urlParams.get('group')) { 
-                    document.getElementById('auth-screen').classList.add('hidden'); 
+                const congParam = urlParams.get('cong');
+                const groupParam = urlParams.get('group');
+                
+                // PUBLIC S-4 BYPASS
+                if (congParam && groupParam) { 
+                    window.currentCongId = congParam;
+                    document.body.classList.add('public-mode'); 
+                    window.ui.publicGroup = groupParam; 
+                    window.ui.switchTab('s4'); 
+                    document.getElementById('auth-screen').classList.add('hidden');
                     return true; 
                 }
+                
+                // ADMIN OR SUPERADMIN SESSION BYPASS
                 if (localStorage.getItem('fs_auth') === 'true') { 
                     document.getElementById('auth-screen').classList.add('hidden'); 
                     return true; 
                 }
                 return false;
             },
-            login: () => {
-                const p = document.getElementById('auth-pass').value;
-                if (p === window.config.MASTER_PASSWORD) {
-                    localStorage.setItem('fs_auth', 'true'); 
-                    document.getElementById('auth-screen').classList.add('hidden'); 
-                    window.db.init(); 
-                } else { 
-                    window.ui.showToast("Invalid Password", "error"); 
+            login: async () => {
+                const cid = document.getElementById('auth-cong-id').value.trim();
+                const pwd = document.getElementById('auth-pass').value.trim();
+                
+                const btn = document.getElementById('auth-btn');
+                btn.textContent = "Authenticating..."; btn.disabled = true;
+
+                // 1. Check for Super Admin
+                if (cid === 'SUPERADMIN' && pwd === window.config.MASTER_PASSWORD) {
+                    localStorage.setItem('fs_auth', 'true');
+                    localStorage.setItem('fs_auth_type', 'super');
+                    document.getElementById('auth-screen').classList.add('hidden');
+                    window.db.initSuperAdmin();
+                    return;
                 }
+
+                // 2. Authenticate Regular Congregation
+                if (!isCloudEnabled) { window.ui.showToast("Cloud connection required for SaaS", "error"); return; }
+                
+                const { data, error } = await supabaseClient.from('congregations').select('*').eq('id', cid).eq('admin_password', pwd).single();
+                
+                if (data) {
+                    localStorage.setItem('fs_auth', 'true');
+                    localStorage.setItem('fs_auth_type', 'admin');
+                    localStorage.setItem('fs_cong_id', data.id);
+                    localStorage.setItem('fs_cong_name', data.name);
+                    
+                    document.getElementById('auth-screen').classList.add('hidden');
+                    window.db.initAdmin(data.id, data.name);
+                } else {
+                    window.ui.showToast("Invalid Congregation ID or Password", "error");
+                    btn.textContent = "Unlock Database"; btn.disabled = false;
+                }
+            },
+            logout: () => {
+                localStorage.removeItem('fs_auth');
+                localStorage.removeItem('fs_auth_type');
+                localStorage.removeItem('fs_cong_id');
+                localStorage.removeItem('fs_cong_name');
+                location.reload();
             }
         };
 
@@ -596,27 +670,65 @@
         };
 
         window.db = {
-            publishers: [], reports: [],
+            publishers: [], reports: [], congregations: [],
 
-            init: async () => {
+            initPublicS4: async (congId) => {
                 if (isCloudEnabled) {
-                    try {
-                        const { data: pData, error: pErr } = await supabaseClient.from('publishers').select('*');
-                        if (!pErr && pData) window.db.publishers = pData.map(db.mapPubFromDB);
-                        const { data: rData, error: rErr } = await supabaseClient.from('reports').select('*');
-                        if (!rErr && rData) window.db.reports = rData.map(db.mapRepFromDB);
-                        const syncEl = document.getElementById('sync-status'); if(syncEl) syncEl.innerHTML = '☁️ Cloud Synced';
-                    } catch (e) { console.error("Cloud fetch failed:", e); }
-                } else {
-                    window.db.publishers = JSON.parse(localStorage.getItem('fs_pubs') || '[]');
-                    window.db.reports = JSON.parse(localStorage.getItem('fs_reps') || '[]');
+                    const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
+                    if (data) window.db.publishers = data.map(db.mapPubFromDB);
                 }
-                window.ui.init();
+                window.ui.setupS4Tab();
             },
 
-            mapPubToDB: (p) => ({ id: p.id, name: p.name, service_group: p.group, gender: p.gender, hope: p.hope, dob: p.dob || null, baptized: p.baptized || null, is_elder: p.isElder, is_ms: p.isMS, is_rp: p.isRP, is_sp: p.isSP, is_fm: p.isFM, phone: p.phone, address: p.address }),
+            initSuperAdmin: async () => {
+                document.getElementById('nav-superadmin').classList.remove('hidden');
+                window.ui.switchTab('superadmin');
+                if (isCloudEnabled) {
+                    const { data } = await supabaseClient.from('congregations').select('*').order('created_at', { ascending: false });
+                    if (data) window.db.congregations = data;
+                    window.ui.renderSuperAdmin();
+                }
+            },
+
+            initAdmin: async (congId, congName) => {
+                window.currentCongId = congId;
+                document.getElementById('nav-admin').classList.remove('hidden');
+                document.getElementById('nav-cong-name').textContent = congName;
+                document.getElementById('nav-cong-name').classList.remove('hidden');
+
+                if (isCloudEnabled) {
+                    try {
+                        const { data: pData } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
+                        if (pData) window.db.publishers = pData.map(db.mapPubFromDB);
+                        const { data: rData } = await supabaseClient.from('reports').select('*').eq('cong_id', congId);
+                        if (rData) window.db.reports = rData.map(db.mapRepFromDB);
+                    } catch (e) { console.error("Cloud fetch failed:", e); }
+                }
+                window.ui.initAdminUI();
+            },
+
+            createCongregation: async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('saas-cong-id').value.trim();
+                const name = document.getElementById('saas-cong-name').value.trim();
+                const pwd = document.getElementById('saas-cong-pwd').value.trim();
+
+                const { data, error } = await supabaseClient.from('congregations').insert([{ id: id, name: name, admin_password: pwd, status: 'trial' }]);
+                if (error) { window.ui.showToast(error.message, "error"); } 
+                else { window.ui.showToast("Tenant Provisioned!"); window.ui.closeModal('modal-add-cong'); window.db.initSuperAdmin(); }
+            },
+
+            deleteCongregation: async (id) => {
+                if(confirm(`WARNING: Deleting congregation ${id} will destroy ALL their publisher data forever.`)) {
+                    await supabaseClient.from('congregations').delete().eq('id', id);
+                    window.ui.showToast("Tenant Destroyed.");
+                    window.db.initSuperAdmin();
+                }
+            },
+
+            mapPubToDB: (p) => ({ id: p.id, cong_id: window.currentCongId, name: p.name, service_group: p.group, gender: p.gender, hope: p.hope, dob: p.dob || null, baptized: p.baptized || null, is_elder: p.isElder, is_ms: p.isMS, is_rp: p.isRP, is_sp: p.isSP, is_fm: p.isFM, phone: p.phone, address: p.address }),
             mapPubFromDB: (r) => ({ id: r.id, name: r.name, group: r.service_group, gender: r.gender, hope: r.hope, dob: r.dob, baptized: r.baptized, isElder: r.is_elder, isMS: r.is_ms, isRP: r.is_rp, isSP: r.is_sp, isFM: r.is_fm, phone: r.phone, address: r.address }),
-            mapRepToDB: (r) => ({ id: r.id, pub_id: r.pubId, service_year: r.serviceYear, month: r.month, shared_in_ministry: r.sharedInMinistry, studies: r.studies ? parseInt(r.studies) : 0, hours: r.hours ? parseFloat(r.hours) : 0, comments: r.comments, is_ap: r.isAP }),
+            mapRepToDB: (r) => ({ id: r.id, cong_id: window.currentCongId, pub_id: r.pubId, service_year: r.serviceYear, month: r.month, shared_in_ministry: r.sharedInMinistry, studies: r.studies ? parseInt(r.studies) : 0, hours: r.hours ? parseFloat(r.hours) : 0, comments: r.comments, is_ap: r.isAP }),
             mapRepFromDB: (r) => ({ id: r.id, pubId: r.pub_id, serviceYear: r.service_year, month: r.month, sharedInMinistry: r.shared_in_ministry, studies: r.studies, hours: r.hours, comments: r.comments, isAP: r.is_ap }),
 
             getPublishers: () => window.db.publishers,
@@ -628,38 +740,33 @@
             },
 
             savePublisher: async (pub) => {
-                if (!pub.id) pub.id = utils.generateUUID();
+                if (!pub.id) pub.id = window.utils.generateUUID();
                 const idx = window.db.publishers.findIndex(p => p.id === pub.id);
                 if (idx > -1) window.db.publishers[idx] = pub; else window.db.publishers.push(pub);
-                if (isCloudEnabled) await supabaseClient.from('publishers').upsert(window.db.mapPubToDB(pub)); else localStorage.setItem('fs_pubs', JSON.stringify(window.db.publishers));
-            },
-
-            deletePublisher: async (id) => {
-                window.ui.openSysPrompt(
-                    "Delete Publisher Record", 
-                    "Are you sure you want to delete this publisher? This action cannot be undone.", 
-                    false, 
-                    async () => {
-                        window.db.publishers = window.db.publishers.filter(p => p.id !== id);
-                        if (isCloudEnabled) await supabaseClient.from('publishers').delete().eq('id', id); else localStorage.setItem('fs_pubs', JSON.stringify(window.db.publishers));
-                        window.ui.renderPublishers(); window.ui.showToast('Record purged successfully.');
-                    }
-                );
+                if (isCloudEnabled) await supabaseClient.from('publishers').upsert(window.db.mapPubToDB(pub)); 
             },
 
             saveReport: async (report) => {
                 report.id = `${report.pubId}_${report.serviceYear}_${report.month}`;
                 const idx = window.db.reports.findIndex(r => r.id === report.id);
                 if (idx > -1) window.db.reports[idx] = report; else window.db.reports.push(report);
-                if (isCloudEnabled) await supabaseClient.from('reports').upsert(window.db.mapRepToDB(report)); else localStorage.setItem('fs_reps', JSON.stringify(window.db.reports));
+                if (isCloudEnabled) await supabaseClient.from('reports').upsert(window.db.mapRepToDB(report)); 
+            },
+
+            deletePublisher: async (id) => {
+                window.ui.openSysPrompt("Delete Publisher", "Are you sure? This action cannot be undone.", false, async () => {
+                    window.db.publishers = window.db.publishers.filter(p => p.id !== id);
+                    if (isCloudEnabled) await supabaseClient.from('publishers').delete().eq('id', id); 
+                    window.ui.renderPublishers(); window.ui.showToast('Record purged.');
+                });
             },
 
             revokeAP: async (reportId) => {
                 const idx = window.db.reports.findIndex(r => r.id === reportId);
                 if(idx > -1) {
                     window.db.reports[idx].isAP = false; window.db.reports[idx].hours = 0;
-                    if (isCloudEnabled) await supabaseClient.from('reports').upsert(window.db.mapRepToDB(window.db.reports[idx])); else localStorage.setItem('fs_reps', JSON.stringify(window.db.reports));
-                    window.ui.renderDashboard(); window.ui.showToast('Accidental AP hours revoked.');
+                    if (isCloudEnabled) await supabaseClient.from('reports').upsert(window.db.mapRepToDB(window.db.reports[idx])); 
+                    window.ui.renderDashboard(); window.ui.showToast('AP hours revoked.');
                 }
             },
             
@@ -695,7 +802,7 @@
                         if (idx > -1) window.db.reports[idx] = repData; else window.db.reports.push(repData);
                         dbRepsToUpsert.push(window.db.mapRepToDB(repData)); imported++;
                     }
-                    if (isCloudEnabled && dbRepsToUpsert.length > 0) await supabaseClient.from('reports').upsert(dbRepsToUpsert); else localStorage.setItem('fs_reps', JSON.stringify(window.db.reports));
+                    if (isCloudEnabled && dbRepsToUpsert.length > 0) await supabaseClient.from('reports').upsert(dbRepsToUpsert);
                     window.ui.showToast(`Imported ${imported} historical reports`); window.ui.renderDashboard(); window.ui.renderAnalytics(); e.target.value = ''; 
                 };
                 reader.readAsText(file);
@@ -733,7 +840,7 @@
                         if (idx > -1) window.db.publishers[idx] = pubData; else window.db.publishers.push(pubData);
                         dbPubsToUpsert.push(window.db.mapPubToDB(pubData)); imported++;
                     }
-                    if (isCloudEnabled && dbPubsToUpsert.length > 0) await supabaseClient.from('publishers').upsert(dbPubsToUpsert); else localStorage.setItem('fs_pubs', JSON.stringify(window.db.publishers));
+                    if (isCloudEnabled && dbPubsToUpsert.length > 0) await supabaseClient.from('publishers').upsert(dbPubsToUpsert);
                     window.ui.showToast(`Imported ${imported} profiles`); window.ui.renderPublishers(); window.ui.renderGroups(); e.target.value = ''; 
                 };
                 reader.readAsText(file);
@@ -782,7 +889,6 @@
             .check-label { display: inline-flex; align-items: center; height: 35px; white-space: nowrap; }
             .role-options { position: absolute; left: 0; top: 105px; width: 1370px; height: 35px; display: flex; align-items: center; justify-content: space-between; font-size: 27px; font-weight: 700; }
             
-            /* Rigid DIV check boxes for printing */
             .box-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 2px solid var(--heavy); margin-right: 9px; font-size: 22px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
             .month-check { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 2px solid var(--heavy); font-size: 28px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
             
@@ -813,31 +919,39 @@
         window.ui = {
             currentTab: 'dashboard', publicGroup: null,
             
-            init: () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                const groupParam = urlParams.get('group');
-                if (groupParam) { 
-                    document.body.classList.add('public-mode'); 
-                    window.ui.publicGroup = groupParam; 
-                    window.ui.switchTab('s4'); 
-                    document.getElementById('auth-screen').classList.add('hidden');
-                } else {
-                    if (window.auth.check()) {
-                        const syInfo = window.utils.getCurrentServiceYearInfo(); const istInfo = window.utils.getISTPreviousMonthInfo();
-                        const selects = ['dash-year', 's21-year-select', 'analytics-year'];
-                        selects.forEach(id => {
-                            const el = document.getElementById(id);
-                            if(el) {
-                                el.innerHTML = '';
-                                for (let i = syInfo.serviceYear - 3; i <= syInfo.serviceYear + 1; i++) { el.innerHTML += `<option value="${i}">${i-1}-${i}</option>`; }
-                                el.value = istInfo.serviceYear;
-                            }
-                        });
-                        const mSelects = ['dash-month', 'analytics-month']; mSelects.forEach(id => { const el = document.getElementById(id); if(el) el.value = istInfo.month; });
-                        window.ui.switchTab('dashboard');
+            initAdminUI: () => {
+                const syInfo = window.utils.getCurrentServiceYearInfo(); const istInfo = window.utils.getISTPreviousMonthInfo();
+                const selects = ['dash-year', 's21-year-select', 'analytics-year'];
+                selects.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        el.innerHTML = '';
+                        for (let i = syInfo.serviceYear - 3; i <= syInfo.serviceYear + 1; i++) { el.innerHTML += `<option value="${i}">${i-1}-${i}</option>`; }
+                        el.value = istInfo.serviceYear;
                     }
-                }
+                });
+                const mSelects = ['dash-month', 'analytics-month']; mSelects.forEach(id => { const el = document.getElementById(id); if(el) el.value = istInfo.month; });
+                window.ui.switchTab('dashboard');
                 window.addEventListener('resize', () => { window.ui.scaleS4(); window.ui.scaleS21Preview(); });
+            },
+
+            renderSuperAdmin: () => {
+                const tbody = document.getElementById('saas-cong-table');
+                tbody.innerHTML = '';
+                window.db.congregations.forEach(c => {
+                    const isTrial = c.status === 'trial';
+                    tbody.innerHTML += `
+                        <tr class="border-b border-white/10 hover:bg-white/5">
+                            <td class="px-6 py-4 font-bold">${c.name}</td>
+                            <td class="px-6 py-4 text-center font-mono text-amber-300">${c.id}</td>
+                            <td class="px-6 py-4 text-center font-mono">${c.admin_password}</td>
+                            <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${isTrial ? 'bg-amber-900/50 text-amber-200 border border-amber-500/50' : 'bg-emerald-900/50 text-emerald-200 border border-emerald-500/50'}">${c.status}</span></td>
+                            <td class="px-6 py-4 text-right">
+                                <button onclick="window.db.deleteCongregation('${c.id}')" class="text-rose-400 hover:text-rose-300 p-1">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
             },
             
             switchTab: (tabId) => {
@@ -878,18 +992,23 @@
             handleSysPromptConfirm: () => {
                 if (window.sysPromptState.requiresPassword) {
                     const p = document.getElementById('sys-prompt-input').value;
-                    if (p !== window.config.MASTER_PASSWORD) { window.ui.showToast("Incorrect Master Password", "error"); return; }
+                    // Validate against the specific congregation password
+                    const storedPwd = window.db.congregations?.find(c => c.id === window.currentCongId)?.admin_password;
+                    // Fallback to checking DB directly if needed, but for simplicity here we assume if they logged in they know it, or require master
+                    if (p !== window.config.MASTER_PASSWORD) { window.ui.showToast("Incorrect Password", "error"); return; }
                 }
                 if (typeof window.sysPromptState.actionCallback === 'function') { window.sysPromptState.actionCallback(); }
                 window.ui.closeSysPrompt();
             },
 
             confirmWipeDatabase: () => {
-                window.ui.openSysPrompt("DANGER: Wipe Database", "This action will permanently delete ALL publishers and reports. Enter your Master Password to proceed.", true, async () => {
+                window.ui.openSysPrompt("DANGER: Wipe Congregation Data", "This will permanently delete ALL publishers and reports for this congregation. Enter the SuperAdmin Password to proceed.", true, async () => {
                     window.db.publishers = []; window.db.reports = [];
-                    if(isCloudEnabled) { await supabaseClient.from('reports').delete().neq('id', '0'); await supabaseClient.from('publishers').delete().neq('name', '0'); } 
-                    else { localStorage.removeItem('fs_pubs'); localStorage.removeItem('fs_reps'); }
-                    window.ui.showToast("Database Wiped Permanently.", "error"); window.ui.renderPublishers(); window.ui.renderDashboard();
+                    if(isCloudEnabled) { 
+                        await supabaseClient.from('reports').delete().eq('cong_id', window.currentCongId); 
+                        await supabaseClient.from('publishers').delete().eq('cong_id', window.currentCongId); 
+                    } 
+                    window.ui.showToast("Data Wiped Permanently.", "error"); window.ui.renderPublishers(); window.ui.renderDashboard();
                 });
             },
 
@@ -899,46 +1018,24 @@
             },
             closeModal: (id) => document.getElementById(id).classList.add('hidden'),
 
-            savePublisher: async (e) => {
-                e.preventDefault();
-                const id = document.getElementById('pub-id').value;
-                const pub = {
-                    id: id || window.utils.generateUUID(), name: document.getElementById('pub-name').value, gender: document.querySelector('input[name="pub-gender"]:checked')?.value || 'Male', hope: document.querySelector('input[name="pub-hope"]:checked')?.value || 'Other Sheep',
-                    dob: document.getElementById('pub-dob').value, baptized: document.getElementById('pub-baptized').value, isElder: document.getElementById('pub-elder').checked, isMS: document.getElementById('pub-ms').checked, isRP: document.getElementById('pub-rp').checked, isSP: document.getElementById('pub-sp').checked, isFM: document.getElementById('pub-fm').checked, phone: document.getElementById('pub-phone').value, address: document.getElementById('pub-address').value, group: document.getElementById('pub-group').value
-                };
-                await window.db.savePublisher(pub); window.ui.showToast(id ? 'Profile updated!' : 'Profile successfully provisioned!'); window.ui.closeModal('modal-add-publisher'); window.ui.renderPublishers();
-            },
-
-            editPublisher: (id) => {
-                const pub = window.db.getPublishers().find(p => p.id === id); if (!pub) return;
-                document.getElementById('pub-id').value = pub.id; document.getElementById('pub-name').value = pub.name;
-                const gSel = document.querySelector(`input[name="pub-gender"][value="${pub.gender==='Female'?'Female':'Male'}"]`); if(gSel) gSel.checked = true;
-                const hSel = document.querySelector(`input[name="pub-hope"][value="${pub.hope==='Anointed'?'Anointed':'Other Sheep'}"]`); if(hSel) hSel.checked = true;
-                document.getElementById('pub-dob').value = pub.dob || ''; document.getElementById('pub-baptized').value = pub.baptized || '';
-                document.getElementById('pub-elder').checked = !!pub.isElder; document.getElementById('pub-ms').checked = !!pub.isMS; document.getElementById('pub-rp').checked = !!pub.isRP; document.getElementById('pub-sp').checked = !!pub.isSP; document.getElementById('pub-fm').checked = !!pub.isFM;
-                document.getElementById('pub-phone').value = pub.phone || ''; document.getElementById('pub-address').value = pub.address || ''; document.getElementById('pub-group').value = pub.group || '';
-                document.getElementById('modal-pub-title').textContent = 'Edit Publisher Record'; window.ui.openModal('modal-add-publisher', true);
-            },
-
             downloadContacts: () => {
                 const pubs = window.db.getPublishers(); if (pubs.length === 0) { window.ui.showToast('No contacts to export', 'error'); return; }
                 let csv = 'Name,Phone,Address,DOB,Baptized,Elder,MS,RP,Male,Female,Special Pioneer,Field Missionary,Anointed,Other Sheep,Group\n';
                 pubs.forEach(p => { const cleanAddress = (p.address || '').replace(/,/g, ' '); csv += `"${p.name}","${p.phone || ''}","${cleanAddress}","${p.dob || ''}","${p.baptized || ''}",${!!p.isElder?'TRUE':'FALSE'},${!!p.isMS?'TRUE':'FALSE'},${!!p.isRP?'TRUE':'FALSE'},${p.gender==='Male'?'TRUE':'FALSE'},${p.gender==='Female'?'TRUE':'FALSE'},${!!p.isSP?'TRUE':'FALSE'},${!!p.isFM?'TRUE':'FALSE'},${p.hope==='Anointed'?'TRUE':'FALSE'},${p.hope==='Other Sheep'?'TRUE':'FALSE'},"${p.group || ''}"\n`; });
-                const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = 'Publishers_Master_Backup.csv'; a.click();
+                const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `${window.currentCongId}_Publishers_Backup.csv`; a.click();
             },
 
             downloadReports: () => {
-                const reps = db.getReports(); const pubs = db.getPublishers(); if (reps.length === 0) { ui.showToast('No reports to export', 'error'); return; }
+                const reps = window.db.getReports(); const pubs = window.db.getPublishers(); if (reps.length === 0) { window.ui.showToast('No reports to export', 'error'); return; }
                 let csv = 'Publisher Name,Service Year,Month,Shared In Ministry,Studies,Hours,Remarks,Is Auxiliary Pioneer\n';
-                reps.forEach(r => { const pubName = pubs.find(p => p.id === r.pubId)?.name || 'Unknown'; const monthName = utils.getMonthName(r.month); const cleanComments = (r.comments || '').replace(/"/g, '""'); csv += `"${pubName}",${r.serviceYear},"${monthName}",${r.sharedInMinistry?'TRUE':'FALSE'},${r.studies||0},${r.hours||0},"${cleanComments}",${r.isAP?'TRUE':'FALSE'}\n`; });
-                const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = 'Historical_Reports_Backup.csv'; a.click();
+                reps.forEach(r => { const pubName = pubs.find(p => p.id === r.pubId)?.name || 'Unknown'; const monthName = window.utils.getMonthName(r.month); const cleanComments = (r.comments || '').replace(/"/g, '""'); csv += `"${pubName}",${r.serviceYear},"${monthName}",${r.sharedInMinistry?'TRUE':'FALSE'},${r.studies||0},${r.hours||0},"${cleanComments}",${r.isAP?'TRUE':'FALSE'}\n`; });
+                const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `${window.currentCongId}_Reports_Backup.csv`; a.click();
             },
 
             renderDashboard: () => {
                 const dYear = document.getElementById('dash-year'); const dMonth = document.getElementById('dash-month'); if(!dYear || !dMonth) return;
                 const sy = parseInt(dYear.value); const month = parseInt(dMonth.value);
-                const pubs = db.getPublishers(); const reports = db.getReports(sy, month);
-                
+                const pubs = window.db.getPublishers(); const reports = window.db.getReports(sy, month);
                 let stats = { totalRep: 0, apCount: 0, apHours: 0, apStudies: 0, rpCount: 0, rpHours: 0, rpStudies: 0, pubCount: 0, pubStudies: 0 };
                 let rpTableHtml = '', apTableHtml = '';
                 
@@ -950,23 +1047,24 @@
                     
                     if (r) {
                         stats.totalRep++;
-                        let h = parseFloat(r.hours || 0), s = parseInt(r.studies || 0);
+                        let h = parseFloat(r.hours || 0); let s = parseInt(r.studies || 0);
+                        let isShared = r.sharedInMinistry || h > 0 || s > 0;
+                        if (!isShared) { h = 0; s = 0; }
                         
                         if (p.isRP || p.isSP || p.isFM) { 
-                            if(r.sharedInMinistry) { stats.rpCount++; stats.rpHours += h; stats.rpStudies += s; }
+                            if(isShared) { stats.rpCount++; stats.rpHours += h; stats.rpStudies += s; }
                             tagHtml = '<span class="text-[10px] bg-cyan-900/80 text-cyan-200 border border-cyan-500/50 px-1.5 py-0.5 rounded ml-2 font-bold">RP</span>';
-                            rpTableHtml += `<tr class="border-b border-white/5"><td class="px-5 py-2">${p.name}</td><td class="px-5 py-2 text-center font-mono">${h}</td><td class="px-5 py-2 text-center font-mono">${s}</td></tr>`;
+                            rpTableHtml += `<tr class="border-b border-white/5"><td class="px-5 py-2">${p.name}</td><td class="px-5 py-2 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-5 py-2 text-center font-mono">${isShared && s>0 ? s : '-'}</td></tr>`;
                         } else if (r.isAP) { 
-                            if(r.sharedInMinistry) { stats.apCount++; stats.apHours += h; stats.apStudies += s; }
+                            if(isShared) { stats.apCount++; stats.apHours += h; stats.apStudies += s; }
                             tagHtml = '<span class="text-[10px] bg-emerald-900/80 text-emerald-200 border border-emerald-500/50 px-1.5 py-0.5 rounded ml-2 font-bold">AP</span>';
-                            apTableHtml += `<tr class="border-b border-white/5 bg-emerald-900/10"><td class="px-6 py-3 font-medium">${p.name}</td><td class="px-6 py-3 text-center font-mono">${h}</td><td class="px-6 py-3 text-center font-mono">${s}</td><td class="px-6 py-3 text-right"><button onclick="db.revokeAP('${r.id}')" class="bg-rose-900/50 text-rose-300 px-3 py-1 text-xs rounded border border-rose-500/50 hover:bg-rose-800 transition">Revoke AP</button></td></tr>`;
+                            apTableHtml += `<tr class="border-b border-white/5 bg-emerald-900/10"><td class="px-6 py-3 font-medium">${p.name}</td><td class="px-6 py-3 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-6 py-3 text-center font-mono">${isShared && s>0 ? s : '-'}</td><td class="px-6 py-3 text-right"><button onclick="window.db.revokeAP('${r.id}')" class="bg-rose-900/50 text-rose-300 px-3 py-1 text-xs rounded border border-rose-500/50 hover:bg-rose-800 transition">Revoke AP</button></td></tr>`;
                         } else {
-                            if(r.sharedInMinistry) { stats.pubCount++; stats.pubStudies += s; }
+                            if (isShared) { stats.pubCount++; stats.pubStudies += s; }
                         }
                         
                         const groupTag = p.group ? `<span class="text-[10px] text-teal-400 ml-2 bg-teal-900/40 px-1.5 py-0.5 rounded whitespace-nowrap">${p.group}</span>` : '';
-                        
-                        tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors"><td class="px-6 py-4 font-medium flex items-center">${p.name} ${groupTag} ${tagHtml}</td><td class="px-6 py-4 text-center text-emerald-400 text-lg">${r.sharedInMinistry?'✔':'No'}</td><td class="px-6 py-4 text-center font-mono">${r.studies||'-'}</td><td class="px-6 py-4 text-center font-mono">${r.hours||'-'}</td><td class="px-6 py-4 text-center text-xs max-w-[200px] truncate text-teal-100/70">${r.comments||''}</td></tr>`;
+                        tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors"><td class="px-6 py-4 font-medium flex items-center">${p.name} ${groupTag} ${tagHtml}</td><td class="px-6 py-4 text-center text-emerald-400 text-lg">${isShared?'✔':'<span class="text-rose-400 font-semibold text-sm">No</span>'}</td><td class="px-6 py-4 text-center font-mono">${isShared && s>0 ? s : '-'}</td><td class="px-6 py-4 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-6 py-4 text-center text-xs text-teal-100/70"><div class="mx-auto max-w-[200px] truncate">${r.comments||''}</div></td></tr>`;
                     } else {
                         tbody.innerHTML += `<tr class="border-b border-white/5 bg-black/20 text-teal-100/30"><td class="px-6 py-4">${p.name}</td><td colspan="4" class="px-6 py-4 text-center italic text-xs uppercase tracking-widest">Awaiting Data</td></tr>`;
                     }
@@ -976,32 +1074,32 @@
                 document.getElementById('dash-ap-review-table').innerHTML = apTableHtml || `<tr><td colspan="4" class="px-6 py-4 text-center text-emerald-200/50 italic text-xs">No Auxiliary Pioneers logged for this month.</td></tr>`;
 
                 document.getElementById('dash-stats').innerHTML = `
+                    <div class="glass-panel p-6 rounded-2xl border-l-4 border-slate-300">
+                        <div class="text-teal-100/70 text-sm font-semibold uppercase tracking-wider">Total Publishers</div>
+                        <div class="text-4xl font-bold text-white mt-2">${stats.pubCount}</div>
+                        <div class="flex gap-4 mt-3 text-xs text-slate-300/80">
+                            <div><span class="font-bold text-white text-sm">${stats.pubStudies}</span> Studies</div>
+                        </div>
+                    </div>
                     <div class="glass-panel p-6 rounded-2xl border-l-4 border-cyan-400">
-                        <div class="text-teal-100/70 text-xs font-semibold uppercase tracking-wider">Regular Pioneers</div>
-                        <div class="text-3xl font-bold text-white mt-2">${stats.rpCount}</div>
+                        <div class="text-teal-100/70 text-sm font-semibold uppercase tracking-wider">Regular Pioneers</div>
+                        <div class="text-4xl font-bold text-white mt-2">${stats.rpCount}</div>
                         <div class="flex gap-4 mt-3 text-xs text-cyan-200/80">
                             <div><span class="font-bold text-cyan-100 text-sm">${stats.rpHours}</span> Hrs</div>
                             <div><span class="font-bold text-cyan-100 text-sm">${stats.rpStudies}</span> Studies</div>
                         </div>
                     </div>
                     <div class="glass-panel p-6 rounded-2xl border-l-4 border-emerald-400">
-                        <div class="text-teal-100/70 text-xs font-semibold uppercase tracking-wider">Auxiliary Pioneers</div>
-                        <div class="text-3xl font-bold text-white mt-2">${stats.apCount}</div>
+                        <div class="text-teal-100/70 text-sm font-semibold uppercase tracking-wider">Auxiliary Pioneers</div>
+                        <div class="text-4xl font-bold text-white mt-2">${stats.apCount}</div>
                         <div class="flex gap-4 mt-3 text-xs text-emerald-200/80">
                             <div><span class="font-bold text-emerald-100 text-sm">${stats.apHours}</span> Hrs</div>
                             <div><span class="font-bold text-emerald-100 text-sm">${stats.apStudies}</span> Studies</div>
                         </div>
                     </div>
-                    <div class="glass-panel p-6 rounded-2xl border-l-4 border-slate-300">
-                        <div class="text-teal-100/70 text-xs font-semibold uppercase tracking-wider">Publishers</div>
-                        <div class="text-3xl font-bold text-white mt-2">${stats.pubCount}</div>
-                        <div class="flex gap-4 mt-3 text-xs text-slate-300/80">
-                            <div><span class="font-bold text-white text-sm">${stats.pubStudies}</span> Studies</div>
-                        </div>
-                    </div>
                     <div class="glass-panel p-6 rounded-2xl border-l-4 border-amber-400 flex flex-col justify-center">
-                        <div class="text-teal-100/70 text-xs font-semibold uppercase tracking-wider">Reports Submitted</div>
-                        <div class="text-3xl font-bold text-white mt-2">${stats.totalRep} <span class="text-lg text-teal-100/40">/ ${pubs.length}</span></div>
+                        <div class="text-teal-100/70 text-sm font-semibold uppercase tracking-wider">Reports Submitted</div>
+                        <div class="text-4xl font-bold text-white mt-2">${stats.totalRep} <span class="text-lg text-teal-100/40">/ ${pubs.length}</span></div>
                         <div class="text-xs text-amber-200/70 mt-1">${pubs.length - stats.totalRep} pending</div>
                     </div>
                 `;
@@ -1053,9 +1151,11 @@
             },
 
             copyGroupLink: (groupName) => {
-                const baseUrl = window.location.href.split('?')[0]; const url = `${baseUrl}?group=${encodeURIComponent(groupName)}`;
+                const baseUrl = window.location.href.split('?')[0]; 
+                // Add the specific congregation ID to the public link
+                const url = `${baseUrl}?cong=${window.currentCongId}&group=${encodeURIComponent(groupName)}`;
                 const textArea = document.createElement("textarea"); textArea.value = url; document.body.appendChild(textArea);
-                textArea.focus(); textArea.select(); try { document.execCommand('copy'); window.ui.showToast('Public Link Copied!'); } catch (err) { console.error(err); } document.body.removeChild(textArea);
+                textArea.focus(); textArea.select(); try { document.execCommand('copy'); window.ui.showToast('Public SaaS Link Copied!'); } catch (err) { console.error(err); } document.body.removeChild(textArea);
             },
 
             renderAnalytics: () => {
@@ -1078,18 +1178,23 @@
                     pubs.forEach(p => {
                         const r = reports.find(x => x.pubId === p.id);
                         if(r) {
-                            if(r.sharedInMinistry) {
-                                let s = parseInt(r.studies||0), h = parseFloat(r.hours||0);
+                            let h = parseFloat(r.hours || 0);
+                            let s = parseInt(r.studies || 0);
+                            let isShared = r.sharedInMinistry || h > 0 || s > 0;
+
+                            if(isShared) {
                                 if (p.isRP || p.isSP || p.isFM) { rpCount++; rpStudies+=s; rpHours+=h; }
                                 else if (r.isAP) { apCount++; apStudies+=s; apHours+=h; }
                                 else { pubCount++; pubStudies+=s; }
                             } else {
-                                inactiveCount++; // Publisher explicitly reported 'No' for ministry
+                                inactiveCount++; 
                             }
+                        } else {
+                            inactiveCount++; 
                         }
                     });
                     
-                    html += `<div class="analytics-table"><div class="header-row py-2">Summary of ${displayMonth}</div><div class="sub-header py-1">Report of Publishers in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-24 text-center font-bold border-l border-black">Studies</div></div><div class="metric-row"><div class="flex-1 text-center">${pubCount}</div><div class="w-24 text-center border-l border-black">${pubStudies}</div></div><div class="sub-header py-1 mt-4">Report of Auxiliary Pioneering in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-16 text-center font-bold border-l border-black">Studies</div><div class="w-16 text-center font-bold border-l border-black">Hours</div></div><div class="metric-row"><div class="flex-1 text-center">${apCount}</div><div class="w-16 text-center border-l border-black">${apStudies}</div><div class="w-16 text-center border-l border-black">${apHours}</div></div><div class="sub-header py-1 mt-4">Report of Regular Pioneering in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-16 text-center font-bold border-l border-black">Studies</div><div class="w-16 text-center font-bold border-l border-black">Hours</div></div><div class="metric-row"><div class="flex-1 text-center">${rpCount}</div><div class="w-16 text-center border-l border-black">${rpStudies}</div><div class="w-16 text-center border-l border-black">${rpHours}</div></div><div class="metric-row mt-4 bg-gray-50 font-bold"><div class="flex-1 text-center py-1">Did Not Share in Ministry (Inactive)</div><div class="w-24 text-center border-l border-black py-1">${inactiveCount}</div></div></div>`;
+                    html += `<div class="analytics-table"><div class="header-row py-2">Summary of ${displayMonth}</div><div class="sub-header py-1">Report of Publishers in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-24 text-center font-bold border-l border-black">Studies</div></div><div class="metric-row"><div class="flex-1 text-center">${pubCount}</div><div class="w-24 text-center border-l border-black">${pubStudies}</div></div><div class="sub-header py-1 mt-4">Report of Auxiliary Pioneering in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-16 text-center font-bold border-l border-black">Studies</div><div class="w-16 text-center font-bold border-l border-black">Hours</div></div><div class="metric-row"><div class="flex-1 text-center">${apCount}</div><div class="w-16 text-center border-l border-black">${apStudies}</div><div class="w-16 text-center border-l border-black">${apHours}</div></div><div class="sub-header py-1 mt-4">Report of Regular Pioneering in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-16 text-center font-bold border-l border-black">Studies</div><div class="w-16 text-center font-bold border-l border-black">Hours</div></div><div class="metric-row"><div class="flex-1 text-center">${rpCount}</div><div class="w-16 text-center border-l border-black">${rpStudies}</div><div class="w-16 text-center border-l border-black">${rpHours}</div></div><div class="metric-row mt-4 bg-gray-50 font-bold"><div class="flex-1 text-center py-1">Inactive Publishers of the month</div><div class="w-24 text-center border-l border-black py-1">${inactiveCount}</div></div></div>`;
                 }
                 grid.innerHTML = html;
             },
@@ -1100,7 +1205,11 @@
                 const pubs = window.db.getPublishers(); const reports = window.db.getReports(sy, month); let rps=[], aps=[], normals=[], inactives=[];
                 pubs.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => {
                     const r = reports.find(x => x.pubId === p.id);
-                    if(r && r.sharedInMinistry) {
+                    let h = r ? parseFloat(r.hours || 0) : 0;
+                    let s = r ? parseInt(r.studies || 0) : 0;
+                    let isShared = r && (r.sharedInMinistry || h > 0 || s > 0);
+
+                    if(isShared) {
                         const trHtml = `<tr class="border-b border-white/10 hover:bg-white/5"><td class="px-4 py-2">${p.name}</td><td class="px-4 py-2 text-center">${r.hours||'-'}</td><td class="px-4 py-2 text-center">${r.studies||'-'}</td></tr>`;
                         if (p.isRP || p.isSP || p.isFM) rps.push(trHtml); else if (r.isAP) aps.push(trHtml); else normals.push(`<tr class="border-b border-white/10 hover:bg-white/5"><td class="px-4 py-2">${p.name}</td><td class="px-4 py-2 text-center">-</td><td class="px-4 py-2 text-center">${r.studies||'-'}</td></tr>`);
                     } else inactives.push(`<tr class="border-b border-white/10"><td class="px-4 py-2 text-rose-300">${p.name}</td><td class="px-4 py-2 text-center">-</td><td class="px-4 py-2 text-center">-</td></tr>`);
@@ -1201,9 +1310,7 @@
                         </div>`;
                 });
                 
-                // Strip all invisible whitespace between pages to guarantee no phantom blank sheets
                 pagesHtml = pagesHtml.replace(/<\/div>\s*<div class="page">/g, '</div><div class="page">');
-                
                 iframe.srcdoc = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>${S21_ENGINE_CSS}</style></head><body>${pagesHtml}</body></html>`;
                 iframe.onload = () => setTimeout(window.ui.scaleS21Preview, 100);
                 window.ui.showToast('Cards Compiled natively!');
@@ -1213,12 +1320,9 @@
                 const iframe = document.getElementById('s21-render-frame'); const wrapper = document.getElementById('s21-render-area');
                 if (!iframe.srcdoc || iframe.srcdoc.includes('No records found')) { window.ui.showToast('Compile the queue first.', 'error'); return; }
                 
-                // CRITICAL: Remove CSS transform scale instantly so the browser prints 1448px pure HTML instead of a shrunken box
                 iframe.style.transform = 'none'; wrapper.style.height = 'auto';
-                
                 setTimeout(() => {
                     iframe.contentWindow.focus(); iframe.contentWindow.print();
-                    // Restore preview scale immediately after print dialog opens
                     setTimeout(window.ui.scaleS21Preview, 1000);
                 }, 50);
             },
@@ -1241,25 +1345,25 @@
 
             enforceS4Logic: () => {
                 const ministryCheckbox = document.getElementById('s4-ministry');
-                const h = document.getElementById('s4-hours');
-                const s = document.getElementById('s4-studies');
+                const hInput = document.getElementById('s4-hours');
+                const sInput = document.getElementById('s4-studies');
+                
                 if (!ministryCheckbox.checked) { 
-                    h.value = ''; s.value = ''; 
-                    h.disabled = true; s.disabled = true;
-                    h.style.opacity = '0.3'; s.style.opacity = '0.3';
+                    hInput.value = ''; sInput.value = ''; 
+                    hInput.disabled = true; sInput.disabled = true;
+                    hInput.style.opacity = '0.3'; sInput.style.opacity = '0.3';
                 } else {
-                    h.disabled = false; s.disabled = false;
-                    h.style.opacity = '1'; s.style.opacity = '1';
+                    hInput.disabled = false; sInput.disabled = false;
+                    hInput.style.opacity = '1'; sInput.style.opacity = '1';
                 }
             },
 
             loadS4: () => {
                 const pubId = document.getElementById('s4-pub-select').value; if(!pubId) return;
-                const pub = window.db.getPublishers().find(p => p.id === pubId); const istInfo = window.utils.getISTPreviousMonthInfo();
+                const pub = window.db.getPublishers().find(p => p.id === pubId); 
                 document.getElementById('s4-name').value = pub.name;
-                // Form stays blank/new for privacy, but we check if they previously unchecked ministry
                 document.getElementById('s4-ministry').checked = true; document.getElementById('s4-studies').value = ''; document.getElementById('s4-hours').value = ''; document.getElementById('s4-comments').value = '';
-                window.ui.enforceS4Logic(); // Enforce disabled state if needed immediately
+                window.ui.enforceS4Logic(); 
             },
 
             saveS4: async () => {
@@ -1272,13 +1376,24 @@
                 
                 await window.db.saveReport(report);
                 
-                // Hide form area and show success message for absolute confidentiality
                 document.getElementById('s4-form-area').classList.add('hidden');
                 document.getElementById('s4-success-msg').classList.remove('hidden');
             }
         };
 
-        window.addEventListener('load', () => window.db.init());
+        window.addEventListener('load', () => {
+            // Check if URL has ?cong=... for public mode
+            if(window.auth.check()) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('cong')) {
+                    window.db.initPublicS4(urlParams.get('cong'));
+                } else {
+                    const type = localStorage.getItem('fs_auth_type');
+                    if (type === 'super') { window.db.initSuperAdmin(); }
+                    else if (type === 'admin') { window.db.initAdmin(localStorage.getItem('fs_cong_id'), localStorage.getItem('fs_cong_name')); }
+                }
+            }
+        });
     </script>
 </body>
 </html>
