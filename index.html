@@ -6,20 +6,25 @@
     <title>Service Reports Manager</title>
     
     <!-- External Dependencies -->
-    <script>window.tailwind = { config: { corePlugins: { preflight: true } } };</script>
+    <script>
+        // Suppress Tailwind CDN warning in console for production
+        window.tailwind = { config: { corePlugins: { preflight: true } } };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --glass-bg: rgba(13, 148, 136, 0.15);
+            --glass-bg: rgba(13, 148, 136, 0.08);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top left, #064e3b 0%, #020617 50%, #083344 100%);
+            background: #020617; /* Deep slate background */
+            background-image: radial-gradient(circle at top right, rgba(13, 148, 136, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at bottom left, rgba(8, 145, 178, 0.1) 0%, transparent 50%);
             background-attachment: fixed;
             color: #f8fafc;
             min-height: 100vh;
@@ -28,16 +33,16 @@
         
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow);
         }
         
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(20, 184, 166, 0.4); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(20, 184, 166, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(20, 184, 166, 0.3); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(20, 184, 166, 0.6); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-out forwards; }
@@ -51,20 +56,36 @@
         }
         #toast.show { transform: translateY(0) scale(1); opacity: 1; }
 
+        /* --- BULLETPROOF PUBLIC MODE LAYOUT --- */
+        body.public-mode { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+            background: #020617;
+        }
         body.public-mode #app-header { display: none !important; }
-        body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh;}
-        body.public-mode #tab-s4 { display: block !important; width: 100%; padding: 1rem; }
+        body.public-mode .main-content { 
+            padding: 0 !important; 
+            margin: 0 !important; 
+            width: 100% !important; 
+            max-width: 600px !important; 
+        }
+        body.public-mode .tab-content:not(#tab-s4) { display: none !important; }
+        body.public-mode #tab-s4 { display: block !important; width: 100%; }
+        /* -------------------------------------- */
         
-        input[type="text"], input[type="password"], input[type="number"], select, textarea {
-            background: rgba(0,0,0,0.2);
+        input[type="text"], input[type="password"], input[type="number"], input[type="tel"], select, textarea {
+            background: rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
             transition: all 0.2s;
         }
         input:focus, select:focus, textarea:focus {
             border-color: rgba(20, 184, 166, 0.6);
-            box-shadow: 0 0 10px rgba(20, 184, 166, 0.2);
+            box-shadow: 0 0 10px rgba(20, 184, 166, 0.1);
             outline: none;
+            background: rgba(0,0,0,0.4);
         }
         
         input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
@@ -76,7 +97,7 @@
         /* Generic Modern Form Styles */
         .modern-form-input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05) !important;
+            background: rgba(0, 0, 0, 0.3) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
             color: white;
             padding: 12px 16px;
@@ -87,29 +108,24 @@
         .modern-form-input:focus {
             border-color: #14b8a6 !important;
             box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
-            background: rgba(255, 255, 255, 0.1) !important;
+            background: rgba(0, 0, 0, 0.5) !important;
         }
 
-        .analytics-table { width: 100%; min-width: 600px; border: 2px solid #000; background: #fff; color: #000; font-family: Arial, sans-serif; font-size: 14px; margin-bottom: 24px; border-collapse: collapse; }
-        .analytics-table th, .analytics-table td { border: 1px solid #000; padding: 6px; }
-        .analytics-table .header-row { font-weight: bold; text-align: center; font-size: 16px; border-bottom: 2px solid #000; }
-        .analytics-table .sub-header { font-weight: bold; text-align: center; background: #f0f0f0; }
-        .analytics-table .metric-row { display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
-
-        /* S-21 Print Preview - Scaled & Unboxed */
+        /* S-21 Print Preview - Fully Unboxed and Free */
         #s21-render-area {
             width: 100%;
             display: flex;
-            justify-content: center;
-            overflow: visible; /* Let it breathe */
-            padding-top: 20px;
+            justify-content: flex-start; /* Anchor left for scaling */
+            overflow: hidden; 
+            padding-top: 10px;
+            position: relative;
         }
         
         #s21-render-frame {
             border: none;
-            background: #fff;
-            transform-origin: top center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Elegant shadow */
+            background: transparent;
+            transform-origin: top left; /* Critical for preventing clipping */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
             border-radius: 4px;
         }
     </style>
@@ -155,31 +171,31 @@
     </div>
 
     <!-- Navigation Header -->
-    <nav id="app-header" class="glass-panel sticky top-0 z-50 border-b border-teal-400/20">
+    <nav id="app-header" class="glass-panel sticky top-0 z-50 border-b border-teal-400/10">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 shrink-0">
-                <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.3)]">FS</div>
-                <span class="hidden sm:inline font-bold text-xl tracking-wide text-white drop-shadow-lg">Service Reports Manager</span>
+                <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.2)]">FS</div>
+                <span class="hidden sm:inline font-bold text-lg tracking-wide text-white drop-shadow-md">Service Reports Manager</span>
             </div>
             
             <!-- Standard Admin Navigation -->
             <div id="nav-admin" class="flex flex-1 justify-end sm:justify-start items-center gap-1 sm:ml-6 hidden min-w-0">
-                <div class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 overflow-x-auto flex-1 min-w-0 custom-scrollbar">
+                <div class="flex gap-1 bg-black/20 p-1.5 rounded-xl border border-white/5 overflow-x-auto flex-1 min-w-0 custom-scrollbar">
                     <span id="nav-cong-name" class="px-4 py-2 text-teal-300 font-bold text-sm tracking-wide hidden lg:block whitespace-nowrap overflow-hidden text-ellipsis"></span>
-                    <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
-                    <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
-                    <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Printer</button>
-                    <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
-                    <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
+                    <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
+                    <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
+                    <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Printer</button>
+                    <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
+                    <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
                 </div>
                 <div class="flex items-center gap-1 sm:gap-2 ml-2 shrink-0">
                     <button onclick="window.ui.openModal('modal-change-password')" class="p-2 rounded-lg transition-all hover:bg-white/10 text-teal-50/70" title="Settings">⚙️</button>
-                    <button onclick="window.auth.logout()" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap">Log Out</button>
+                    <button onclick="window.auth.logout()" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap">Log Out</button>
                 </div>
             </div>
 
             <!-- Super Admin Navigation -->
-            <div id="nav-superadmin" class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 hidden shrink-0">
+            <div id="nav-superadmin" class="flex gap-1 bg-black/20 p-1.5 rounded-xl border border-white/5 hidden shrink-0">
                 <span class="px-4 py-2 text-amber-400 font-bold text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2">👑 Super Admin</span>
                 <button onclick="window.auth.logout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300">Log Out</button>
             </div>
@@ -195,14 +211,14 @@
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">SaaS Control Center</h2>
                     <p class="text-teal-200/70 mt-1">Manage tenant congregations and system access</p>
                 </div>
-                <button onclick="window.ui.openModal('modal-add-cong')" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center gap-2">
+                <button onclick="window.ui.openModal('modal-add-cong')" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)] flex items-center gap-2 text-sm">
                     + New Congregation
                 </button>
             </div>
             <div class="glass-panel rounded-2xl overflow-hidden mt-6">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-black/50 text-amber-100/70">
+                        <thead class="bg-black/40 text-amber-100/70 border-b border-amber-500/20">
                             <tr>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Congregation Details</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-center">Login ID</th>
@@ -210,7 +226,7 @@
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-right">Admin Action</th>
                             </tr>
                         </thead>
-                        <tbody id="saas-cong-table" class="divide-y divide-white/10 text-teal-50"></tbody>
+                        <tbody id="saas-cong-table" class="divide-y divide-white/5 text-teal-50"></tbody>
                     </table>
                 </div>
             </div>
@@ -221,11 +237,11 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Congregation Overview</h2>
-                    <p class="text-teal-200/70 mt-1">Real-time telemetry and service totals</p>
+                    <p class="text-teal-200/70 mt-1">Real-time reporting telemetry and service totals</p>
                 </div>
                 <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
-                    <select id="dash-year" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm"></select>
-                    <select id="dash-month" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm">
+                    <select id="dash-year" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white"></select>
+                    <select id="dash-month" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white">
                         <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                         <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
                         <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
@@ -237,12 +253,12 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 mt-6">
                 <!-- Regular Pioneers Log -->
-                <div class="glass-panel rounded-2xl overflow-hidden border border-cyan-500/30">
-                    <div class="bg-black/30 px-4 sm:px-5 py-3 border-b border-cyan-500/20 text-cyan-300 font-bold">Regular Pioneers Log</div>
+                <div class="glass-panel rounded-2xl overflow-hidden border border-cyan-500/20">
+                    <div class="bg-black/20 px-4 sm:px-5 py-3 border-b border-cyan-500/20 text-cyan-300 font-bold text-sm">Regular Pioneers Log</div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm whitespace-nowrap text-white">
-                            <thead class="bg-black/40 text-cyan-100/60 text-xs uppercase">
-                                <tr><th class="px-4 sm:px-5 py-2">Name</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Studies</th></tr>
+                            <thead class="bg-black/30 text-cyan-100/60 text-[10px] uppercase tracking-wider border-b border-white/5">
+                                <tr><th class="px-4 sm:px-5 py-2.5">Name</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Studies</th></tr>
                             </thead>
                             <tbody id="dash-rp-table" class="divide-y divide-white/5"></tbody>
                         </table>
@@ -250,15 +266,15 @@
                 </div>
                 
                 <!-- Auxiliary Pioneers Review Log -->
-                <div class="glass-panel rounded-2xl overflow-hidden border border-emerald-500/30">
-                    <div class="bg-black/30 px-4 sm:px-5 py-3 border-b border-emerald-500/20 text-emerald-300 font-bold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
+                <div class="glass-panel rounded-2xl overflow-hidden border border-emerald-500/20">
+                    <div class="bg-black/20 px-4 sm:px-5 py-3 border-b border-emerald-500/20 text-emerald-300 font-bold text-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
                         <span>Auxiliary Pioneer Review Log</span>
                         <span class="text-[9px] sm:text-[10px] uppercase text-emerald-200/50">Review mapped APs</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm whitespace-nowrap text-white">
-                            <thead class="bg-black/40 text-emerald-100/60 text-xs uppercase">
-                                <tr><th class="px-4 sm:px-5 py-2">Publisher</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Studies</th><th class="px-4 sm:px-5 py-2 text-right">Admin Action</th></tr>
+                            <thead class="bg-black/30 text-emerald-100/60 text-[10px] uppercase tracking-wider border-b border-white/5">
+                                <tr><th class="px-4 sm:px-5 py-2.5">Publisher</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Studies</th><th class="px-4 sm:px-5 py-2.5 text-right">Admin Action</th></tr>
                             </thead>
                             <tbody id="dash-ap-review-table" class="divide-y divide-white/5"></tbody>
                         </table>
@@ -268,13 +284,13 @@
             
             <!-- Monthly Submissions Log -->
             <div class="glass-panel rounded-2xl overflow-hidden mt-6">
-                <div class="bg-black/30 px-4 sm:px-6 py-4 border-b border-white/10 flex justify-between items-center">
-                    <h3 class="font-semibold text-white">Monthly Submissions Log</h3>
-                    <span class="text-[10px] sm:text-xs font-mono text-teal-300 bg-teal-900/40 px-2 py-1 rounded flex items-center gap-1">☁️ Synced</span>
+                <div class="bg-black/20 px-4 sm:px-6 py-4 border-b border-white/5 flex justify-between items-center">
+                    <h3 class="font-semibold text-white text-sm">Monthly Submissions Log</h3>
+                    <span class="text-[10px] sm:text-xs font-mono text-teal-300 bg-teal-900/30 px-2.5 py-1 rounded-md border border-teal-500/20 flex items-center gap-1">☁️ Synced</span>
                 </div>
                 <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
                     <table class="w-full text-left text-sm whitespace-nowrap relative">
-                        <thead class="bg-black/80 text-teal-100/70 sticky top-0 z-10 backdrop-blur-md">
+                        <thead class="bg-[#0f172a] text-teal-100/60 sticky top-0 z-10 border-b border-white/5 text-xs uppercase tracking-wider">
                             <tr>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Publisher</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-center">Shared</th>
@@ -284,7 +300,7 @@
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="dash-reports-table" class="divide-y divide-white/10 text-teal-50"></tbody>
+                        <tbody id="dash-reports-table" class="divide-y divide-white/5 text-teal-50"></tbody>
                     </table>
                 </div>
             </div>
@@ -295,29 +311,29 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
                 <div class="md:col-span-1 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 custom-scrollbar" id="groups-sidebar"></div>
                 <div class="md:col-span-3">
-                    <div id="group-details" class="hidden glass-panel p-4 sm:p-8 rounded-2xl"></div>
+                    <div id="group-details" class="hidden glass-panel p-4 sm:p-6 rounded-2xl"></div>
                 </div>
             </div>
         </div>
 
         <!-- PRINTER TAB -->
         <div id="tab-s21" class="tab-content space-y-6">
-            <div class="flex justify-between items-center glass-panel p-4 sm:p-6 rounded-2xl flex-wrap gap-4">
+            <div class="flex justify-between items-center glass-panel p-4 sm:p-6 rounded-2xl flex-wrap gap-4 border-b-2 border-teal-500/30">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Document Printer</h2>
                     <p class="text-teal-200/70 mt-1">Compile and print pixel-perfect S-21 records</p>
                 </div>
                 <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
-                    <select id="s21-year-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm"></select>
-                    <select id="s21-publisher-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm max-w-[250px]"></select>
-                    <button onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)] flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2v4h10z"></path></svg> 
+                    <select id="s21-year-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm bg-black/30 border border-white/10 text-white"></select>
+                    <select id="s21-publisher-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm max-w-[250px] bg-black/30 border border-white/10 text-white"></select>
+                    <button onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.4)] flex items-center justify-center gap-2 text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2v4h10z"></path></svg> 
                         Print Cards
                     </button>
                 </div>
             </div>
             
-            <!-- Scaled & Unboxed Iframe Container -->
+            <!-- Scaled & Unboxed Iframe Container (Perfect width fit) -->
             <div id="s21-render-area">
                 <iframe id="s21-render-frame"></iframe>
             </div>
@@ -325,21 +341,22 @@
 
         <!-- ANALYTICS TAB -->
         <div id="tab-analytics" class="tab-content space-y-6">
-            <div>
-                <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Analytics & Rosters</h2>
-                <p class="text-teal-200/70 mt-1">Rolling statistical summaries and historical data</p>
-            </div>
-            
-            <div class="flex gap-2 sm:gap-3 mb-4 w-full sm:w-auto">
-                <select id="analytics-year" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm"></select>
-                <select id="analytics-month" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm">
-                    <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
-                    <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
-                    <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
-                </select>
+            <div class="flex justify-between items-end flex-wrap gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Analytics & Rosters</h2>
+                    <p class="text-teal-200/70 mt-1">Rolling statistical summaries and historical data</p>
+                </div>
+                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                    <select id="analytics-year" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white"></select>
+                    <select id="analytics-month" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white">
+                        <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                        <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                        <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- Detailed Monthly Roster (Moved to top as requested) -->
+            <!-- Detailed Monthly Roster (Active & Inactive Only) -->
             <div class="glass-panel p-4 sm:p-6 rounded-2xl">
                 <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                     <h3 class="text-lg sm:text-xl font-bold text-white">Detailed Monthly Roster</h3>
@@ -348,10 +365,10 @@
             </div>
             
             <!-- 6-Month Grid -->
-            <div id="analytics-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 bg-white p-4 sm:p-8 rounded-xl overflow-x-auto text-black"></div>
+            <div id="analytics-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 bg-black/20 p-4 sm:p-6 rounded-2xl border border-white/5 text-white"></div>
         </div>
 
-        <!-- PUBLISHERS TAB (Previously Directory) -->
+        <!-- PUBLISHERS TAB -->
         <div id="tab-publishers" class="tab-content space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
@@ -363,12 +380,12 @@
                     <input type="file" id="csv-file" accept=".csv" class="hidden" onchange="window.db.importContacts(event)">
                     <button onclick="window.ui.downloadContacts()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">Export Contacts</button>
                     
-                    <button onclick="document.getElementById('csv-report-file').click()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Import Reports</button>
+                    <button onclick="document.getElementById('csv-report-file').click()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border-amber-500/30 text-amber-200">Import Reports</button>
                     <input type="file" id="csv-report-file" accept=".csv" class="hidden" onchange="window.db.importReports(event)">
-                    <button onclick="window.ui.downloadReports()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Export Reports</button>
+                    <button onclick="window.ui.downloadReports()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border-amber-500/30 text-amber-200">Export Reports</button>
 
-                    <button onclick="window.ui.confirmWipeDatabase()" class="bg-rose-900/50 flex-1 sm:flex-none hover:bg-rose-800/80 text-rose-200 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border border-rose-500/50 shadow-lg hidden sm:block">⚠️ Wipe Data</button>
-                    <button onclick="window.ui.openModal('modal-add-publisher')" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)] flex items-center justify-center gap-2">
+                    <button onclick="window.ui.confirmWipeDatabase()" class="bg-rose-900/40 flex-1 sm:flex-none hover:bg-rose-800/80 text-rose-300 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border border-rose-500/30 shadow-sm hidden sm:block">⚠️ Wipe Data</button>
+                    <button onclick="window.ui.openModal('modal-add-publisher')" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.3)] flex items-center justify-center gap-2">
                         + Add Publisher
                     </button>
                 </div>
@@ -377,7 +394,7 @@
             <div class="glass-panel rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-black/50 text-teal-100/70">
+                        <thead class="bg-black/30 text-teal-100/60 text-xs uppercase tracking-wider border-b border-white/5">
                             <tr>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Name & Group</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Privileges</th>
@@ -385,7 +402,7 @@
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="publisher-table-body" class="divide-y divide-white/10 text-teal-50"></tbody>
+                        <tbody id="publisher-table-body" class="divide-y divide-white/5 text-teal-50"></tbody>
                     </table>
                 </div>
             </div>
@@ -394,43 +411,39 @@
         <!-- PUBLIC FORM TAB (Generic S-4 Alternative) -->
         <div id="tab-s4" class="tab-content">
             <div id="s4-success-msg" class="hidden flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
                     <span class="text-4xl sm:text-5xl">✅</span>
                 </div>
                 <h2 class="text-2xl sm:text-4xl font-bold text-white mb-4">Report Submitted Successfully</h2>
                 <p class="text-teal-200/70 text-base sm:text-lg">Thank you. Your field service report has been securely recorded.</p>
-                <button onclick="location.reload()" class="mt-8 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all text-white font-medium">Submit Another Report</button>
+                <button onclick="location.reload()" class="mt-8 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl transition-all text-white font-medium shadow-sm">Submit Another Report</button>
             </div>
         
-            <div id="s4-form-area" class="w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-4">
+            <div id="s4-form-area" class="w-full max-w-xl mx-auto flex flex-col items-center justify-center py-4">
                 
                 <!-- Modern Generic Form UI -->
-                <div class="glass-panel w-full p-6 sm:p-10 rounded-3xl border border-teal-500/30 shadow-2xl relative overflow-hidden">
-                    <!-- Decorative Background element -->
-                    <div class="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/20 rounded-full blur-3xl"></div>
+                <div class="glass-panel w-full p-6 sm:p-10 rounded-3xl border border-teal-500/20 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl"></div>
                     
                     <div class="relative z-10">
                         <div class="mb-8 text-center sm:text-left border-b border-white/10 pb-6">
                             <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Field Service Report</h2>
-                            <p class="text-teal-200/70 mt-2 text-sm">Securely submit your monthly activity below.</p>
+                            <p class="text-teal-200/60 mt-2 text-sm">Securely submit your monthly activity below.</p>
                         </div>
                         
                         <div class="space-y-6">
-                            <!-- Publisher Selection -->
                             <div>
                                 <label class="block text-sm font-semibold text-teal-100/90 mb-2">Publisher Name</label>
-                                <select id="s4-pub-select" onchange="window.ui.loadS4()" class="modern-form-input appearance-none bg-slate-900/50">
+                                <select id="s4-pub-select" onchange="window.ui.loadS4()" class="modern-form-input appearance-none bg-[#0f172a]/80 font-medium">
                                     <option value="">-- Please select your name --</option>
                                 </select>
                             </div>
 
-                            <!-- Month Display -->
                             <div>
                                 <label class="block text-sm font-semibold text-teal-100/90 mb-2">Reporting Month</label>
-                                <input type="text" id="s4-month-display" readonly class="modern-form-input bg-black/40 text-teal-200 cursor-not-allowed font-medium">
+                                <input type="text" id="s4-month-display" readonly class="modern-form-input bg-black/20 text-teal-200 cursor-not-allowed font-medium border-dashed">
                             </div>
 
-                            <!-- Shared in Ministry Toggle -->
                             <div class="bg-black/20 p-4 sm:p-5 rounded-2xl border border-white/5 flex items-start sm:items-center justify-between gap-4">
                                 <div>
                                     <h4 class="text-white font-medium">Shared in the ministry</h4>
@@ -438,35 +451,30 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer shrink-0">
                                     <input type="checkbox" id="s4-ministry" class="sr-only peer" checked onchange="window.ui.enforceS4Logic()">
-                                    <div class="w-14 h-7 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-teal-500"></div>
+                                    <div class="w-12 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
                                 </label>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <!-- Studies -->
                                 <div>
                                     <label class="block text-sm font-semibold text-teal-100/90 mb-2">Bible Studies</label>
-                                    <input type="number" id="s4-studies" min="0" step="1" placeholder="0" class="modern-form-input text-center text-xl font-medium">
-                                    <p class="text-[10px] text-teal-200/50 mt-1.5 text-center">Number of different studies conducted</p>
+                                    <input type="number" id="s4-studies" min="0" step="1" placeholder="0" class="modern-form-input text-center text-xl font-medium bg-[#0f172a]/50">
+                                    <p class="text-[10px] text-teal-200/40 mt-1.5 text-center">Number of different studies conducted</p>
                                 </div>
-
-                                <!-- Hours -->
                                 <div>
                                     <label class="block text-sm font-semibold text-teal-100/90 mb-2">Hours</label>
-                                    <input type="number" id="s4-hours" min="0" step="0.25" placeholder="0" class="modern-form-input text-center text-xl font-medium">
-                                    <p class="text-[10px] text-teal-200/50 mt-1.5 text-center">If auxiliary, regular, special pioneer or missionary</p>
+                                    <input type="number" id="s4-hours" min="0" step="0.25" placeholder="0" class="modern-form-input text-center text-xl font-medium bg-[#0f172a]/50">
+                                    <p class="text-[10px] text-teal-200/40 mt-1.5 text-center">If auxiliary, regular, special pioneer or missionary</p>
                                 </div>
                             </div>
 
-                            <!-- Comments -->
                             <div>
                                 <label class="block text-sm font-semibold text-teal-100/90 mb-2">Comments</label>
-                                <textarea id="s4-comments" rows="3" placeholder="Any additional remarks..." class="modern-form-input resize-none"></textarea>
+                                <textarea id="s4-comments" rows="3" placeholder="Any additional remarks..." class="modern-form-input resize-none bg-[#0f172a]/50 text-sm"></textarea>
                             </div>
                             
-                            <!-- Submit Button -->
                             <div class="pt-6 border-t border-white/10">
-                                <button onclick="window.ui.saveS4()" class="w-full bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_25px_rgba(20,184,166,0.5)]">
+                                <button onclick="window.ui.saveS4()" class="w-full bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)]">
                                     Submit Report
                                 </button>
                             </div>
@@ -482,7 +490,7 @@
     <!-- Super Admin: Add Congregation -->
     <div id="modal-add-cong" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30">
-            <div class="bg-black/40 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
+            <div class="bg-black/30 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
                 <h3 class="text-lg sm:text-xl font-bold text-amber-400 tracking-tight">Provision Tenant</h3>
                 <button onclick="window.ui.closeModal('modal-add-cong')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -503,7 +511,7 @@
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-add-cong')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Provision</button>
+                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)]">Provision</button>
                 </div>
             </form>
         </div>
@@ -512,7 +520,7 @@
     <!-- Super Admin: Edit Congregation -->
     <div id="modal-edit-cong" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30">
-            <div class="bg-black/40 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
+            <div class="bg-black/30 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
                 <h3 class="text-lg sm:text-xl font-bold text-amber-400 tracking-tight">Edit Tenant</h3>
                 <button onclick="window.ui.closeModal('modal-edit-cong')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -523,7 +531,7 @@
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider flex justify-between">
                         <span>Login ID</span> <span class="text-rose-300 text-[10px]">(Locked)</span>
                     </label>
-                    <input type="text" id="edit-cong-id" readonly autocomplete="username" class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-white/50 cursor-not-allowed font-mono">
+                    <input type="text" id="edit-cong-id" readonly autocomplete="username" class="w-full bg-black/50 border border-white/5 rounded-xl px-4 py-2.5 text-white/50 cursor-not-allowed font-mono">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Congregation Name</label>
@@ -531,7 +539,7 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
-                    <input type="password" id="edit-cong-pwd" required autocomplete="new-password" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                    <input type="text" id="edit-cong-pwd" required autocomplete="off" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Subscription Status</label>
@@ -543,7 +551,7 @@
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-edit-cong')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Update Tenant</button>
+                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)]">Update Tenant</button>
                 </div>
             </form>
         </div>
@@ -551,26 +559,26 @@
 
     <!-- Admin: Change Password -->
     <div id="modal-change-password" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-white/20">
-            <div class="bg-black/40 px-6 py-5 flex justify-between items-center border-b border-white/10">
+        <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+            <div class="bg-black/30 px-6 py-5 flex justify-between items-center border-b border-white/10">
                 <h3 class="text-lg font-bold text-white tracking-tight">Security Settings</h3>
                 <button onclick="window.ui.closeModal('modal-change-password')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <form onsubmit="window.db.changeAdminPassword(event)" class="p-6 space-y-4">
+            <form onsubmit="window.db.changeAdminPassword(event)" class="p-6 space-y-5">
                 <div class="space-y-2">
                     <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Current Password</label>
-                    <input type="password" id="cp-current" autocomplete="current-password" required class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400" placeholder="Verify identity">
+                    <input type="password" id="cp-current" autocomplete="current-password" required class="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400" placeholder="Verify identity">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">New Password</label>
-                    <input type="password" id="cp-new" autocomplete="new-password" required class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 font-mono" placeholder="Min 8 chars, 1 num, 1 special">
-                    <p class="text-[10px] text-teal-200/60 leading-tight">Must be at least 8 characters, include 1 number and 1 special character (!@#$%^&*).</p>
+                    <input type="password" id="cp-new" autocomplete="new-password" required class="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 font-mono" placeholder="Min 8 chars, 1 num, 1 special">
+                    <p class="text-[10px] text-teal-200/50 leading-tight">Must be at least 8 characters, include 1 number and 1 special character (!@#$%^&*).</p>
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-change-password')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" class="bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg">Save Password</button>
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md">Save Password</button>
                 </div>
             </form>
         </div>
@@ -578,8 +586,8 @@
 
     <!-- Add/Edit Publisher -->
     <div id="modal-add-publisher" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[999] flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
-            <div class="bg-black/40 px-6 sm:px-8 py-4 sm:py-5 flex justify-between items-center border-b border-white/10 shrink-0">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/10 max-h-[90vh] flex flex-col">
+            <div class="bg-black/30 px-6 sm:px-8 py-4 sm:py-5 flex justify-between items-center border-b border-white/10 shrink-0">
                 <h3 id="modal-pub-title" class="text-lg sm:text-xl font-bold text-white tracking-tight">Publisher Record</h3>
                 <button onclick="window.ui.closeModal('modal-add-publisher')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -591,11 +599,11 @@
                     <div class="grid grid-cols-2 gap-4 sm:gap-5">
                         <div class="col-span-2 md:col-span-1 space-y-2">
                             <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Full Name</label>
-                            <input type="text" id="pub-name" required autocomplete="off" class="w-full px-4 py-2.5 rounded-xl">
+                            <input type="text" id="pub-name" required autocomplete="off" class="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-white/10">
                         </div>
                         <div class="col-span-2 md:col-span-1 space-y-2">
                             <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Service Group</label>
-                            <input type="text" id="pub-group" placeholder="e.g. Group A" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl">
+                            <input type="text" id="pub-group" placeholder="e.g. Group A" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-white/10">
                         </div>
                     </div>
                     
@@ -616,7 +624,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-3 bg-black/30 p-4 sm:p-5 rounded-xl border border-white/10">
+                    <div class="space-y-3 bg-black/20 p-4 sm:p-5 rounded-xl border border-white/5">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider block">Ecclesiastical Privileges</label>
                         <div class="flex flex-wrap gap-3 sm:gap-5">
                             <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-elder" class="accent-teal-500 rounded w-4 h-4"> Elder</label>
@@ -631,10 +639,9 @@
                         <div class="col-span-2 md:col-span-1 space-y-2">
                             <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider flex justify-between">
                                 <span>Date of Birth</span>
-                                <span class="text-[10px] font-normal text-teal-100/50">DD-MM-YYYY</span>
                             </label>
                             <div class="relative">
-                                <input type="text" id="pub-dob" placeholder="01-01-1980" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl pr-10">
+                                <input type="text" id="pub-dob" placeholder="DD-MM-YYYY" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl pr-10 bg-black/30 border border-white/10 font-mono">
                                 <span class="absolute right-3 top-3 text-teal-100/30">📅</span>
                             </div>
                         </div>
@@ -644,30 +651,37 @@
                                 <label class="flex items-center gap-1 text-[10px] cursor-pointer normal-case text-teal-100 bg-white/10 px-2 py-0.5 rounded-md hover:bg-white/20 transition-colors"><input type="checkbox" id="pub-ubp" class="accent-teal-500" onchange="window.ui.toggleUBP()"> Unbaptized (UBP)</label>
                             </label>
                             <div class="relative">
-                                <input type="text" id="pub-baptized" placeholder="DD-MM-YYYY" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl pr-10 transition-all">
+                                <input type="text" id="pub-baptized" placeholder="DD-MM-YYYY" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl pr-10 transition-all bg-black/30 border border-white/10 font-mono">
                                 <span class="absolute right-3 top-3 text-teal-100/30">📅</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="space-y-2">
-                        <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Phone Number (For Reminders)</label>
+                        <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">WhatsApp Number (For Reminders)</label>
                         <div class="flex gap-2">
-                            <input type="text" id="pub-phone-code" placeholder="+91" value="+91" class="w-20 px-3 py-2.5 rounded-xl text-center font-mono">
-                            <input type="text" id="pub-phone" placeholder="9876543210" class="flex-1 px-4 py-2.5 rounded-xl font-mono">
+                            <select id="pub-phone-code" class="w-24 px-2 py-2.5 rounded-xl text-center font-mono bg-black/30 border border-white/10 text-white text-xs">
+                                <option value="+91">🇮🇳 +91</option>
+                                <option value="+1">🇺🇸 +1</option>
+                                <option value="+44">🇬🇧 +44</option>
+                                <option value="+61">🇦🇺 +61</option>
+                                <option value="+81">🇯🇵 +81</option>
+                                <option value="">Other</option>
+                            </select>
+                            <input type="tel" id="pub-phone" placeholder="9876543210" class="flex-1 px-4 py-2.5 rounded-xl font-mono bg-black/30 border border-white/10">
                         </div>
                     </div>
 
                     <div class="pt-4 flex justify-end gap-3 sm:gap-4 border-t border-white/10 mt-2">
                         <button type="button" onclick="window.ui.closeModal('modal-add-publisher')" class="px-4 sm:px-6 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                        <button type="submit" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 sm:px-8 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.4)]">Commit Record</button>
+                        <button type="submit" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 sm:px-8 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.3)]">Commit Record</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="glass-panel text-white px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-3 sm:gap-4 border border-teal-500/40">
+    <div id="toast" class="glass-panel text-white px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-3 sm:gap-4 border border-teal-500/30">
         <span id="toast-icon" class="text-xl sm:text-2xl drop-shadow-md">✅</span>
         <span id="toast-msg" class="font-medium tracking-wide text-sm sm:text-base"></span>
     </div>
@@ -675,10 +689,13 @@
     <script type="module">
         const { createClient } = window.supabase;
         
-        // --- SUPABASE CONFIGURATION (MULTI-TENANT) ---
+        // =========================================================================
+        // ⚠️ CRITICAL: YOU MUST REPLACE THESE TWO LINES WITH YOUR SUPABASE KEYS ⚠️
+        // =========================================================================
         const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; 
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
-        
+        // =========================================================================
+
         const isCloudEnabled = SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_URL.startsWith('http');
         const supabaseClient = isCloudEnabled ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -686,33 +703,48 @@
         window.sysPromptState = { actionCallback: null, requiresPassword: false };
         window.currentCongId = null;
 
+        // --- CORE FIX: ISOLATED LOAD LOGIC ---
+        window.onload = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const congParam = urlParams.get('cong');
+            
+            // 1. If URL has ?cong=, FORCIBLY enter Public Mode and skip everything else.
+            if (congParam) { 
+                document.body.classList.add('public-mode'); 
+                document.getElementById('auth-screen').classList.add('hidden');
+                window.currentCongId = congParam;
+                window.ui.publicGroup = urlParams.get('group'); 
+                window.ui.preselectedPub = urlParams.get('pub'); // Store pre-selected publisher
+                
+                // Fetch data, THEN setup the S4 tab so names appear!
+                await window.db.initPublicS4(congParam);
+                return; // Stop execution here. Do not check local storage.
+            }
+            
+            // 2. If no ?cong=, run standard Admin Authentication
+            if (window.auth.check()) {
+                const type = localStorage.getItem('fs_auth_type');
+                if (type === 'super') {
+                    window.db.initSuperAdmin();
+                } else if (type === 'admin') {
+                    const cid = localStorage.getItem('fs_cong_id');
+                    const cname = localStorage.getItem('fs_cong_name');
+                    await window.db.initAdmin(cid, cname);
+                }
+            }
+        };
+
         window.auth = {
             check: () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                const congParam = urlParams.get('cong');
-                
-                // Public link routing
-                if (congParam) { 
-                    window.currentCongId = congParam;
-                    document.body.classList.add('public-mode'); 
-                    window.ui.publicGroup = urlParams.get('group'); 
-                    window.ui.switchTab('s4'); 
-                    document.getElementById('auth-screen').classList.add('hidden');
-                    return true; 
-                }
-                
-                // Active session routing
                 if (localStorage.getItem('fs_auth') === 'true') { 
                     const type = localStorage.getItem('fs_auth_type');
                     const cid = localStorage.getItem('fs_cong_id');
                     
-                    // Legacy session wiper (forces re-login if the session data is from the old non-SaaS version)
                     if (!type || (!cid && type !== 'super')) {
                         console.warn("Legacy session detected. Wiping memory...");
                         window.auth.logout();
                         return false; 
                     }
-
                     document.getElementById('auth-screen').classList.add('hidden'); 
                     return true; 
                 }
@@ -725,7 +757,6 @@
                 
                 btn.textContent = "Authenticating..."; btn.disabled = true;
 
-                // Super Admin Backdoor
                 if (cid === 'SUPERADMIN' && pwd === window.config.MASTER_PASSWORD) {
                     localStorage.setItem('fs_auth', 'true');
                     localStorage.setItem('fs_auth_type', 'super');
@@ -737,9 +768,7 @@
                 if (!isCloudEnabled) { window.ui.showToast("Cloud connection required for SaaS", "error"); btn.textContent = "Unlock Database"; btn.disabled = false; return; }
                 
                 try {
-                    // SaaS Tenant Auth check
                     const { data, error } = await supabaseClient.from('congregations').select('*').eq('id', cid).eq('admin_password', pwd).single();
-                    
                     if (data) {
                         localStorage.setItem('fs_auth', 'true');
                         localStorage.setItem('fs_auth_type', 'admin');
@@ -815,10 +844,14 @@
 
             initPublicS4: async (congId) => {
                 if (isCloudEnabled) {
-                    const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
-                    if (data) window.db.publishers = data.map(window.db.mapPubFromDB);
+                    try {
+                        const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
+                        if (data) window.db.publishers = data.map(window.db.mapPubFromDB);
+                    } catch(e) { console.error("Could not fetch public data", e); }
                 }
+                // Call this AFTER data is loaded to populate the dropdown
                 window.ui.setupS4Tab();
+                window.ui.switchTab('s4'); 
             },
 
             initSuperAdmin: async () => {
@@ -871,14 +904,6 @@
                 else { window.ui.showToast("Tenant Updated!"); window.ui.closeModal('modal-edit-cong'); window.db.initSuperAdmin(); }
             },
 
-            deleteCongregation: async (id) => {
-                if(confirm(`WARNING: Deleting congregation ${id} will destroy ALL their publisher data forever.`)) {
-                    await supabaseClient.from('congregations').delete().eq('id', id);
-                    window.ui.showToast("Tenant Destroyed.");
-                    window.db.initSuperAdmin();
-                }
-            },
-
             changeAdminPassword: async (e) => {
                 e.preventDefault();
                 const currentP = document.getElementById('cp-current').value;
@@ -912,7 +937,6 @@
                 return r;
             },
 
-            // CORE FIX: Restoring savePublisher function
             savePublisher: async (pub) => {
                 if (!pub.id) pub.id = window.utils.generateUUID();
                 const idx = window.db.publishers.findIndex(p => p.id === pub.id);
@@ -949,7 +973,6 @@
                 const reader = new FileReader();
                 reader.onload = async (event) => {
                     const lines = event.target.result.split('\n');
-                    if (lines.length < 2) { window.ui.showToast('Invalid CSV format', 'error'); return; }
                     let imported = 0; const dbRepsToUpsert = [];
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim(); if (!line) continue;
@@ -966,9 +989,8 @@
                         
                         const isTrue = (v) => v && v.toUpperCase() === 'TRUE';
                         const monthName = values[2]?.trim();
-                        const monthIdx = window.utils.getMonths().findIndex(m => m.toLowerCase() === monthName.toLowerCase());
-                        let actualMonthIdx = monthIdx;
-                        if(monthIdx === -1) {
+                        let actualMonthIdx = window.utils.getMonths().findIndex(m => m.toLowerCase() === monthName.toLowerCase());
+                        if(actualMonthIdx === -1) {
                              const standardMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                              actualMonthIdx = standardMonths.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
                              if(actualMonthIdx === -1) continue;
@@ -992,7 +1014,6 @@
                 const reader = new FileReader();
                 reader.onload = async (event) => {
                     const lines = event.target.result.split('\n');
-                    if (lines.length < 2) { window.ui.showToast('Invalid CSV format', 'error'); return; }
                     let imported = 0; const dbPubsToUpsert = [];
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim(); if (!line) continue;
@@ -1078,7 +1099,7 @@
         `;
 
         window.ui = {
-            currentTab: 'dashboard', publicGroup: null,
+            currentTab: 'dashboard', publicGroup: null, preselectedPub: null,
             
             initAdminUI: () => {
                 const syInfo = window.utils.getCurrentServiceYearInfo(); const istInfo = window.utils.getISTPreviousMonthInfo();
@@ -1094,10 +1115,8 @@
                 const mSelects = ['dash-month', 'analytics-month']; mSelects.forEach(id => { const el = document.getElementById(id); if(el) el.value = istInfo.month; });
                 window.ui.switchTab('dashboard');
                 
-                // S-21 scaling listener
                 window.addEventListener('resize', window.ui.scaleS21Preview);
                 
-                // Add Date auto-formatters
                 document.getElementById('pub-dob').addEventListener('input', window.utils.formatDateInput);
                 document.getElementById('pub-baptized').addEventListener('input', window.utils.formatDateInput);
             },
@@ -1114,12 +1133,12 @@
                     else statusHtml = `<span class="px-2 py-1 rounded text-[10px] uppercase font-bold bg-amber-900/50 text-amber-200 border border-amber-500/50">Trial (${daysLeft}d left)</span>`;
 
                     tbody.innerHTML += `
-                        <tr class="border-b border-white/10 hover:bg-white/5">
+                        <tr class="border-b border-white/5 hover:bg-white/5">
                             <td class="px-4 sm:px-6 py-4 font-bold text-white">${c.name}</td>
                             <td class="px-4 sm:px-6 py-4 text-center font-mono text-cyan-300 text-xs">${c.id}</td>
                             <td class="px-4 sm:px-6 py-4 text-center">${statusHtml}</td>
                             <td class="px-4 sm:px-6 py-4 text-right">
-                                <button onclick="window.ui.editCongregation('${c.id}')" class="text-teal-400 hover:text-teal-300 transition px-2 py-1 bg-white/5 rounded border border-white/10 text-xs">Edit Settings</button>
+                                <button onclick="window.ui.editCongregation('${c.id}')" class="text-teal-400 hover:text-teal-300 transition px-3 py-1.5 bg-white/5 rounded-md border border-white/10 text-xs shadow-sm">Edit Settings</button>
                             </td>
                         </tr>
                     `;
@@ -1136,10 +1155,19 @@
             },
 
             switchTab: (tabId) => {
+                // If we are in public mode, force isolation. Only S4 can show.
+                if (document.body.classList.contains('public-mode')) {
+                    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                    document.getElementById('tab-s4').classList.add('active');
+                    return;
+                }
+
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
                 const targetTab = document.getElementById(`tab-${tabId}`); if (targetTab) targetTab.classList.add('active');
+                
                 document.querySelectorAll('nav button').forEach(el => { el.classList.remove('bg-teal-500/80', 'text-white', 'shadow-lg'); el.classList.add('hover:bg-white/10', 'text-teal-50/70'); });
                 const btn = document.getElementById(`btn-tab-${tabId}`); if (btn) { btn.classList.remove('hover:bg-white/10', 'text-teal-50/70'); btn.classList.add('bg-teal-500/80', 'text-white', 'shadow-lg'); }
+                
                 window.ui.currentTab = tabId;
                 if (tabId === 'dashboard') window.ui.renderDashboard();
                 if (tabId === 'publishers') window.ui.renderPublishers();
@@ -1173,7 +1201,6 @@
             handleSysPromptConfirm: () => {
                 if (window.sysPromptState.requiresPassword) {
                     const p = document.getElementById('sys-prompt-input').value;
-                    const storedPwd = window.db.congregations?.find(c => c.id === window.currentCongId)?.admin_password;
                     if (p !== window.config.MASTER_PASSWORD) { window.ui.showToast("Incorrect Password", "error"); return; }
                 }
                 if (typeof window.sysPromptState.actionCallback === 'function') { window.sysPromptState.actionCallback(); }
@@ -1191,7 +1218,6 @@
                 });
             },
 
-            // CORE FIX: Restoring Modal Open logic to clear forms properly
             openModal: (id, isEdit = false) => {
                 if(id === 'modal-add-publisher' && !isEdit) { 
                     document.getElementById('form-publisher').reset(); 
@@ -1213,12 +1239,9 @@
                 else { bapInput.disabled = false; bapInput.classList.remove('opacity-30', 'cursor-not-allowed'); }
             },
 
-            // CORE FIX: Restoring savePublisher UI handler
             savePublisher: async (e) => {
                 e.preventDefault();
                 const id = document.getElementById('pub-id').value;
-                
-                // Handle Country Code + Phone combination
                 const countryCode = document.getElementById('pub-phone-code').value.trim();
                 const rawPhone = document.getElementById('pub-phone').value.trim();
                 const fullPhone = rawPhone ? `${countryCode}${rawPhone}` : '';
@@ -1244,7 +1267,6 @@
                 window.ui.renderPublishers();
             },
 
-            // CORE FIX: Restoring editPublisher handler
             editPublisher: (id) => {
                 const pub = window.db.getPublishers().find(p => p.id === id); if (!pub) return;
                 document.getElementById('pub-id').value = pub.id; 
@@ -1269,14 +1291,16 @@
                 document.getElementById('pub-sp').checked = !!pub.isSP; 
                 document.getElementById('pub-fm').checked = !!pub.isFM;
                 
-                // Parse phone and country code
                 if (pub.phone) {
                     const match = pub.phone.match(/^(\+\d{1,4})(.*)$/);
                     if (match) {
-                        document.getElementById('pub-phone-code').value = match[1];
+                        const codeSelect = document.getElementById('pub-phone-code');
+                        let exists = false;
+                        for (let i = 0; i < codeSelect.options.length; i++) { if (codeSelect.options[i].value === match[1]) exists = true; }
+                        if(exists) codeSelect.value = match[1]; else codeSelect.value = '';
                         document.getElementById('pub-phone').value = match[2];
                     } else {
-                        document.getElementById('pub-phone-code').value = '+91';
+                        document.getElementById('pub-phone-code').value = '';
                         document.getElementById('pub-phone').value = pub.phone;
                     }
                 } else {
@@ -1306,9 +1330,8 @@
             sendReminder: (pId, pName, pGroup, pPhone) => {
                 const baseUrl = window.location.href.split('?')[0]; 
                 const url = `${baseUrl}?cong=${window.currentCongId}&group=${encodeURIComponent(pGroup||'')}&pub=${pId}`;
-                const msg = `Hi ${pName},\n\nA gentle reminder to submit your field service report for this month. You can submit it directly using this pre-filled link:\n\n${url}\n\nThank you!`;
+                const msg = `Hi ${pName},\n\nA gentle reminder to submit your field service report for this month. You can submit it directly using this secure link (your name is pre-selected):\n\n${url}\n\nThank you!`;
                 
-                // If phone exists, format it to strip everything but + and numbers
                 let waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
                 if (pPhone) {
                     const cleanPhone = pPhone.replace(/[^\d+]/g, '');
@@ -1338,7 +1361,7 @@
                         if (p.isRP || p.isSP || p.isFM) { 
                             if(isShared) { stats.rpCount++; stats.rpHours += h; stats.rpStudies += s; }
                             tagHtml = '<span class="text-[9px] sm:text-[10px] bg-cyan-900/80 text-cyan-200 border border-cyan-500/50 px-1.5 py-0.5 rounded ml-2 font-bold">RP</span>';
-                            rpTableHtml += `<tr class="border-b border-white/5"><td class="px-4 sm:px-5 py-2">${p.name}</td><td class="px-4 sm:px-5 py-2 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-5 py-2 text-center font-mono">${isShared && s>0 ? s : '-'}</td></tr>`;
+                            rpTableHtml += `<tr class="border-b border-white/5"><td class="px-4 sm:px-5 py-2.5">${p.name}</td><td class="px-4 sm:px-5 py-2.5 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-5 py-2.5 text-center font-mono">${isShared && s>0 ? s : '-'}</td></tr>`;
                         } else if (r.isAP) { 
                             if(isShared) { stats.apCount++; stats.apHours += h; stats.apStudies += s; }
                             tagHtml = '<span class="text-[9px] sm:text-[10px] bg-emerald-900/80 text-emerald-200 border border-emerald-500/50 px-1.5 py-0.5 rounded ml-2 font-bold">AP</span>';
@@ -1347,10 +1370,10 @@
                             if (isShared) { stats.pubCount++; stats.pubStudies += s; }
                         }
                         
-                        const groupTag = p.group ? `<span class="text-[9px] sm:text-[10px] text-teal-400 ml-2 bg-teal-900/40 px-1.5 py-0.5 rounded whitespace-nowrap">${p.group}</span>` : '';
+                        const groupTag = p.group ? `<span class="text-[9px] sm:text-[10px] text-teal-400 ml-2 bg-teal-900/40 px-1.5 py-0.5 rounded whitespace-nowrap border border-teal-500/20">${p.group}</span>` : '';
                         tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors"><td class="px-4 sm:px-6 py-4 font-medium flex items-center flex-wrap gap-y-1">${p.name} ${groupTag} ${tagHtml}</td><td class="px-4 sm:px-6 py-4 text-center text-emerald-400 text-lg">${isShared?'✔':'<span class="text-rose-400 font-semibold text-sm">No</span>'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && s>0 ? s : '-'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-6 py-4 text-center text-xs text-teal-100/70"><div class="mx-auto max-w-[150px] sm:max-w-[200px] truncate" title="${r.comments||''}">${r.comments||''}</div></td><td class="px-4 sm:px-6 py-4 text-center">-</td></tr>`;
                     } else {
-                        tbody.innerHTML += `<tr class="border-b border-white/5 bg-black/20 text-teal-100/30"><td class="px-4 sm:px-6 py-4">${p.name}</td><td colspan="4" class="px-4 sm:px-6 py-4 text-center italic text-xs uppercase tracking-widest">Awaiting Data</td><td class="px-4 sm:px-6 py-4 text-right"><button onclick="window.ui.sendReminder('${p.id}', '${p.name}', '${p.group}', '${p.phone || ''}')" class="bg-teal-900/50 hover:bg-teal-800 text-teal-300 px-3 py-1.5 rounded-lg border border-teal-500/30 transition text-xs flex items-center gap-1 ml-auto">Remind</button></td></tr>`;
+                        tbody.innerHTML += `<tr class="border-b border-white/5 bg-black/20 text-teal-100/30"><td class="px-4 sm:px-6 py-4">${p.name}</td><td colspan="4" class="px-4 sm:px-6 py-4 text-center italic text-xs uppercase tracking-widest font-semibold">Awaiting Data</td><td class="px-4 sm:px-6 py-4 text-right"><button onclick="window.ui.sendReminder('${p.id}', '${p.name}', '${p.group}', '${p.phone || ''}')" class="bg-teal-900/40 hover:bg-teal-800/80 text-teal-300 px-3 py-1.5 rounded border border-teal-500/30 transition text-xs font-medium">Remind</button></td></tr>`;
                     }
                 });
 
@@ -1358,32 +1381,32 @@
                 document.getElementById('dash-ap-review-table').innerHTML = apTableHtml || `<tr><td colspan="4" class="px-6 py-4 text-center text-emerald-200/50 italic text-xs">No Auxiliary Pioneers logged for this month.</td></tr>`;
 
                 document.getElementById('dash-stats').innerHTML = `
-                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-slate-300">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Publishers</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.pubCount}</div>
-                        <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-slate-300/80">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-slate-300">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Publishers</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1">${stats.pubCount}</div>
+                        <div class="flex gap-4 mt-2 text-[10px] sm:text-xs text-slate-300/80">
                             <div><span class="font-bold text-white text-sm">${stats.pubStudies}</span> Studies</div>
                         </div>
                     </div>
-                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-cyan-400">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Reg. Pioneers</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.rpCount}</div>
-                        <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-cyan-200/80">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-cyan-400">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Reg. Pioneers</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1">${stats.rpCount}</div>
+                        <div class="flex gap-4 mt-2 text-[10px] sm:text-xs text-cyan-200/80">
                             <div><span class="font-bold text-cyan-100 text-sm">${stats.rpHours}</span> Hrs</div>
                             <div><span class="font-bold text-cyan-100 text-sm">${stats.rpStudies}</span> Studies</div>
                         </div>
                     </div>
-                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-emerald-400">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Aux. Pioneers</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.apCount}</div>
-                        <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-emerald-200/80">
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-emerald-400">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Aux. Pioneers</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1">${stats.apCount}</div>
+                        <div class="flex gap-4 mt-2 text-[10px] sm:text-xs text-emerald-200/80">
                             <div><span class="font-bold text-emerald-100 text-sm">${stats.apHours}</span> Hrs</div>
                             <div><span class="font-bold text-emerald-100 text-sm">${stats.apStudies}</span> Studies</div>
                         </div>
                     </div>
-                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-amber-400 flex flex-col justify-center">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Submitted</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.totalRep} <span class="text-base sm:text-lg text-teal-100/40">/ ${pubs.length}</span></div>
+                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-amber-400 flex flex-col justify-center">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Collection Status</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1 text-amber-300">${stats.totalRep} <span class="text-base sm:text-lg text-teal-100/40">/ ${pubs.length}</span></div>
                         <div class="text-[10px] sm:text-xs text-amber-200/70 mt-1">${pubs.length - stats.totalRep} pending</div>
                     </div>
                 `;
@@ -1394,12 +1417,12 @@
                 const pubs = window.db.getPublishers(); tbody.innerHTML = '';
                 pubs.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p => {
                     let badges = [];
-                    if(p.isElder) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">Elder</span>');
-                    if(p.isMS) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">MS</span>');
-                    if(p.isRP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50 shadow-sm">RP</span>');
-                    if(p.isSP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50 shadow-sm">SP</span>');
+                    if(p.isElder) badges.push('<span class="bg-cyan-900/50 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/30">Elder</span>');
+                    if(p.isMS) badges.push('<span class="bg-cyan-900/50 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/30">MS</span>');
+                    if(p.isRP) badges.push('<span class="bg-emerald-900/50 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30">RP</span>');
+                    if(p.isSP) badges.push('<span class="bg-emerald-900/50 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30">SP</span>');
                     const age = p.dob ? window.utils.calculateAge(p.dob) + ' yrs' : '-';
-                    const bapText = (!p.baptized || p.baptized === 'UBP') ? '<span class="text-rose-300 font-semibold border border-rose-500/40 bg-rose-900/50 px-1.5 py-0.5 rounded text-[10px] uppercase">UBP</span>' : p.baptized;
+                    const bapText = (!p.baptized || p.baptized === 'UBP') ? '<span class="text-rose-300 font-semibold border border-rose-500/40 bg-rose-900/30 px-1.5 py-0.5 rounded text-[10px] uppercase">UBP</span>' : p.baptized;
                     tbody.innerHTML += `<tr class="hover:bg-white/5 transition-colors border-b border-white/5"><td class="px-4 sm:px-6 py-4"><div class="font-bold text-white text-base">${p.name}</div><div class="text-[11px] text-teal-300 mt-1 uppercase tracking-widest font-semibold">${p.group || 'UNASSIGNED'}</div></td><td class="px-4 sm:px-6 py-4"><div class="flex flex-wrap gap-2">${badges.join('')}</div></td><td class="px-4 sm:px-6 py-4 text-teal-100/90 font-mono text-sm">${age}<br><span class="text-[11px] font-sans text-teal-100/60 mt-1 block">${bapText}</span></td><td class="px-4 sm:px-6 py-4 text-right space-x-3"><button onclick="window.ui.editPublisher('${p.id}')" class="text-cyan-400 hover:text-cyan-300 transition-colors p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002-2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></button><button onclick="window.db.deletePublisher('${p.id}')" class="text-rose-400 hover:text-rose-300 transition-colors p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></td></tr>`;
                 });
             },
@@ -1413,8 +1436,8 @@
             },
 
             showGroup: (groupName) => {
-                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.remove('bg-teal-600/50', 'border-teal-400/50'));
-                const btn = Array.from(document.querySelectorAll('.group-btn')).find(b => b.textContent.includes(groupName)); if(btn) btn.classList.add('bg-teal-600/50', 'border-teal-400/50');
+                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.remove('bg-teal-600/30', 'border-teal-400/50'));
+                const btn = Array.from(document.querySelectorAll('.group-btn')).find(b => b.textContent.includes(groupName)); if(btn) btn.classList.add('bg-teal-600/30', 'border-teal-400/50');
                 const details = document.getElementById('group-details'); details.classList.remove('hidden');
                 
                 const pubs = window.db.getPublishers().filter(p => p.group === groupName);
@@ -1431,7 +1454,7 @@
                 });
                 
                 let pendingHtml = pending.length > 0 ? `<ol class="list-decimal pl-5 space-y-1 text-rose-300 text-sm">${pending.map(name => `<li>${name}</li>`).join('')}</ol>` : '<div class="text-emerald-400 text-sm">All submitted!</div>';
-                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex gap-2"><button onclick="window.ui.copyGroupLink('${groupName}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy Form Link</button></div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70 leading-relaxed">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
+                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex gap-2"><button onclick="window.ui.copyGroupLink('${groupName}')" class="bg-black/30 border border-white/10 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy Form Link</button></div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70 leading-relaxed">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
             },
 
             copyGroupLink: (groupName) => {
@@ -1471,14 +1494,14 @@
                     });
                     
                     html += `
-                    <div class="border border-slate-300 rounded-lg overflow-hidden shadow-sm">
-                        <div class="bg-slate-100 px-4 py-2 font-bold border-b border-slate-300 text-center">${displayMonth}</div>
+                    <div class="border border-white/10 rounded-lg overflow-hidden shadow-sm bg-[#0f172a]">
+                        <div class="bg-black/40 px-4 py-2 font-bold border-b border-white/5 text-center text-teal-100">${displayMonth}</div>
                         <table class="w-full text-sm">
                             <tbody>
-                                <tr class="border-b border-slate-200"><td class="px-3 py-2 font-medium">Publishers</td><td class="px-3 py-2 text-right w-12 border-l border-slate-200">${pubCount}</td><td class="px-3 py-2 text-right w-12 border-l border-slate-200">St: ${pubStudies}</td></tr>
-                                <tr class="border-b border-slate-200"><td class="px-3 py-2 font-medium text-cyan-700">Reg. Pioneers</td><td class="px-3 py-2 text-right w-12 border-l border-slate-200">${rpCount}</td><td class="px-3 py-2 text-right w-12 border-l border-slate-200">Hr: ${rpHours}</td></tr>
-                                <tr class="border-b border-slate-200 bg-emerald-50/50"><td class="px-3 py-2 font-medium text-emerald-700">Aux. Pioneers</td><td class="px-3 py-2 text-right w-12 border-l border-slate-200">${apCount}</td><td class="px-3 py-2 text-right w-12 border-l border-slate-200">Hr: ${apHours}</td></tr>
-                                <tr class="bg-slate-50 font-bold"><td class="px-3 py-2">Total Shared</td><td class="px-3 py-2 text-right border-l border-slate-200">${pubCount + rpCount + apCount}</td><td class="px-3 py-2 border-l border-slate-200"></td></tr>
+                                <tr class="border-b border-white/5"><td class="px-3 py-2 font-medium">Publishers</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">${pubCount}</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">St: ${pubStudies}</td></tr>
+                                <tr class="border-b border-white/5"><td class="px-3 py-2 font-medium text-cyan-300">Reg. Pioneers</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">${rpCount}</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">Hr: ${rpHours}</td></tr>
+                                <tr class="border-b border-white/5 bg-emerald-900/20"><td class="px-3 py-2 font-medium text-emerald-300">Aux. Pioneers</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">${apCount}</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">Hr: ${apHours}</td></tr>
+                                <tr class="bg-black/20 font-bold"><td class="px-3 py-2">Total Shared</td><td class="px-3 py-2 text-right border-l border-white/5 text-teal-300">${pubCount + rpCount + apCount}</td><td class="px-3 py-2 border-l border-white/5"></td></tr>
                             </tbody>
                         </table>
                     </div>`;
@@ -1502,13 +1525,13 @@
                         if (!isShared) { h = 0; s = 0; }
                         
                         let pType = p.isRP ? 'RP' : (p.isSP ? 'SP' : (p.isFM ? 'FM' : (r.isAP ? 'AP' : 'Pub')));
-                        let pTypeHtml = pType !== 'Pub' ? `<span class="text-[9px] px-1 py-0.5 rounded ml-1 bg-white/20">${pType}</span>` : '';
+                        let pTypeHtml = pType !== 'Pub' ? `<span class="text-[9px] px-1.5 py-0.5 rounded ml-2 bg-black/40 border border-white/10">${pType}</span>` : '';
                         
                         if (!isShared) {
                             inactiveCount++;
-                            inactiveHtml += `<tr class="border-b border-white/5 bg-rose-900/20"><td class="py-2 px-3 font-medium">${p.name}</td><td class="py-2 px-3 text-rose-300">Did Not Share</td><td colspan="2" class="py-2 px-3 text-xs opacity-50">${r.comments || ''}</td></tr>`;
+                            inactiveHtml += `<tr class="border-b border-white/5 bg-rose-900/20"><td class="py-2 px-3 font-medium">${p.name}</td><td class="py-2 px-3 text-rose-300 text-center">Did Not Share</td><td colspan="2" class="py-2 px-3 text-xs opacity-70">${r.comments || ''}</td></tr>`;
                         } else {
-                            activeHtml += `<tr class="border-b border-white/5"><td class="py-2 px-3">${p.name} ${pTypeHtml}</td><td class="py-2 px-3 text-center">✔</td><td class="py-2 px-3 text-center">${s||'-'}</td><td class="py-2 px-3 text-center">${h||'-'}</td></tr>`;
+                            activeHtml += `<tr class="border-b border-white/5"><td class="py-2 px-3">${p.name} ${pTypeHtml}</td><td class="py-2 px-3 text-center text-emerald-400">✔</td><td class="py-2 px-3 text-center">${s||'-'}</td><td class="py-2 px-3 text-center">${h||'-'}</td></tr>`;
                         }
                     } else {
                         pendingCount++;
@@ -1518,17 +1541,17 @@
 
                 let finalHtml = '';
                 if (inactiveCount > 0) {
-                    finalHtml += `<div class="mb-6"><h4 class="text-rose-400 font-bold mb-2 border-b border-rose-500/30 pb-1">Inactive This Month (${inactiveCount})</h4><table class="w-full text-sm text-left"><tbody>${inactiveHtml}</tbody></table></div>`;
+                    finalHtml += `<div class="mb-6"><h4 class="text-rose-400 font-bold mb-2 border-b border-rose-500/30 pb-2">Inactive This Month (${inactiveCount})</h4><table class="w-full text-sm text-left"><tbody>${inactiveHtml}</tbody></table></div>`;
                 }
                 
                 finalHtml += `<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <h4 class="text-teal-300 font-bold mb-2 border-b border-white/10 pb-1">Active Publishers</h4>
-                        <table class="w-full text-sm text-left"><thead class="bg-black/20 text-xs"><tr><th class="py-1 px-3">Name</th><th class="py-1 px-3 text-center">Shared</th><th class="py-1 px-3 text-center">Studies</th><th class="py-1 px-3 text-center">Hours</th></tr></thead><tbody>${activeHtml}</tbody></table>
+                        <h4 class="text-teal-300 font-bold mb-2 border-b border-teal-500/30 pb-2">Active Publishers</h4>
+                        <table class="w-full text-sm text-left"><thead class="bg-black/30 text-xs text-teal-100/60 uppercase tracking-wider"><tr><th class="py-2 px-3 rounded-tl-lg">Name</th><th class="py-2 px-3 text-center">Shared</th><th class="py-2 px-3 text-center">Studies</th><th class="py-2 px-3 text-center rounded-tr-lg">Hours</th></tr></thead><tbody class="text-teal-50">${activeHtml}</tbody></table>
                     </div>
                     <div>
-                        <h4 class="text-teal-100/50 font-bold mb-2 border-b border-white/10 pb-1">Pending / No Report (${pendingCount})</h4>
-                        <table class="w-full text-sm text-left"><tbody>${pendingHtml}</tbody></table>
+                        <h4 class="text-teal-100/50 font-bold mb-2 border-b border-white/10 pb-2">Pending Reports (${pendingCount})</h4>
+                        <table class="w-full text-sm text-left"><tbody class="text-teal-50">${pendingHtml}</tbody></table>
                     </div>
                 </div>`;
                 
@@ -1542,16 +1565,15 @@
                 window.ui.renderS21();
             },
 
+            // --- CORE FIX: PRINTER SCALING LOGIC ---
             scaleS21Preview: () => {
                 const area = document.getElementById('s21-render-area');
                 const frame = document.getElementById('s21-render-frame');
                 if (!area || !frame) return;
 
-                // Base dimensions of the S-21 paper in pixels
-                const baseWidth = 1448;
+                const baseWidth = 1448; // The exact pixel width of the S-21 card CSS
                 const pageHeight = 1025; 
                 
-                // Get the number of pages generated inside the iframe
                 let numPages = 1;
                 try {
                     const innerDoc = frame.contentDocument || frame.contentWindow.document;
@@ -1559,24 +1581,24 @@
                     if (pages.length > 0) numPages = pages.length;
                 } catch(e) {}
 
-                // Force iframe to native massive size so it renders perfectly
+                // Force iframe to generate the full native size without scrollbars
                 frame.style.width = `${baseWidth}px`;
                 frame.style.height = `${pageHeight * numPages}px`;
 
-                // Calculate the scale needed to fit the screen width
-                const containerWidth = area.clientWidth - 40; // 40px for padding
+                // Calculate exact scale required to fit the screen
+                const containerWidth = area.clientWidth; 
                 let scale = containerWidth / baseWidth;
                 
-                // Don't scale up past 100%, don't shrink too tiny on mobile
+                // Never scale larger than 100% on big screens
                 if (scale > 1) scale = 1;
-                if (scale < 0.25) scale = 0.25;
 
-                // Apply CSS Transform
+                // Apply Perfect Transform (Anchored Top-Left so it doesn't wander)
                 frame.style.transform = `scale(${scale})`;
+                frame.style.transformOrigin = 'top left';
                 
-                // The Magic Trick: Collapse the container height so the scaled iframe doesn't leave massive empty space
+                // Magic: Collapse the container height exactly to match the shrunken iframe
                 const finalHeight = (pageHeight * numPages) * scale;
-                area.style.height = `${finalHeight + 40}px`;
+                area.style.height = `${finalHeight}px`;
             },
 
             renderS21: () => {
@@ -1646,7 +1668,7 @@
                 
                 doc.open(); doc.write(html); doc.close();
                 
-                // Allow iframe to render, then scale it
+                // Allow iframe to render, then run the flawless scale function
                 setTimeout(window.ui.scaleS21Preview, 200);
             },
 
@@ -1658,17 +1680,16 @@
             setupS4Tab: () => {
                 const sel = document.getElementById('s4-pub-select'); if(!sel) return;
                 let pubs = window.db.getPublishers().sort((a,b)=>a.name.localeCompare(b.name));
+                
                 if (window.ui.publicGroup) pubs = pubs.filter(p => p.group === window.ui.publicGroup);
                 sel.innerHTML = '<option value="">-- Please select your name --</option>' + pubs.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
                 
-                const urlParams = new URLSearchParams(window.location.search);
-                const prePubId = urlParams.get('pub');
-                if (prePubId && pubs.find(p => p.id === prePubId)) {
-                    sel.value = prePubId;
-                    window.ui.loadS4();
-                } else {
-                    window.ui.loadS4();
+                // PRE-SELECT LOGIC: If a Publisher ID was in the link, pick them!
+                if (window.ui.preselectedPub && pubs.find(p => p.id === window.ui.preselectedPub)) {
+                    sel.value = window.ui.preselectedPub;
                 }
+                
+                window.ui.loadS4();
             },
 
             loadS4: () => {
@@ -1728,22 +1749,6 @@
                 document.getElementById('s4-form-area').classList.add('hidden');
                 document.getElementById('s4-success-msg').classList.remove('hidden');
                 document.getElementById('s4-success-msg').classList.add('flex');
-            }
-        };
-
-        window.onload = async () => {
-            if (window.auth.check()) {
-                const type = localStorage.getItem('fs_auth_type');
-                if (type === 'super') {
-                    window.db.initSuperAdmin();
-                } else if (type === 'admin') {
-                    const cid = localStorage.getItem('fs_cong_id');
-                    const cname = localStorage.getItem('fs_cong_name');
-                    await window.db.initAdmin(cid, cname);
-                }
-            } else if (window.currentCongId) {
-                // Public link detected
-                await window.db.initPublicS4(window.currentCongId);
             }
         };
     </script>
