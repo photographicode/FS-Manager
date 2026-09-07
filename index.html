@@ -585,6 +585,12 @@
                 
                 // ADMIN OR SUPERADMIN SESSION BYPASS
                 if (localStorage.getItem('fs_auth') === 'true') { 
+                    // AUTO-FIX: Detect if this is an old "ghost" session from the previous version
+                    if (!localStorage.getItem('fs_auth_type')) {
+                        localStorage.removeItem('fs_auth'); // Wipe the ghost session
+                        return false; // Force the login screen to show
+                    }
+                    
                     document.getElementById('auth-screen').classList.add('hidden'); 
                     return true; 
                 }
