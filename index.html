@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FS Manager - Central</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: true }
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -469,11 +474,11 @@
             <form id="settings-form" class="space-y-4" onsubmit="window.auth.changePassword(event)">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Current Password</label>
-                    <input type="password" id="set-current-pwd" required class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="Verify identity">
+                    <input type="password" id="set-current-pwd" required class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="Verify identity" autocomplete="current-password">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">New Password</label>
-                    <input type="password" id="set-new-pwd" required class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="Min 8 chars, 1 num, 1 special">
+                    <input type="password" id="set-new-pwd" required class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="Min 8 chars, 1 num, 1 special" autocomplete="new-password">
                 </div>
                 <div class="text-[10px] text-slate-500 leading-tight space-y-1">
                     <p>• Must be at least 8 characters long</p>
