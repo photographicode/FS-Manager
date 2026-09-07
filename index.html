@@ -6,25 +6,19 @@
     <title>Service Reports Manager</title>
     
     <!-- External Dependencies -->
-    <script>
-        // Suppress Tailwind CDN warning in console for production
-        window.tailwind = { config: { corePlugins: { preflight: true } } };
-    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --glass-bg: rgba(13, 148, 136, 0.08);
+            --glass-bg: rgba(13, 148, 136, 0.15);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
         body {
             font-family: 'Inter', sans-serif;
-            background: #020617; /* Deep slate background */
-            background-image: radial-gradient(circle at top right, rgba(13, 148, 136, 0.15) 0%, transparent 50%),
-                              radial-gradient(circle at bottom left, rgba(8, 145, 178, 0.1) 0%, transparent 50%);
+            background: radial-gradient(circle at top left, #064e3b 0%, #020617 50%, #083344 100%);
             background-attachment: fixed;
             color: #f8fafc;
             min-height: 100vh;
@@ -33,16 +27,16 @@
         
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow);
         }
         
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(20, 184, 166, 0.3); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(20, 184, 166, 0.6); }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(20, 184, 166, 0.4); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(20, 184, 166, 0.8); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-out forwards; }
@@ -56,103 +50,86 @@
         }
         #toast.show { transform: translateY(0) scale(1); opacity: 1; }
 
-        /* --- BULLETPROOF PUBLIC MODE LAYOUT --- */
-        body.public-mode { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 1rem; 
-            background: #020617;
+        body.public-mode {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e2e8f0 100%) !important;
+            color: #0f172a !important;
         }
         body.public-mode #app-header { display: none !important; }
-        body.public-mode .main-content { 
-            padding: 0 !important; 
-            margin: 0 !important; 
-            width: 100% !important; 
-            max-width: 600px !important; 
-        }
-        body.public-mode .tab-content:not(#tab-s4) { display: none !important; }
-        body.public-mode #tab-s4 { display: block !important; width: 100%; }
-        /* -------------------------------------- */
+        body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh;}
+        body.public-mode #tab-s4 { display: flex !important; width: 100%; }
         
-        input[type="text"], input[type="password"], input[type="number"], input[type="tel"], select, textarea {
-            background: rgba(0,0,0,0.3);
+        input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
+            background: rgba(0,0,0,0.2);
             border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
             transition: all 0.2s;
         }
         input:focus, select:focus, textarea:focus {
             border-color: rgba(20, 184, 166, 0.6);
-            box-shadow: 0 0 10px rgba(20, 184, 166, 0.1);
+            box-shadow: 0 0 10px rgba(20, 184, 166, 0.2);
             outline: none;
-            background: rgba(0,0,0,0.4);
         }
         
+        body.public-mode input, body.public-mode select, body.public-mode textarea {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #cbd5e1;
+            color: #1e293b !important;
+        }
+        body.public-mode input:focus, body.public-mode select:focus, body.public-mode textarea:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+        }
+
         input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
             -webkit-box-shadow: 0 0 0 30px #020617 inset !important;
             -webkit-text-fill-color: white !important;
             transition: background-color 5000s ease-in-out 0s;
         }
-
-        /* Generic Modern Form Styles */
-        .modern-form-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-        .modern-form-input:focus {
-            border-color: #14b8a6 !important;
-            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
-            background: rgba(0, 0, 0, 0.5) !important;
+        body.public-mode input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px white inset !important;
+            -webkit-text-fill-color: #1e293b !important;
         }
 
-        /* S-21 Print Preview - Fully Unboxed and Free */
+        .analytics-table { width: 100%; min-width: 600px; border: 2px solid #000; background: #fff; color: #000; font-family: Arial, sans-serif; font-size: 14px; margin-bottom: 24px; border-collapse: collapse; }
+        .analytics-table th, .analytics-table td { border: 1px solid #000; padding: 6px; }
+        .analytics-table .header-row { font-weight: bold; text-align: center; font-size: 16px; border-bottom: 2px solid #000; }
+        .analytics-table .sub-header { font-weight: bold; text-align: center; background: #f0f0f0; }
+        .analytics-table .metric-row { display: flex; justify-content: space-between; border-bottom: 1px solid #000; }
+
         #s21-render-area {
             width: 100%;
             display: flex;
-            justify-content: flex-start; /* Anchor left for scaling */
-            overflow: hidden; 
-            padding-top: 10px;
-            position: relative;
+            justify-content: center;
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            transition: height 0.3s;
         }
-        
         #s21-render-frame {
+            width: 1448px;
             border: none;
-            background: transparent;
-            transform-origin: top left; /* Critical for preventing clipping */
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-            border-radius: 4px;
+            background: #fff;
+            transform-origin: top center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
     </style>
 </head>
 <body class="text-sm">
-    <!-- SaaS Auth Portal -->
+
     <div id="auth-screen" class="fixed inset-0 bg-gradient-to-br from-slate-900 to-teal-900 z-[10000] flex flex-col items-center justify-center p-4">
         <div class="glass-panel p-8 sm:p-10 rounded-3xl text-center max-w-md w-full border border-teal-500/30 shadow-2xl">
             <div class="w-16 h-16 rounded-2xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-lg mx-auto mb-6 text-2xl">FS</div>
-            <h2 class="text-2xl font-bold text-white mb-2">Service Portal</h2>
-            <p class="text-teal-200/70 text-sm mb-6">Enter your credentials to access your secure database.</p>
+            <h2 class="text-2xl font-bold text-white mb-2">Service Reports Manager</h2>
+            <p class="text-teal-200/70 text-sm mb-6">Enter your Congregation ID to access your portal.</p>
             <form onsubmit="event.preventDefault(); window.auth.login();">
-                <div class="space-y-4 mb-6">
-                    <input type="text" id="auth-cong-id" autocomplete="username" placeholder="Congregation ID" required class="w-full px-5 py-3 rounded-xl text-center font-mono">
-                    <input type="password" id="auth-pass" autocomplete="current-password" placeholder="Password" required class="w-full px-5 py-3 rounded-xl text-center font-mono">
-                </div>
+                <input type="text" id="auth-cong-id" placeholder="Congregation ID" required class="w-full px-5 py-3 rounded-xl mb-4 text-center">
+                <input type="password" id="auth-pass" placeholder="Password" required class="w-full px-5 py-3 rounded-xl mb-6 text-center">
                 <button type="submit" id="auth-btn" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)]">Unlock Database</button>
             </form>
-            <div class="mt-6 text-[10px] text-teal-200/40 uppercase tracking-widest flex items-center justify-center gap-2">
-                <span>Enterprise Platform</span>
-                <span class="w-1 h-1 rounded-full bg-teal-500/50"></span>
-                <span>End-to-End Encrypted</span>
-            </div>
         </div>
     </div>
 
-    <!-- Custom Dialogs -->
     <div id="sys-prompt-overlay" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-4">
         <div class="glass-panel p-6 sm:p-8 rounded-3xl text-center max-w-md w-full border border-rose-500/30 shadow-[0_0_30px_rgba(225,29,72,0.3)]">
             <div class="w-16 h-16 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold border border-rose-500/30 shadow-lg mx-auto mb-6 text-3xl">⚠️</div>
@@ -170,32 +147,29 @@
         </div>
     </div>
 
-    <!-- Navigation Header -->
-    <nav id="app-header" class="glass-panel sticky top-0 z-50 border-b border-teal-400/10">
+    <nav id="app-header" class="glass-panel sticky top-0 z-50 border-b border-teal-400/20">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 shrink-0">
-                <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.2)]">FS</div>
-                <span class="hidden sm:inline font-bold text-lg tracking-wide text-white drop-shadow-md">Service Reports Manager</span>
+                <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.3)]">FS</div>
+                <span class="hidden sm:inline font-bold text-xl tracking-wide text-white drop-shadow-lg">Service Reports Manager</span>
             </div>
             
-            <!-- Standard Admin Navigation -->
             <div id="nav-admin" class="flex flex-1 justify-end sm:justify-start items-center gap-1 sm:ml-6 hidden min-w-0">
-                <div class="flex gap-1 bg-black/20 p-1.5 rounded-xl border border-white/5 overflow-x-auto flex-1 min-w-0 custom-scrollbar">
-                    <span id="nav-cong-name" class="px-4 py-2 text-teal-300 font-bold text-sm tracking-wide hidden lg:block whitespace-nowrap overflow-hidden text-ellipsis"></span>
-                    <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
-                    <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
-                    <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Printer</button>
-                    <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
-                    <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
+                <div class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 overflow-x-auto flex-1 min-w-0 custom-scrollbar">
+                    <span id="nav-cong-name" class="px-4 py-2 text-teal-300 font-bold text-sm tracking-wide hidden lg:block"></span>
+                    <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
+                    <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
+                    <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Printer</button>
+                    <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
+                    <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
                 </div>
-                <div class="flex items-center gap-1 sm:gap-2 ml-2 shrink-0">
+                <div class="flex items-center gap-2 ml-2 shrink-0">
                     <button onclick="window.ui.openModal('modal-change-password')" class="p-2 rounded-lg transition-all hover:bg-white/10 text-teal-50/70" title="Settings">⚙️</button>
-                    <button onclick="window.auth.logout()" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap">Log Out</button>
+                    <button onclick="window.auth.logout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap">Log Out</button>
                 </div>
             </div>
 
-            <!-- Super Admin Navigation -->
-            <div id="nav-superadmin" class="flex gap-1 bg-black/20 p-1.5 rounded-xl border border-white/5 hidden shrink-0">
+            <div id="nav-superadmin" class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 hidden shrink-0">
                 <span class="px-4 py-2 text-amber-400 font-bold text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2">👑 Super Admin</span>
                 <button onclick="window.auth.logout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300">Log Out</button>
             </div>
@@ -204,44 +178,43 @@
 
     <main class="main-content max-w-7xl mx-auto px-4 py-6 sm:py-8">
         
-        <!-- SUPER ADMIN TAB -->
         <div id="tab-superadmin" class="tab-content space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">SaaS Control Center</h2>
                     <p class="text-teal-200/70 mt-1">Manage tenant congregations and system access</p>
                 </div>
-                <button onclick="window.ui.openModal('modal-add-cong')" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)] flex items-center gap-2 text-sm">
+                <button onclick="window.ui.openModal('modal-add-cong')" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center gap-2">
                     + New Congregation
                 </button>
             </div>
             <div class="glass-panel rounded-2xl overflow-hidden mt-6">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-black/40 text-amber-100/70 border-b border-amber-500/20">
+                        <thead class="bg-black/50 text-amber-100/70">
                             <tr>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Congregation Details</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-center">Login ID</th>
-                                <th class="px-4 sm:px-6 py-4 font-semibold text-center">Trial Status</th>
+                                <th class="px-4 sm:px-6 py-4 font-semibold text-center">Password</th>
+                                <th class="px-4 sm:px-6 py-4 font-semibold text-center">Status</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-right">Admin Action</th>
                             </tr>
                         </thead>
-                        <tbody id="saas-cong-table" class="divide-y divide-white/5 text-teal-50"></tbody>
+                        <tbody id="saas-cong-table" class="divide-y divide-white/10 text-teal-50"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- DASHBOARD TAB -->
         <div id="tab-dashboard" class="tab-content space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+            <div class="flex justify-between items-end flex-wrap gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Congregation Overview</h2>
-                    <p class="text-teal-200/70 mt-1">Real-time reporting telemetry and service totals</p>
+                    <p class="text-teal-200/70 mt-1">Real-time telemetry and service totals</p>
                 </div>
                 <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
-                    <select id="dash-year" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white"></select>
-                    <select id="dash-month" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white">
+                    <select id="dash-year" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm"></select>
+                    <select id="dash-month" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-2 rounded-xl text-sm">
                         <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                         <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
                         <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
@@ -249,32 +222,30 @@
                 </div>
             </div>
             
-            <div id="dash-stats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5"></div>
+            <div id="dash-stats" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5"></div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 mt-6">
-                <!-- Regular Pioneers Log -->
-                <div class="glass-panel rounded-2xl overflow-hidden border border-cyan-500/20">
-                    <div class="bg-black/20 px-4 sm:px-5 py-3 border-b border-cyan-500/20 text-cyan-300 font-bold text-sm">Regular Pioneers Log</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mt-6">
+                <div class="glass-panel rounded-2xl overflow-hidden border border-cyan-500/30">
+                    <div class="bg-black/30 px-4 sm:px-5 py-3 border-b border-cyan-500/20 text-cyan-300 font-bold">Regular Pioneers Log</div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm whitespace-nowrap text-white">
-                            <thead class="bg-black/30 text-cyan-100/60 text-[10px] uppercase tracking-wider border-b border-white/5">
-                                <tr><th class="px-4 sm:px-5 py-2.5">Name</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Studies</th></tr>
+                            <thead class="bg-black/40 text-cyan-100/60 text-xs uppercase">
+                                <tr><th class="px-4 sm:px-5 py-2">Name</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Studies</th></tr>
                             </thead>
                             <tbody id="dash-rp-table" class="divide-y divide-white/5"></tbody>
                         </table>
                     </div>
                 </div>
                 
-                <!-- Auxiliary Pioneers Review Log -->
-                <div class="glass-panel rounded-2xl overflow-hidden border border-emerald-500/20">
-                    <div class="bg-black/20 px-4 sm:px-5 py-3 border-b border-emerald-500/20 text-emerald-300 font-bold text-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
+                <div class="glass-panel rounded-2xl overflow-hidden border border-emerald-500/30">
+                    <div class="bg-black/30 px-4 sm:px-5 py-3 border-b border-emerald-500/20 text-emerald-300 font-bold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
                         <span>Auxiliary Pioneer Review Log</span>
                         <span class="text-[9px] sm:text-[10px] uppercase text-emerald-200/50">Review mapped APs</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm whitespace-nowrap text-white">
-                            <thead class="bg-black/30 text-emerald-100/60 text-[10px] uppercase tracking-wider border-b border-white/5">
-                                <tr><th class="px-4 sm:px-5 py-2.5">Publisher</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2.5 text-center w-16 sm:w-20">Studies</th><th class="px-4 sm:px-5 py-2.5 text-right">Admin Action</th></tr>
+                            <thead class="bg-black/40 text-emerald-100/60 text-xs uppercase">
+                                <tr><th class="px-4 sm:px-5 py-2">Publisher</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Hours</th><th class="px-4 sm:px-5 py-2 text-center w-16 sm:w-20">Studies</th><th class="px-4 sm:px-5 py-2 text-right">Admin Action</th></tr>
                             </thead>
                             <tbody id="dash-ap-review-table" class="divide-y divide-white/5"></tbody>
                         </table>
@@ -282,15 +253,14 @@
                 </div>
             </div>
             
-            <!-- Monthly Submissions Log -->
             <div class="glass-panel rounded-2xl overflow-hidden mt-6">
-                <div class="bg-black/20 px-4 sm:px-6 py-4 border-b border-white/5 flex justify-between items-center">
-                    <h3 class="font-semibold text-white text-sm">Monthly Submissions Log</h3>
-                    <span class="text-[10px] sm:text-xs font-mono text-teal-300 bg-teal-900/30 px-2.5 py-1 rounded-md border border-teal-500/20 flex items-center gap-1">☁️ Synced</span>
+                <div class="bg-black/30 px-4 sm:px-6 py-4 border-b border-white/10 flex justify-between items-center">
+                    <h3 class="font-semibold text-white">Monthly Submissions Log</h3>
+                    <span class="text-[10px] sm:text-xs font-mono text-teal-300 bg-teal-900/40 px-2 py-1 rounded flex items-center gap-1">☁️ SaaS Sync</span>
                 </div>
                 <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
                     <table class="w-full text-left text-sm whitespace-nowrap relative">
-                        <thead class="bg-[#0f172a] text-teal-100/60 sticky top-0 z-10 border-b border-white/5 text-xs uppercase tracking-wider">
+                        <thead class="bg-black/80 text-teal-100/70 sticky top-0 z-10 backdrop-blur-md">
                             <tr>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Publisher</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-center">Shared</th>
@@ -300,63 +270,61 @@
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="dash-reports-table" class="divide-y divide-white/5 text-teal-50"></tbody>
+                        <tbody id="dash-reports-table" class="divide-y divide-white/10 text-teal-50"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- GROUPS TAB -->
         <div id="tab-groups" class="tab-content space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
-                <div class="md:col-span-1 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 custom-scrollbar" id="groups-sidebar"></div>
+                <div class="md:col-span-1 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0" id="groups-sidebar"></div>
                 <div class="md:col-span-3">
-                    <div id="group-details" class="hidden glass-panel p-4 sm:p-6 rounded-2xl"></div>
+                    <div id="group-details" class="hidden glass-panel p-4 sm:p-8 rounded-2xl"></div>
                 </div>
             </div>
         </div>
 
-        <!-- PRINTER TAB -->
         <div id="tab-s21" class="tab-content space-y-6">
-            <div class="flex justify-between items-center glass-panel p-4 sm:p-6 rounded-2xl flex-wrap gap-4 border-b-2 border-teal-500/30">
+            <div class="flex justify-between items-center glass-panel p-4 sm:p-6 rounded-2xl flex-wrap gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Document Printer</h2>
                     <p class="text-teal-200/70 mt-1">Compile and print pixel-perfect S-21 records</p>
                 </div>
                 <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
-                    <select id="s21-year-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm bg-black/30 border border-white/10 text-white"></select>
-                    <select id="s21-publisher-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm max-w-[250px] bg-black/30 border border-white/10 text-white"></select>
-                    <button onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.4)] flex items-center justify-center gap-2 text-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2v4h10z"></path></svg> 
+                    <select id="s21-year-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm"></select>
+                    <select id="s21-publisher-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm max-w-[250px]"></select>
+                    
+                    <button onclick="window.ui.openMissingReportsModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                        📱 Remind Missing
+                    </button>
+                    
+                    <button onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)] flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> 
                         Print Cards
                     </button>
                 </div>
             </div>
-            
-            <!-- Scaled & Unboxed Iframe Container (Perfect width fit) -->
-            <div id="s21-render-area">
-                <iframe id="s21-render-frame"></iframe>
+            <div id="s21-render-area" style="overflow-x: auto; -webkit-overflow-scrolling: touch; background: #111; padding: 20px; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: height 0.3s; display: flex; justify-content: center;">
+                <iframe id="s21-render-frame" style="width: 1448px; border: none; background: #fff; transform-origin: top center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);"></iframe>
             </div>
         </div>
 
-        <!-- ANALYTICS TAB -->
         <div id="tab-analytics" class="tab-content space-y-6">
-            <div class="flex justify-between items-end flex-wrap gap-4">
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Analytics & Rosters</h2>
-                    <p class="text-teal-200/70 mt-1">Rolling statistical summaries and historical data</p>
-                </div>
-                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
-                    <select id="analytics-year" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white"></select>
-                    <select id="analytics-month" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm bg-black/30 border border-white/10 text-white">
-                        <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
-                        <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
-                        <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
-                    </select>
-                </div>
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Analytics & Rosters</h2>
+                <p class="text-teal-200/70 mt-1">Rolling statistical summaries and historical data</p>
+            </div>
+            
+            <div class="flex gap-2 sm:gap-3 mb-4 w-full sm:w-auto">
+                <select id="analytics-year" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm"></select>
+                <select id="analytics-month" onchange="window.ui.renderAnalytics(); window.ui.renderDetailedRoster()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm">
+                    <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                    <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                    <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                </select>
             </div>
 
-            <!-- Detailed Monthly Roster (Active & Inactive Only) -->
             <div class="glass-panel p-4 sm:p-6 rounded-2xl">
                 <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                     <h3 class="text-lg sm:text-xl font-bold text-white">Detailed Monthly Roster</h3>
@@ -364,28 +332,26 @@
                 <div id="analytics-roster" class="overflow-x-auto pb-4"></div>
             </div>
             
-            <!-- 6-Month Grid -->
-            <div id="analytics-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 bg-black/20 p-4 sm:p-6 rounded-2xl border border-white/5 text-white"></div>
+            <div id="analytics-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 bg-white p-4 sm:p-8 rounded-xl overflow-x-auto text-black"></div>
         </div>
 
-        <!-- PUBLISHERS TAB -->
         <div id="tab-publishers" class="tab-content space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Publishers</h2>
                     <p class="text-teal-200/70 mt-1">Manage profiles for this congregation</p>
                 </div>
-                <div class="flex gap-2 sm:gap-3 flex-wrap w-full lg:w-auto">
+                <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
                     <button onclick="document.getElementById('csv-file').click()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">Import Contacts</button>
                     <input type="file" id="csv-file" accept=".csv" class="hidden" onchange="window.db.importContacts(event)">
                     <button onclick="window.ui.downloadContacts()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">Export Contacts</button>
                     
-                    <button onclick="document.getElementById('csv-report-file').click()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border-amber-500/30 text-amber-200">Import Reports</button>
+                    <button onclick="document.getElementById('csv-report-file').click()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Import Reports</button>
                     <input type="file" id="csv-report-file" accept=".csv" class="hidden" onchange="window.db.importReports(event)">
-                    <button onclick="window.ui.downloadReports()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border-amber-500/30 text-amber-200">Export Reports</button>
+                    <button onclick="window.ui.downloadReports()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Export Reports</button>
 
-                    <button onclick="window.ui.confirmWipeDatabase()" class="bg-rose-900/40 flex-1 sm:flex-none hover:bg-rose-800/80 text-rose-300 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border border-rose-500/30 shadow-sm hidden sm:block">⚠️ Wipe Data</button>
-                    <button onclick="window.ui.openModal('modal-add-publisher')" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.3)] flex items-center justify-center gap-2">
+                    <button onclick="window.ui.confirmWipeDatabase()" class="bg-rose-900/50 flex-1 sm:flex-none hover:bg-rose-800/80 text-rose-200 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border border-rose-500/50 shadow-lg">⚠️ Wipe Data</button>
+                    <button onclick="window.ui.openModal('modal-add-publisher')" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)] flex items-center justify-center gap-2">
                         + Add Publisher
                     </button>
                 </div>
@@ -394,7 +360,7 @@
             <div class="glass-panel rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="bg-black/30 text-teal-100/60 text-xs uppercase tracking-wider border-b border-white/5">
+                        <thead class="bg-black/50 text-teal-100/70">
                             <tr>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Name & Group</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Privileges</th>
@@ -402,95 +368,79 @@
                                 <th class="px-4 sm:px-6 py-4 font-semibold text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="publisher-table-body" class="divide-y divide-white/5 text-teal-50"></tbody>
+                        <tbody id="publisher-table-body" class="divide-y divide-white/10 text-teal-50"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- PUBLIC FORM TAB (Generic S-4 Alternative) -->
-        <div id="tab-s4" class="tab-content">
+        <div id="tab-s4" class="tab-content h-full w-full flex-col items-center justify-center p-4">
+            
             <div id="s4-success-msg" class="hidden flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
                     <span class="text-4xl sm:text-5xl">✅</span>
                 </div>
-                <h2 class="text-2xl sm:text-4xl font-bold text-white mb-4">Report Submitted Successfully</h2>
-                <p class="text-teal-200/70 text-base sm:text-lg">Thank you. Your field service report has been securely recorded.</p>
-                <button onclick="location.reload()" class="mt-8 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl transition-all text-white font-medium shadow-sm">Submit Another Report</button>
+                <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 mb-4 drop-shadow-sm">Report Submitted Successfully</h2>
+                <p class="text-slate-600 text-base sm:text-lg">Thank you. Your field service report has been securely recorded.</p>
+                <button onclick="location.reload()" class="mt-8 px-6 py-3 bg-slate-200 hover:bg-slate-300 rounded-xl transition-all text-slate-800 font-bold shadow-sm">Submit Another Report</button>
             </div>
         
-            <div id="s4-form-area" class="w-full max-w-xl mx-auto flex flex-col items-center justify-center py-4">
-                
-                <!-- Modern Generic Form UI -->
-                <div class="glass-panel w-full p-6 sm:p-10 rounded-3xl border border-teal-500/20 shadow-2xl relative overflow-hidden">
-                    <div class="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl"></div>
-                    
-                    <div class="relative z-10">
-                        <div class="mb-8 text-center sm:text-left border-b border-white/10 pb-6">
-                            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Field Service Report</h2>
-                            <p class="text-teal-200/60 mt-2 text-sm">Securely submit your monthly activity below.</p>
+            <div id="s4-form-area" class="w-full max-w-lg bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.1)] rounded-3xl p-6 sm:p-8 text-slate-800">
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Field Service Report</h2>
+                <p class="text-sm text-slate-600 mb-6 font-medium">Securely submit your monthly activity below.</p>
+
+                <hr class="border-slate-300/50 mb-6">
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Publisher Name</label>
+                        <select id="s4-pub-select" onchange="window.ui.loadS4()" class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:ring-2 focus:ring-teal-500 outline-none transition-all"></select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Reporting Month</label>
+                        <input id="s4-month-display" type="text" readonly class="w-full px-4 py-3 bg-slate-100/80 border border-slate-300 rounded-xl text-slate-800 font-medium cursor-not-allowed">
+                    </div>
+
+                    <div class="bg-white/80 border border-slate-300 rounded-xl p-4 flex items-center justify-between gap-4 transition-all focus-within:ring-2 focus-within:ring-teal-500">
+                        <div>
+                            <label for="s4-ministry" class="font-bold text-slate-800 text-sm cursor-pointer">Shared in the ministry</label>
+                            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 cursor-pointer select-none">Check this box if you shared in any form of the ministry during the month.</p>
                         </div>
-                        
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-sm font-semibold text-teal-100/90 mb-2">Publisher Name</label>
-                                <select id="s4-pub-select" onchange="window.ui.loadS4()" class="modern-form-input appearance-none bg-[#0f172a]/80 font-medium">
-                                    <option value="">-- Please select your name --</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-semibold text-teal-100/90 mb-2">Reporting Month</label>
-                                <input type="text" id="s4-month-display" readonly class="modern-form-input bg-black/20 text-teal-200 cursor-not-allowed font-medium border-dashed">
-                            </div>
-
-                            <div class="bg-black/20 p-4 sm:p-5 rounded-2xl border border-white/5 flex items-start sm:items-center justify-between gap-4">
-                                <div>
-                                    <h4 class="text-white font-medium">Shared in the ministry</h4>
-                                    <p class="text-xs text-teal-200/50 mt-1">Check this box if you shared in any form of the ministry during the month.</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                                    <input type="checkbox" id="s4-ministry" class="sr-only peer" checked onchange="window.ui.enforceS4Logic()">
-                                    <div class="w-12 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
-                                </label>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-semibold text-teal-100/90 mb-2">Bible Studies</label>
-                                    <input type="number" id="s4-studies" min="0" step="1" placeholder="0" class="modern-form-input text-center text-xl font-medium bg-[#0f172a]/50">
-                                    <p class="text-[10px] text-teal-200/40 mt-1.5 text-center">Number of different studies conducted</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-teal-100/90 mb-2">Hours</label>
-                                    <input type="number" id="s4-hours" min="0" step="0.25" placeholder="0" class="modern-form-input text-center text-xl font-medium bg-[#0f172a]/50">
-                                    <p class="text-[10px] text-teal-200/40 mt-1.5 text-center">If auxiliary, regular, special pioneer or missionary</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-semibold text-teal-100/90 mb-2">Comments</label>
-                                <textarea id="s4-comments" rows="3" placeholder="Any additional remarks..." class="modern-form-input resize-none bg-[#0f172a]/50 text-sm"></textarea>
-                            </div>
-                            
-                            <div class="pt-6 border-t border-white/10">
-                                <button onclick="window.ui.saveS4()" class="w-full bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)]">
-                                    Submit Report
-                                </button>
-                            </div>
+                        <div class="shrink-0 flex items-center justify-center">
+                            <input type="checkbox" id="s4-ministry" checked onchange="window.ui.enforceS4Logic()" class="w-6 h-6 text-teal-500 bg-white border-slate-300 rounded focus:ring-teal-500 cursor-pointer accent-teal-500 shadow-sm transition-transform hover:scale-105">
                         </div>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Bible Studies</label>
+                            <input id="s4-studies" type="number" min="0" step="1" value="0" class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-center text-slate-800 font-bold focus:ring-2 focus:ring-teal-500 outline-none transition-all">
+                            <p class="text-[10px] text-slate-500 text-center mt-2 font-medium">Number of different studies conducted</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Hours</label>
+                            <input id="s4-hours" type="number" min="0" step="0.25" value="0" class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-center text-slate-800 font-bold focus:ring-2 focus:ring-teal-500 outline-none transition-all">
+                            <p class="text-[10px] text-slate-500 text-center mt-2 font-medium">If auxiliary, regular, special pioneer or missionary</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Comments</label>
+                        <textarea id="s4-comments" rows="3" placeholder="Any additional remarks..." class="w-full px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-teal-500 outline-none transition-all resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="window.ui.saveS4()" class="w-full bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-slate-900 px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-[0_8px_20px_rgba(20,184,166,0.3)] hover:shadow-[0_12px_25px_rgba(20,184,166,0.4)] transform hover:-translate-y-0.5">Submit Report</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modals -->
-
-    <!-- Super Admin: Add Congregation -->
     <div id="modal-add-cong" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30">
-            <div class="bg-black/30 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
+            <div class="bg-black/40 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
                 <h3 class="text-lg sm:text-xl font-bold text-amber-400 tracking-tight">Provision Tenant</h3>
                 <button onclick="window.ui.closeModal('modal-add-cong')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -499,28 +449,27 @@
             <form id="form-congregation" onsubmit="window.db.createCongregation(event)" class="p-6 sm:p-8 space-y-5">
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Congregation Name</label>
-                    <input type="text" id="saas-cong-name" required placeholder="e.g. Central, New York" autocomplete="off" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
+                    <input type="text" id="saas-cong-name" required placeholder="e.g. Central, New York" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Login ID (Tenant ID)</label>
-                    <input type="text" id="saas-cong-id" required placeholder="e.g. central-ny" autocomplete="username" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                    <input type="text" id="saas-cong-id" required placeholder="e.g. central-ny" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
-                    <input type="password" id="saas-cong-pwd" required placeholder="e.g. Sec1234!" autocomplete="new-password" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                    <input type="text" id="saas-cong-pwd" required placeholder="e.g. Sec1234!" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-add-cong')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)]">Provision</button>
+                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Provision</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Super Admin: Edit Congregation -->
     <div id="modal-edit-cong" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30">
-            <div class="bg-black/30 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
+            <div class="bg-black/40 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-amber-500/20">
                 <h3 class="text-lg sm:text-xl font-bold text-amber-400 tracking-tight">Edit Tenant</h3>
                 <button onclick="window.ui.closeModal('modal-edit-cong')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -529,17 +478,17 @@
             <form id="form-edit-congregation" onsubmit="window.db.updateCongregation(event)" class="p-6 sm:p-8 space-y-5">
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider flex justify-between">
-                        <span>Login ID</span> <span class="text-rose-300 text-[10px]">(Locked)</span>
+                        <span>Login ID</span> <span class="text-rose-300 text-[10px]">(Locked to preserve data)</span>
                     </label>
-                    <input type="text" id="edit-cong-id" readonly autocomplete="username" class="w-full bg-black/50 border border-white/5 rounded-xl px-4 py-2.5 text-white/50 cursor-not-allowed font-mono">
+                    <input type="text" id="edit-cong-id" readonly class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-white/50 cursor-not-allowed font-mono">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Congregation Name</label>
-                    <input type="text" id="edit-cong-name" required autocomplete="off" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
+                    <input type="text" id="edit-cong-name" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
-                    <input type="text" id="edit-cong-pwd" required autocomplete="off" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                    <input type="text" id="edit-cong-pwd" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Subscription Status</label>
@@ -551,43 +500,40 @@
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-edit-cong')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)]">Update Tenant</button>
+                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Update Tenant</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Admin: Change Password -->
     <div id="modal-change-password" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-            <div class="bg-black/30 px-6 py-5 flex justify-between items-center border-b border-white/10">
-                <h3 class="text-lg font-bold text-white tracking-tight">Security Settings</h3>
+        <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-white/20">
+            <div class="bg-black/40 px-6 py-5 flex justify-between items-center border-b border-white/10">
+                <h3 class="text-lg font-bold text-white tracking-tight">Change Password</h3>
                 <button onclick="window.ui.closeModal('modal-change-password')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <form onsubmit="window.db.changeAdminPassword(event)" class="p-6 space-y-5">
+            <form onsubmit="window.db.changeAdminPassword(event)" class="p-6 space-y-4">
                 <div class="space-y-2">
                     <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Current Password</label>
-                    <input type="password" id="cp-current" autocomplete="current-password" required class="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400" placeholder="Verify identity">
+                    <input type="password" id="cp-current" required class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400">
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">New Password</label>
-                    <input type="password" id="cp-new" autocomplete="new-password" required class="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 font-mono" placeholder="Min 8 chars, 1 num, 1 special">
-                    <p class="text-[10px] text-teal-200/50 leading-tight">Must be at least 8 characters, include 1 number and 1 special character (!@#$%^&*).</p>
+                    <input type="text" id="cp-new" required class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 font-mono">
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-change-password')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" class="bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md">Save Password</button>
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg">Save Password</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Add/Edit Publisher -->
     <div id="modal-add-publisher" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[999] flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/10 max-h-[90vh] flex flex-col">
-            <div class="bg-black/30 px-6 sm:px-8 py-4 sm:py-5 flex justify-between items-center border-b border-white/10 shrink-0">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
+            <div class="bg-black/40 px-6 sm:px-8 py-4 sm:py-5 flex justify-between items-center border-b border-white/10 shrink-0">
                 <h3 id="modal-pub-title" class="text-lg sm:text-xl font-bold text-white tracking-tight">Publisher Record</h3>
                 <button onclick="window.ui.closeModal('modal-add-publisher')" class="text-teal-200/50 hover:text-white transition-colors">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -599,11 +545,11 @@
                     <div class="grid grid-cols-2 gap-4 sm:gap-5">
                         <div class="col-span-2 md:col-span-1 space-y-2">
                             <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Full Name</label>
-                            <input type="text" id="pub-name" required autocomplete="off" class="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-white/10">
+                            <input type="text" id="pub-name" required class="w-full px-4 py-2.5 rounded-xl">
                         </div>
                         <div class="col-span-2 md:col-span-1 space-y-2">
                             <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Service Group</label>
-                            <input type="text" id="pub-group" placeholder="e.g. Group A" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-white/10">
+                            <input type="text" id="pub-group" placeholder="e.g. Group A" class="w-full px-4 py-2.5 rounded-xl">
                         </div>
                     </div>
                     
@@ -624,7 +570,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-3 bg-black/20 p-4 sm:p-5 rounded-xl border border-white/5">
+                    <div class="space-y-3 bg-black/30 p-4 sm:p-5 rounded-xl border border-white/10">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider block">Ecclesiastical Privileges</label>
                         <div class="flex flex-wrap gap-3 sm:gap-5">
                             <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-elder" class="accent-teal-500 rounded w-4 h-4"> Elder</label>
@@ -637,51 +583,49 @@
 
                     <div class="grid grid-cols-2 gap-4 sm:gap-5">
                         <div class="col-span-2 md:col-span-1 space-y-2">
-                            <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider flex justify-between">
-                                <span>Date of Birth</span>
-                            </label>
-                            <div class="relative">
-                                <input type="text" id="pub-dob" placeholder="DD-MM-YYYY" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl pr-10 bg-black/30 border border-white/10 font-mono">
-                                <span class="absolute right-3 top-3 text-teal-100/30">📅</span>
-                            </div>
+                            <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Date of Birth</label>
+                            <input type="text" id="pub-dob" placeholder="dd-mm-yyyy" class="w-full px-4 py-2.5 rounded-xl">
                         </div>
                         <div class="col-span-2 md:col-span-1 space-y-2">
-                            <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider flex justify-between items-center">
-                                <span>Date Baptized</span>
-                                <label class="flex items-center gap-1 text-[10px] cursor-pointer normal-case text-teal-100 bg-white/10 px-2 py-0.5 rounded-md hover:bg-white/20 transition-colors"><input type="checkbox" id="pub-ubp" class="accent-teal-500" onchange="window.ui.toggleUBP()"> Unbaptized (UBP)</label>
-                            </label>
-                            <div class="relative">
-                                <input type="text" id="pub-baptized" placeholder="DD-MM-YYYY" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl pr-10 transition-all bg-black/30 border border-white/10 font-mono">
-                                <span class="absolute right-3 top-3 text-teal-100/30">📅</span>
-                            </div>
+                            <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Date Baptized</label>
+                            <input type="text" id="pub-baptized" placeholder="dd-mm-yyyy" class="w-full px-4 py-2.5 rounded-xl">
                         </div>
                     </div>
                     
                     <div class="space-y-2">
-                        <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">WhatsApp Number (For Reminders)</label>
-                        <div class="flex gap-2">
-                            <select id="pub-phone-code" class="w-24 px-2 py-2.5 rounded-xl text-center font-mono bg-black/30 border border-white/10 text-white text-xs">
-                                <option value="+91">🇮🇳 +91</option>
-                                <option value="+1">🇺🇸 +1</option>
-                                <option value="+44">🇬🇧 +44</option>
-                                <option value="+61">🇦🇺 +61</option>
-                                <option value="+81">🇯🇵 +81</option>
-                                <option value="">Other</option>
-                            </select>
-                            <input type="tel" id="pub-phone" placeholder="9876543210" class="flex-1 px-4 py-2.5 rounded-xl font-mono bg-black/30 border border-white/10">
-                        </div>
+                        <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Phone Number</label>
+                        <input type="text" id="pub-phone" class="w-full px-4 py-2.5 rounded-xl">
                     </div>
 
                     <div class="pt-4 flex justify-end gap-3 sm:gap-4 border-t border-white/10 mt-2">
                         <button type="button" onclick="window.ui.closeModal('modal-add-publisher')" class="px-4 sm:px-6 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                        <button type="submit" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 sm:px-8 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.3)]">Commit Record</button>
+                        <button type="submit" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 sm:px-8 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(20,184,166,0.4)]">Commit Record</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="glass-panel text-white px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-3 sm:gap-4 border border-teal-500/30">
+    <div id="modal-missing-reports" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/20 max-h-[80vh] flex flex-col">
+            <div class="bg-black/40 px-6 py-5 flex justify-between items-center border-b border-white/10 shrink-0">
+                <div>
+                    <h3 class="text-lg font-bold text-white tracking-tight">Missing Reports</h3>
+                    <p class="text-xs text-teal-200/60 mt-1" id="missing-reports-month-label"></p>
+                </div>
+                <button onclick="window.ui.closeModal('modal-missing-reports')" class="text-teal-200/50 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="overflow-y-auto custom-scrollbar p-6">
+                <div class="space-y-3" id="missing-reports-list">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="glass-panel text-white px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-3 sm:gap-4 border border-teal-500/40">
         <span id="toast-icon" class="text-xl sm:text-2xl drop-shadow-md">✅</span>
         <span id="toast-msg" class="font-medium tracking-wide text-sm sm:text-base"></span>
     </div>
@@ -689,60 +633,34 @@
     <script type="module">
         const { createClient } = window.supabase;
         
-        // =========================================================================
-        // ⚠️ CRITICAL: YOU MUST REPLACE THESE TWO LINES WITH YOUR SUPABASE KEYS ⚠️
-        // =========================================================================
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; 
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
-        // =========================================================================
-
-        const isCloudEnabled = SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_URL.startsWith('http');
+        const SUPABASE_URL = 'https://vffbprsuvrwkzvwnipvg.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZmJwcnN1dnJ3a3p2d25pcHZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NjE2MDIsImV4cCI6MjEwMzIzNzYwMn0.G3CdIsJduBvboPwbbMw07V4EdM0j_btHXFQzgg7j-XE';
+        
+        const isCloudEnabled = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL.startsWith('http');
         const supabaseClient = isCloudEnabled ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
         window.config = { MASTER_PASSWORD: 'Admin' + '1234' };
         window.sysPromptState = { actionCallback: null, requiresPassword: false };
         window.currentCongId = null;
 
-        // --- CORE FIX: ISOLATED LOAD LOGIC ---
-        window.onload = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const congParam = urlParams.get('cong');
-            
-            // 1. If URL has ?cong=, FORCIBLY enter Public Mode and skip everything else.
-            if (congParam) { 
-                document.body.classList.add('public-mode'); 
-                document.getElementById('auth-screen').classList.add('hidden');
-                window.currentCongId = congParam;
-                window.ui.publicGroup = urlParams.get('group'); 
-                window.ui.preselectedPub = urlParams.get('pub'); // Store pre-selected publisher
-                
-                // Fetch data, THEN setup the S4 tab so names appear!
-                await window.db.initPublicS4(congParam);
-                return; // Stop execution here. Do not check local storage.
-            }
-            
-            // 2. If no ?cong=, run standard Admin Authentication
-            if (window.auth.check()) {
-                const type = localStorage.getItem('fs_auth_type');
-                if (type === 'super') {
-                    window.db.initSuperAdmin();
-                } else if (type === 'admin') {
-                    const cid = localStorage.getItem('fs_cong_id');
-                    const cname = localStorage.getItem('fs_cong_name');
-                    await window.db.initAdmin(cid, cname);
-                }
-            }
-        };
-
         window.auth = {
             check: () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const congParam = urlParams.get('cong');
+                
+                if (congParam) { 
+                    window.currentCongId = congParam;
+                    document.body.classList.add('public-mode'); 
+                    window.ui.publicGroup = urlParams.get('group'); 
+                    window.ui.switchTab('s4'); 
+                    document.getElementById('auth-screen').classList.add('hidden');
+                    return true; 
+                }
+                
                 if (localStorage.getItem('fs_auth') === 'true') { 
                     const type = localStorage.getItem('fs_auth_type');
-                    const cid = localStorage.getItem('fs_cong_id');
-                    
-                    if (!type || (!cid && type !== 'super')) {
-                        console.warn("Legacy session detected. Wiping memory...");
-                        window.auth.logout();
+                    if (!type) {
+                        localStorage.removeItem('fs_auth'); 
                         return false; 
                     }
                     document.getElementById('auth-screen').classList.add('hidden'); 
@@ -769,6 +687,7 @@
                 
                 try {
                     const { data, error } = await supabaseClient.from('congregations').select('*').eq('id', cid).eq('admin_password', pwd).single();
+                    
                     if (data) {
                         localStorage.setItem('fs_auth', 'true');
                         localStorage.setItem('fs_auth_type', 'admin');
@@ -791,7 +710,7 @@
                 localStorage.removeItem('fs_auth_type');
                 localStorage.removeItem('fs_cong_id');
                 localStorage.removeItem('fs_cong_name');
-                location.href = window.location.href.split('?')[0]; 
+                location.href = window.location.href.split('?')[0];
             }
         };
 
@@ -805,7 +724,7 @@
             getMonths: () => ['September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'],
             getMonthName: (idx) => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][idx],
             calculateAge: (dob) => {
-                if (!dob || dob === 'UBP') return '-'; const parts = dob.split(/[-/]/);
+                if (!dob) return '-'; const parts = dob.split(/[-/]/);
                 if(parts.length === 3) { const y = parts[2].length === 4 ? parts[2] : parts[0]; return new Date().getFullYear() - parseInt(y); }
                 return '-';
             },
@@ -821,21 +740,6 @@
             extractNumbers: (str) => {
                 if(!str) return 0; const matches = str.match(/\d+(\.\d+)?/g);
                 return matches ? matches.reduce((acc, val) => acc + parseFloat(val), 0) : 0;
-            },
-            formatDateInput: (e) => {
-                if(e.inputType === 'deleteContentBackward') return;
-                let v = e.target.value.replace(/\D/g,'');
-                if (v.length > 2) v = v.substring(0,2) + '-' + v.substring(2);
-                if (v.length > 5) v = v.substring(0,5) + '-' + v.substring(5,9);
-                e.target.value = v;
-            },
-            getTrialDaysLeft: (createdAt) => {
-                if(!createdAt) return 0;
-                const created = new Date(createdAt);
-                const now = new Date();
-                const diffTime = Math.abs(now - created);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                return Math.max(0, 60 - diffDays);
             }
         };
 
@@ -844,14 +748,10 @@
 
             initPublicS4: async (congId) => {
                 if (isCloudEnabled) {
-                    try {
-                        const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
-                        if (data) window.db.publishers = data.map(window.db.mapPubFromDB);
-                    } catch(e) { console.error("Could not fetch public data", e); }
+                    const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
+                    if (data) window.db.publishers = data.map(window.db.mapPubFromDB);
                 }
-                // Call this AFTER data is loaded to populate the dropdown
                 window.ui.setupS4Tab();
-                window.ui.switchTab('s4'); 
             },
 
             initSuperAdmin: async () => {
@@ -904,14 +804,19 @@
                 else { window.ui.showToast("Tenant Updated!"); window.ui.closeModal('modal-edit-cong'); window.db.initSuperAdmin(); }
             },
 
+            deleteCongregation: async (id) => {
+                if(confirm(`WARNING: Deleting congregation ${id} will destroy ALL their publisher data forever.`)) {
+                    await supabaseClient.from('congregations').delete().eq('id', id);
+                    window.ui.showToast("Tenant Destroyed.");
+                    window.db.initSuperAdmin();
+                }
+            },
+
             changeAdminPassword: async (e) => {
                 e.preventDefault();
                 const currentP = document.getElementById('cp-current').value;
                 const newP = document.getElementById('cp-new').value.trim();
                 
-                const isValid = newP.length >= 8 && /\d/.test(newP) && /[!@#$%^&*(),.?":{}|<>]/.test(newP);
-                if (!isValid) { window.ui.showToast('Password too weak. See requirements.', 'error'); return; }
-
                 const { data } = await supabaseClient.from('congregations').select('admin_password').eq('id', window.currentCongId).single();
                 if (data && data.admin_password === currentP) {
                     const { error } = await supabaseClient.from('congregations').update({ admin_password: newP }).eq('id', window.currentCongId);
@@ -973,6 +878,7 @@
                 const reader = new FileReader();
                 reader.onload = async (event) => {
                     const lines = event.target.result.split('\n');
+                    if (lines.length < 2) { window.ui.showToast('Invalid CSV format', 'error'); return; }
                     let imported = 0; const dbRepsToUpsert = [];
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim(); if (!line) continue;
@@ -989,14 +895,10 @@
                         
                         const isTrue = (v) => v && v.toUpperCase() === 'TRUE';
                         const monthName = values[2]?.trim();
-                        let actualMonthIdx = window.utils.getMonths().findIndex(m => m.toLowerCase() === monthName.toLowerCase());
-                        if(actualMonthIdx === -1) {
-                             const standardMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                             actualMonthIdx = standardMonths.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
-                             if(actualMonthIdx === -1) continue;
-                        }
+                        const monthIdx = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].findIndex(m => m.toLowerCase() === monthName.toLowerCase());
+                        if(monthIdx === -1) continue;
 
-                        const repData = { pubId: pub.id, serviceYear: parseInt(values[1]), month: actualMonthIdx, sharedInMinistry: isTrue(values[3]), studies: parseInt(values[4]) || 0, hours: parseFloat(values[5]) || 0, comments: values[6]?.trim() || '', isAP: isTrue(values[7]) };
+                        const repData = { pubId: pub.id, serviceYear: parseInt(values[1]), month: monthIdx, sharedInMinistry: isTrue(values[3]), studies: parseInt(values[4]) || 0, hours: parseFloat(values[5]) || 0, comments: values[6]?.trim() || '', isAP: isTrue(values[7]) };
                         repData.id = `${repData.pubId}_${repData.serviceYear}_${repData.month}`;
                         
                         const idx = window.db.reports.findIndex(r => r.id === repData.id);
@@ -1014,6 +916,7 @@
                 const reader = new FileReader();
                 reader.onload = async (event) => {
                     const lines = event.target.result.split('\n');
+                    if (lines.length < 2) { window.ui.showToast('Invalid CSV format', 'error'); return; }
                     let imported = 0; const dbPubsToUpsert = [];
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim(); if (!line) continue;
@@ -1099,7 +1002,7 @@
         `;
 
         window.ui = {
-            currentTab: 'dashboard', publicGroup: null, preselectedPub: null,
+            currentTab: 'dashboard', publicGroup: null,
             
             initAdminUI: () => {
                 const syInfo = window.utils.getCurrentServiceYearInfo(); const istInfo = window.utils.getISTPreviousMonthInfo();
@@ -1114,11 +1017,7 @@
                 });
                 const mSelects = ['dash-month', 'analytics-month']; mSelects.forEach(id => { const el = document.getElementById(id); if(el) el.value = istInfo.month; });
                 window.ui.switchTab('dashboard');
-                
-                window.addEventListener('resize', window.ui.scaleS21Preview);
-                
-                document.getElementById('pub-dob').addEventListener('input', window.utils.formatDateInput);
-                document.getElementById('pub-baptized').addEventListener('input', window.utils.formatDateInput);
+                window.addEventListener('resize', () => { window.ui.scaleS21Preview(); });
             },
 
             renderSuperAdmin: () => {
@@ -1126,19 +1025,15 @@
                 tbody.innerHTML = '';
                 window.db.congregations.forEach(c => {
                     const isTrial = c.status === 'trial';
-                    const daysLeft = window.utils.getTrialDaysLeft(c.created_at);
-                    let statusHtml = '';
-                    if (c.status === 'active') statusHtml = '<span class="px-2 py-1 rounded text-[10px] uppercase font-bold bg-emerald-900/50 text-emerald-200 border border-emerald-500/50">Active</span>';
-                    else if (c.status === 'expired' || (isTrial && daysLeft === 0)) statusHtml = '<span class="px-2 py-1 rounded text-[10px] uppercase font-bold bg-rose-900/50 text-rose-200 border border-rose-500/50">Expired</span>';
-                    else statusHtml = `<span class="px-2 py-1 rounded text-[10px] uppercase font-bold bg-amber-900/50 text-amber-200 border border-amber-500/50">Trial (${daysLeft}d left)</span>`;
-
                     tbody.innerHTML += `
-                        <tr class="border-b border-white/5 hover:bg-white/5">
-                            <td class="px-4 sm:px-6 py-4 font-bold text-white">${c.name}</td>
-                            <td class="px-4 sm:px-6 py-4 text-center font-mono text-cyan-300 text-xs">${c.id}</td>
-                            <td class="px-4 sm:px-6 py-4 text-center">${statusHtml}</td>
+                        <tr class="border-b border-white/10 hover:bg-white/5">
+                            <td class="px-4 sm:px-6 py-4 font-bold">${c.name}</td>
+                            <td class="px-4 sm:px-6 py-4 text-center font-mono text-amber-300">${c.id}</td>
+                            <td class="px-4 sm:px-6 py-4 text-center font-mono">${c.admin_password}</td>
+                            <td class="px-4 sm:px-6 py-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${isTrial ? 'bg-amber-900/50 text-amber-200 border border-amber-500/50' : 'bg-emerald-900/50 text-emerald-200 border border-emerald-500/50'}">${c.status}</span></td>
                             <td class="px-4 sm:px-6 py-4 text-right">
-                                <button onclick="window.ui.editCongregation('${c.id}')" class="text-teal-400 hover:text-teal-300 transition px-3 py-1.5 bg-white/5 rounded-md border border-white/10 text-xs shadow-sm">Edit Settings</button>
+                                <button onclick="window.ui.editCongregation('${c.id}')" class="text-cyan-400 hover:text-cyan-300 p-1 mr-2">Edit</button>
+                                <button onclick="window.db.deleteCongregation('${c.id}')" class="text-rose-400 hover:text-rose-300 p-1">Delete</button>
                             </td>
                         </tr>
                     `;
@@ -1155,19 +1050,10 @@
             },
 
             switchTab: (tabId) => {
-                // If we are in public mode, force isolation. Only S4 can show.
-                if (document.body.classList.contains('public-mode')) {
-                    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-                    document.getElementById('tab-s4').classList.add('active');
-                    return;
-                }
-
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
                 const targetTab = document.getElementById(`tab-${tabId}`); if (targetTab) targetTab.classList.add('active');
-                
                 document.querySelectorAll('nav button').forEach(el => { el.classList.remove('bg-teal-500/80', 'text-white', 'shadow-lg'); el.classList.add('hover:bg-white/10', 'text-teal-50/70'); });
                 const btn = document.getElementById(`btn-tab-${tabId}`); if (btn) { btn.classList.remove('hover:bg-white/10', 'text-teal-50/70'); btn.classList.add('bg-teal-500/80', 'text-white', 'shadow-lg'); }
-                
                 window.ui.currentTab = tabId;
                 if (tabId === 'dashboard') window.ui.renderDashboard();
                 if (tabId === 'publishers') window.ui.renderPublishers();
@@ -1201,6 +1087,7 @@
             handleSysPromptConfirm: () => {
                 if (window.sysPromptState.requiresPassword) {
                     const p = document.getElementById('sys-prompt-input').value;
+                    const storedPwd = window.db.congregations?.find(c => c.id === window.currentCongId)?.admin_password;
                     if (p !== window.config.MASTER_PASSWORD) { window.ui.showToast("Incorrect Password", "error"); return; }
                 }
                 if (typeof window.sysPromptState.actionCallback === 'function') { window.sysPromptState.actionCallback(); }
@@ -1219,46 +1106,28 @@
             },
 
             openModal: (id, isEdit = false) => {
-                if(id === 'modal-add-publisher' && !isEdit) { 
-                    document.getElementById('form-publisher').reset(); 
-                    document.getElementById('pub-id').value = ''; 
-                    document.getElementById('modal-pub-title').textContent = 'Publisher Record'; 
-                    document.getElementById('pub-ubp').checked = false; 
-                    window.ui.toggleUBP(); 
-                }
+                if(id === 'modal-add-publisher' && !isEdit) { document.getElementById('form-publisher').reset(); document.getElementById('pub-id').value = ''; document.getElementById('modal-pub-title').textContent = 'Publisher Record'; }
                 if(id === 'modal-change-password') { document.getElementById('cp-current').value = ''; document.getElementById('cp-new').value = ''; }
                 document.getElementById(id).classList.remove('hidden');
             },
-            
             closeModal: (id) => document.getElementById(id).classList.add('hidden'),
-
-            toggleUBP: () => {
-                const isUBP = document.getElementById('pub-ubp').checked;
-                const bapInput = document.getElementById('pub-baptized');
-                if(isUBP) { bapInput.value = ''; bapInput.disabled = true; bapInput.classList.add('opacity-30', 'cursor-not-allowed'); }
-                else { bapInput.disabled = false; bapInput.classList.remove('opacity-30', 'cursor-not-allowed'); }
-            },
 
             savePublisher: async (e) => {
                 e.preventDefault();
                 const id = document.getElementById('pub-id').value;
-                const countryCode = document.getElementById('pub-phone-code').value.trim();
-                const rawPhone = document.getElementById('pub-phone').value.trim();
-                const fullPhone = rawPhone ? `${countryCode}${rawPhone}` : '';
-
                 const pub = {
                     id: id || window.utils.generateUUID(), 
                     name: document.getElementById('pub-name').value, 
                     gender: document.querySelector('input[name="pub-gender"]:checked')?.value || 'Male', 
                     hope: document.querySelector('input[name="pub-hope"]:checked')?.value || 'Other Sheep',
                     dob: document.getElementById('pub-dob').value, 
-                    baptized: document.getElementById('pub-ubp').checked ? 'UBP' : document.getElementById('pub-baptized').value, 
+                    baptized: document.getElementById('pub-baptized').value, 
                     isElder: document.getElementById('pub-elder').checked, 
                     isMS: document.getElementById('pub-ms').checked, 
                     isRP: document.getElementById('pub-rp').checked, 
                     isSP: document.getElementById('pub-sp').checked, 
                     isFM: document.getElementById('pub-fm').checked, 
-                    phone: fullPhone, 
+                    phone: document.getElementById('pub-phone').value, 
                     group: document.getElementById('pub-group').value
                 };
                 await window.db.savePublisher(pub); 
@@ -1269,48 +1138,13 @@
 
             editPublisher: (id) => {
                 const pub = window.db.getPublishers().find(p => p.id === id); if (!pub) return;
-                document.getElementById('pub-id').value = pub.id; 
-                document.getElementById('pub-name').value = pub.name;
-                
+                document.getElementById('pub-id').value = pub.id; document.getElementById('pub-name').value = pub.name;
                 const gSel = document.querySelector(`input[name="pub-gender"][value="${pub.gender==='Female'?'Female':'Male'}"]`); if(gSel) gSel.checked = true;
                 const hSel = document.querySelector(`input[name="pub-hope"][value="${pub.hope==='Anointed'?'Anointed':'Other Sheep'}"]`); if(hSel) hSel.checked = true;
-                document.getElementById('pub-dob').value = pub.dob || ''; 
-                
-                if (pub.baptized === 'UBP') {
-                    document.getElementById('pub-ubp').checked = true;
-                    window.ui.toggleUBP();
-                } else {
-                    document.getElementById('pub-ubp').checked = false;
-                    document.getElementById('pub-baptized').value = pub.baptized || '';
-                    window.ui.toggleUBP();
-                }
-
-                document.getElementById('pub-elder').checked = !!pub.isElder; 
-                document.getElementById('pub-ms').checked = !!pub.isMS; 
-                document.getElementById('pub-rp').checked = !!pub.isRP; 
-                document.getElementById('pub-sp').checked = !!pub.isSP; 
-                document.getElementById('pub-fm').checked = !!pub.isFM;
-                
-                if (pub.phone) {
-                    const match = pub.phone.match(/^(\+\d{1,4})(.*)$/);
-                    if (match) {
-                        const codeSelect = document.getElementById('pub-phone-code');
-                        let exists = false;
-                        for (let i = 0; i < codeSelect.options.length; i++) { if (codeSelect.options[i].value === match[1]) exists = true; }
-                        if(exists) codeSelect.value = match[1]; else codeSelect.value = '';
-                        document.getElementById('pub-phone').value = match[2];
-                    } else {
-                        document.getElementById('pub-phone-code').value = '';
-                        document.getElementById('pub-phone').value = pub.phone;
-                    }
-                } else {
-                    document.getElementById('pub-phone-code').value = '+91';
-                    document.getElementById('pub-phone').value = '';
-                }
-
-                document.getElementById('pub-group').value = pub.group || '';
-                document.getElementById('modal-pub-title').textContent = 'Edit Publisher Record'; 
-                window.ui.openModal('modal-add-publisher', true);
+                document.getElementById('pub-dob').value = pub.dob || ''; document.getElementById('pub-baptized').value = pub.baptized || '';
+                document.getElementById('pub-elder').checked = !!pub.isElder; document.getElementById('pub-ms').checked = !!pub.isMS; document.getElementById('pub-rp').checked = !!pub.isRP; document.getElementById('pub-sp').checked = !!pub.isSP; document.getElementById('pub-fm').checked = !!pub.isFM;
+                document.getElementById('pub-phone').value = pub.phone || ''; document.getElementById('pub-group').value = pub.group || '';
+                document.getElementById('modal-pub-title').textContent = 'Edit Publisher Record'; window.ui.openModal('modal-add-publisher', true);
             },
 
             downloadContacts: () => {
@@ -1327,16 +1161,11 @@
                 const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `${window.currentCongId}_Reports_Backup.csv`; a.click();
             },
 
-            sendReminder: (pId, pName, pGroup, pPhone) => {
+            sendReminder: (pId, pName, pGroup) => {
                 const baseUrl = window.location.href.split('?')[0]; 
                 const url = `${baseUrl}?cong=${window.currentCongId}&group=${encodeURIComponent(pGroup||'')}&pub=${pId}`;
-                const msg = `Hi ${pName},\n\nA gentle reminder to submit your field service report for this month. You can submit it directly using this secure link (your name is pre-selected):\n\n${url}\n\nThank you!`;
-                
-                let waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-                if (pPhone) {
-                    const cleanPhone = pPhone.replace(/[^\d+]/g, '');
-                    waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-                }
+                const msg = `Hi ${pName},\n\nA gentle reminder to submit your field service report for this month. You can submit it directly using this pre-filled link:\n\n${url}\n\nThank you!`;
+                const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
                 window.open(waUrl, '_blank');
             },
 
@@ -1361,7 +1190,7 @@
                         if (p.isRP || p.isSP || p.isFM) { 
                             if(isShared) { stats.rpCount++; stats.rpHours += h; stats.rpStudies += s; }
                             tagHtml = '<span class="text-[9px] sm:text-[10px] bg-cyan-900/80 text-cyan-200 border border-cyan-500/50 px-1.5 py-0.5 rounded ml-2 font-bold">RP</span>';
-                            rpTableHtml += `<tr class="border-b border-white/5"><td class="px-4 sm:px-5 py-2.5">${p.name}</td><td class="px-4 sm:px-5 py-2.5 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-5 py-2.5 text-center font-mono">${isShared && s>0 ? s : '-'}</td></tr>`;
+                            rpTableHtml += `<tr class="border-b border-white/5"><td class="px-4 sm:px-5 py-2">${p.name}</td><td class="px-4 sm:px-5 py-2 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-5 py-2 text-center font-mono">${isShared && s>0 ? s : '-'}</td></tr>`;
                         } else if (r.isAP) { 
                             if(isShared) { stats.apCount++; stats.apHours += h; stats.apStudies += s; }
                             tagHtml = '<span class="text-[9px] sm:text-[10px] bg-emerald-900/80 text-emerald-200 border border-emerald-500/50 px-1.5 py-0.5 rounded ml-2 font-bold">AP</span>';
@@ -1370,10 +1199,10 @@
                             if (isShared) { stats.pubCount++; stats.pubStudies += s; }
                         }
                         
-                        const groupTag = p.group ? `<span class="text-[9px] sm:text-[10px] text-teal-400 ml-2 bg-teal-900/40 px-1.5 py-0.5 rounded whitespace-nowrap border border-teal-500/20">${p.group}</span>` : '';
+                        const groupTag = p.group ? `<span class="text-[9px] sm:text-[10px] text-teal-400 ml-2 bg-teal-900/40 px-1.5 py-0.5 rounded whitespace-nowrap">${p.group}</span>` : '';
                         tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors"><td class="px-4 sm:px-6 py-4 font-medium flex items-center flex-wrap gap-y-1">${p.name} ${groupTag} ${tagHtml}</td><td class="px-4 sm:px-6 py-4 text-center text-emerald-400 text-lg">${isShared?'✔':'<span class="text-rose-400 font-semibold text-sm">No</span>'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && s>0 ? s : '-'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-6 py-4 text-center text-xs text-teal-100/70"><div class="mx-auto max-w-[150px] sm:max-w-[200px] truncate" title="${r.comments||''}">${r.comments||''}</div></td><td class="px-4 sm:px-6 py-4 text-center">-</td></tr>`;
                     } else {
-                        tbody.innerHTML += `<tr class="border-b border-white/5 bg-black/20 text-teal-100/30"><td class="px-4 sm:px-6 py-4">${p.name}</td><td colspan="4" class="px-4 sm:px-6 py-4 text-center italic text-xs uppercase tracking-widest font-semibold">Awaiting Data</td><td class="px-4 sm:px-6 py-4 text-right"><button onclick="window.ui.sendReminder('${p.id}', '${p.name}', '${p.group}', '${p.phone || ''}')" class="bg-teal-900/40 hover:bg-teal-800/80 text-teal-300 px-3 py-1.5 rounded border border-teal-500/30 transition text-xs font-medium">Remind</button></td></tr>`;
+                        tbody.innerHTML += `<tr class="border-b border-white/5 bg-black/20 text-teal-100/30"><td class="px-4 sm:px-6 py-4">${p.name}</td><td colspan="4" class="px-4 sm:px-6 py-4 text-center italic text-xs uppercase tracking-widest">Awaiting Data</td><td class="px-4 sm:px-6 py-4 text-right"><button onclick="window.ui.sendReminder('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${(p.group||'').replace(/'/g, "\\'")}')" class="bg-teal-900/50 hover:bg-teal-800 text-teal-300 px-3 py-1.5 rounded-lg border border-teal-500/30 transition text-xs flex items-center gap-1 ml-auto">📱 Remind</button></td></tr>`;
                     }
                 });
 
@@ -1381,32 +1210,32 @@
                 document.getElementById('dash-ap-review-table').innerHTML = apTableHtml || `<tr><td colspan="4" class="px-6 py-4 text-center text-emerald-200/50 italic text-xs">No Auxiliary Pioneers logged for this month.</td></tr>`;
 
                 document.getElementById('dash-stats').innerHTML = `
-                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-slate-300">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Publishers</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1">${stats.pubCount}</div>
-                        <div class="flex gap-4 mt-2 text-[10px] sm:text-xs text-slate-300/80">
+                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-slate-300">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Publishers</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.pubCount}</div>
+                        <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-slate-300/80">
                             <div><span class="font-bold text-white text-sm">${stats.pubStudies}</span> Studies</div>
                         </div>
                     </div>
-                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-cyan-400">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Reg. Pioneers</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1">${stats.rpCount}</div>
-                        <div class="flex gap-4 mt-2 text-[10px] sm:text-xs text-cyan-200/80">
+                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-cyan-400">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Reg. Pioneers</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.rpCount}</div>
+                        <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-cyan-200/80">
                             <div><span class="font-bold text-cyan-100 text-sm">${stats.rpHours}</span> Hrs</div>
                             <div><span class="font-bold text-cyan-100 text-sm">${stats.rpStudies}</span> Studies</div>
                         </div>
                     </div>
-                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-emerald-400">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Aux. Pioneers</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1">${stats.apCount}</div>
-                        <div class="flex gap-4 mt-2 text-[10px] sm:text-xs text-emerald-200/80">
+                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-emerald-400">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Aux. Pioneers</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.apCount}</div>
+                        <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-emerald-200/80">
                             <div><span class="font-bold text-emerald-100 text-sm">${stats.apHours}</span> Hrs</div>
                             <div><span class="font-bold text-emerald-100 text-sm">${stats.apStudies}</span> Studies</div>
                         </div>
                     </div>
-                    <div class="glass-panel p-4 sm:p-5 rounded-2xl border-t-2 border-amber-400 flex flex-col justify-center">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Collection Status</div>
-                        <div class="text-2xl sm:text-3xl font-bold text-white mt-1 text-amber-300">${stats.totalRep} <span class="text-base sm:text-lg text-teal-100/40">/ ${pubs.length}</span></div>
+                    <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-amber-400 flex flex-col justify-center">
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Submitted</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.totalRep} <span class="text-base sm:text-lg text-teal-100/40">/ ${pubs.length}</span></div>
                         <div class="text-[10px] sm:text-xs text-amber-200/70 mt-1">${pubs.length - stats.totalRep} pending</div>
                     </div>
                 `;
@@ -1417,12 +1246,12 @@
                 const pubs = window.db.getPublishers(); tbody.innerHTML = '';
                 pubs.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p => {
                     let badges = [];
-                    if(p.isElder) badges.push('<span class="bg-cyan-900/50 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/30">Elder</span>');
-                    if(p.isMS) badges.push('<span class="bg-cyan-900/50 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/30">MS</span>');
-                    if(p.isRP) badges.push('<span class="bg-emerald-900/50 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30">RP</span>');
-                    if(p.isSP) badges.push('<span class="bg-emerald-900/50 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30">SP</span>');
+                    if(p.isElder) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">Elder</span>');
+                    if(p.isMS) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">MS</span>');
+                    if(p.isRP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50 shadow-sm">RP</span>');
+                    if(p.isSP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50 shadow-sm">SP</span>');
                     const age = p.dob ? window.utils.calculateAge(p.dob) + ' yrs' : '-';
-                    const bapText = (!p.baptized || p.baptized === 'UBP') ? '<span class="text-rose-300 font-semibold border border-rose-500/40 bg-rose-900/30 px-1.5 py-0.5 rounded text-[10px] uppercase">UBP</span>' : p.baptized;
+                    const bapText = !p.baptized ? '<span class="text-rose-300 font-semibold border border-rose-500/40 bg-rose-900/50 px-1.5 py-0.5 rounded text-[10px] uppercase">UBP</span>' : p.baptized;
                     tbody.innerHTML += `<tr class="hover:bg-white/5 transition-colors border-b border-white/5"><td class="px-4 sm:px-6 py-4"><div class="font-bold text-white text-base">${p.name}</div><div class="text-[11px] text-teal-300 mt-1 uppercase tracking-widest font-semibold">${p.group || 'UNASSIGNED'}</div></td><td class="px-4 sm:px-6 py-4"><div class="flex flex-wrap gap-2">${badges.join('')}</div></td><td class="px-4 sm:px-6 py-4 text-teal-100/90 font-mono text-sm">${age}<br><span class="text-[11px] font-sans text-teal-100/60 mt-1 block">${bapText}</span></td><td class="px-4 sm:px-6 py-4 text-right space-x-3"><button onclick="window.ui.editPublisher('${p.id}')" class="text-cyan-400 hover:text-cyan-300 transition-colors p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002-2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></button><button onclick="window.db.deletePublisher('${p.id}')" class="text-rose-400 hover:text-rose-300 transition-colors p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></td></tr>`;
                 });
             },
@@ -1431,13 +1260,13 @@
                 const pubs = window.db.getPublishers(); const groups = [...new Set(pubs.map(p => p.group).filter(g => g && g.trim() !== ''))].sort();
                 const sidebar = document.getElementById('groups-sidebar'); if(!sidebar) return;
                 if (groups.length === 0) { sidebar.innerHTML = '<div class="glass-panel p-4 text-center text-teal-100/60">No groups assigned.</div>'; document.getElementById('group-details').classList.add('hidden'); return; }
-                sidebar.innerHTML = groups.map(g => `<button onclick="window.ui.showGroup('${g}')" class="group-btn w-full glass-panel text-left px-4 py-3 rounded-xl hover:bg-white/10 transition-all font-medium flex justify-between items-center text-white mb-2 whitespace-nowrap min-w-[150px] md:min-w-0">${g} <span class="bg-black/40 text-teal-300 text-xs px-2.5 py-1 rounded-full">${pubs.filter(p=>p.group===g).length}</span></button>`).join('');
+                sidebar.innerHTML = groups.map(g => `<button onclick="window.ui.showGroup('${g.replace(/'/g, "\\'")}')" class="group-btn w-full glass-panel text-left px-4 py-3 rounded-xl hover:bg-white/10 transition-all font-medium flex justify-between items-center text-white mb-2">${g} <span class="bg-black/40 text-teal-300 text-xs px-2.5 py-1 rounded-full">${pubs.filter(p=>p.group===g).length}</span></button>`).join('');
                 window.ui.showGroup(groups[0]);
             },
 
             showGroup: (groupName) => {
-                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.remove('bg-teal-600/30', 'border-teal-400/50'));
-                const btn = Array.from(document.querySelectorAll('.group-btn')).find(b => b.textContent.includes(groupName)); if(btn) btn.classList.add('bg-teal-600/30', 'border-teal-400/50');
+                document.querySelectorAll('.group-btn').forEach(btn => btn.classList.remove('bg-teal-600/50', 'border-teal-400/50'));
+                const btn = Array.from(document.querySelectorAll('.group-btn')).find(b => b.textContent.includes(groupName)); if(btn) btn.classList.add('bg-teal-600/50', 'border-teal-400/50');
                 const details = document.getElementById('group-details'); details.classList.remove('hidden');
                 
                 const pubs = window.db.getPublishers().filter(p => p.group === groupName);
@@ -1454,7 +1283,7 @@
                 });
                 
                 let pendingHtml = pending.length > 0 ? `<ol class="list-decimal pl-5 space-y-1 text-rose-300 text-sm">${pending.map(name => `<li>${name}</li>`).join('')}</ol>` : '<div class="text-emerald-400 text-sm">All submitted!</div>';
-                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex gap-2"><button onclick="window.ui.copyGroupLink('${groupName}')" class="bg-black/30 border border-white/10 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy Form Link</button></div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70 leading-relaxed">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
+                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex gap-2"><button onclick="window.ui.copyGroupLink('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy S-4 Link</button></div></div><div class="grid grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
             },
 
             copyGroupLink: (groupName) => {
@@ -1478,277 +1307,270 @@
                     const targetDate = new Date(selectedDate.getTime()); targetDate.setMonth(selectedDate.getMonth() - i);
                     const tMonth = targetDate.getMonth(); const tYear = targetDate.getFullYear(); const tSy = tMonth >= 8 ? tYear + 1 : tYear;
                     const displayMonth = `${window.utils.getMonthName(tMonth)} ${tYear}`; const reports = window.db.getReports(tSy, tMonth);
-                    let pubCount = 0, pubStudies = 0, apCount = 0, apStudies = 0, apHours = 0, rpCount = 0, rpStudies = 0, rpHours = 0;
+                    let pubCount = 0, pubStudies = 0, apCount = 0, apStudies = 0, apHours = 0, rpCount = 0, rpStudies = 0, rpHours = 0, inactiveCount = 0;
                     
                     pubs.forEach(p => {
                         const r = reports.find(x => x.pubId === p.id);
                         if(r) {
                             let h = parseFloat(r.hours || 0); let s = parseInt(r.studies || 0);
                             let isShared = r.sharedInMinistry || h > 0 || s > 0;
-                            if(!isShared) { h = 0; s = 0; }
-                            
-                            if (p.isRP || p.isSP || p.isFM) { if(isShared) { rpCount++; rpHours += h; rpStudies += s; } }
-                            else if (r.isAP) { if(isShared) { apCount++; apHours += h; apStudies += s; } }
-                            else { if (isShared) { pubCount++; pubStudies += s; } }
+
+                            if(isShared) {
+                                if (p.isRP || p.isSP || p.isFM) { rpCount++; rpStudies+=s; rpHours+=h; }
+                                else if (r.isAP) { apCount++; apStudies+=s; apHours+=h; }
+                                else { pubCount++; pubStudies+=s; }
+                            } else {
+                                inactiveCount++; 
+                            }
                         }
                     });
                     
-                    html += `
-                    <div class="border border-white/10 rounded-lg overflow-hidden shadow-sm bg-[#0f172a]">
-                        <div class="bg-black/40 px-4 py-2 font-bold border-b border-white/5 text-center text-teal-100">${displayMonth}</div>
-                        <table class="w-full text-sm">
-                            <tbody>
-                                <tr class="border-b border-white/5"><td class="px-3 py-2 font-medium">Publishers</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">${pubCount}</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">St: ${pubStudies}</td></tr>
-                                <tr class="border-b border-white/5"><td class="px-3 py-2 font-medium text-cyan-300">Reg. Pioneers</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">${rpCount}</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">Hr: ${rpHours}</td></tr>
-                                <tr class="border-b border-white/5 bg-emerald-900/20"><td class="px-3 py-2 font-medium text-emerald-300">Aux. Pioneers</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">${apCount}</td><td class="px-3 py-2 text-right w-12 border-l border-white/5">Hr: ${apHours}</td></tr>
-                                <tr class="bg-black/20 font-bold"><td class="px-3 py-2">Total Shared</td><td class="px-3 py-2 text-right border-l border-white/5 text-teal-300">${pubCount + rpCount + apCount}</td><td class="px-3 py-2 border-l border-white/5"></td></tr>
-                            </tbody>
-                        </table>
-                    </div>`;
+                    html += `<div class="analytics-table"><div class="header-row py-2">Summary of ${displayMonth}</div><div class="sub-header py-1">Report of Publishers in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-24 text-center font-bold border-l border-black">Studies</div></div><div class="metric-row"><div class="flex-1 text-center">${pubCount}</div><div class="w-24 text-center border-l border-black">${pubStudies}</div></div><div class="sub-header py-1 mt-4">Report of Auxiliary Pioneering in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-16 text-center font-bold border-l border-black">Studies</div><div class="w-16 text-center font-bold border-l border-black">Hours</div></div><div class="metric-row"><div class="flex-1 text-center">${apCount}</div><div class="w-16 text-center border-l border-black">${apStudies}</div><div class="w-16 text-center border-l border-black">${apHours}</div></div><div class="sub-header py-1 mt-4">Report of Regular Pioneering in the Month of ${displayMonth}</div><div class="metric-row"><div class="flex-1 text-center font-bold">Number of Reports</div><div class="w-16 text-center font-bold border-l border-black">Studies</div><div class="w-16 text-center font-bold border-l border-black">Hours</div></div><div class="metric-row"><div class="flex-1 text-center">${rpCount}</div><div class="w-16 text-center border-l border-black">${rpStudies}</div><div class="w-16 text-center border-l border-black">${rpHours}</div></div><div class="metric-row mt-4 bg-gray-50 font-bold"><div class="flex-1 text-center py-1">Inactive Publishers of the month</div><div class="w-24 text-center border-l border-black py-1">${inactiveCount}</div></div></div>`;
                 }
                 grid.innerHTML = html;
             },
-
+            
             renderDetailedRoster: () => {
-                const rosterDiv = document.getElementById('analytics-roster'); if(!rosterDiv) return;
+                const area = document.getElementById('analytics-roster'); if(!area) return;
                 const sy = parseInt(document.getElementById('analytics-year').value); const month = parseInt(document.getElementById('analytics-month').value);
-                if(isNaN(sy) || isNaN(month)) return;
-                const pubs = window.db.getPublishers().sort((a,b)=>a.name.localeCompare(b.name)); const reports = window.db.getReports(sy, month);
+                const pubs = window.db.getPublishers(); const reports = window.db.getReports(sy, month); 
+                let rps=[], aps=[], inactives=[];
                 
-                let inactiveHtml = ''; let activeHtml = ''; let inactiveCount = 0; let pendingHtml = ''; let pendingCount = 0;
-
-                pubs.forEach(p => {
+                pubs.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => {
                     const r = reports.find(x => x.pubId === p.id);
-                    if (r) {
+                    if(r) {
                         let h = parseFloat(r.hours || 0); let s = parseInt(r.studies || 0);
                         let isShared = r.sharedInMinistry || h > 0 || s > 0;
-                        if (!isShared) { h = 0; s = 0; }
-                        
-                        let pType = p.isRP ? 'RP' : (p.isSP ? 'SP' : (p.isFM ? 'FM' : (r.isAP ? 'AP' : 'Pub')));
-                        let pTypeHtml = pType !== 'Pub' ? `<span class="text-[9px] px-1.5 py-0.5 rounded ml-2 bg-black/40 border border-white/10">${pType}</span>` : '';
-                        
-                        if (!isShared) {
-                            inactiveCount++;
-                            inactiveHtml += `<tr class="border-b border-white/5 bg-rose-900/20"><td class="py-2 px-3 font-medium">${p.name}</td><td class="py-2 px-3 text-rose-300 text-center">Did Not Share</td><td colspan="2" class="py-2 px-3 text-xs opacity-70">${r.comments || ''}</td></tr>`;
+                        if(isShared) {
+                            const trHtml = `<tr class="border-b border-white/10 hover:bg-white/5"><td class="px-4 py-2">${p.name}</td><td class="px-4 py-2 text-center">${h||'-'}</td><td class="px-4 py-2 text-center">${s||'-'}</td></tr>`;
+                            if (p.isRP || p.isSP || p.isFM) {
+                                rps.push(trHtml); 
+                            } else if (r.isAP) {
+                                aps.push(trHtml);
+                            }
                         } else {
-                            activeHtml += `<tr class="border-b border-white/5"><td class="py-2 px-3">${p.name} ${pTypeHtml}</td><td class="py-2 px-3 text-center text-emerald-400">✔</td><td class="py-2 px-3 text-center">${s||'-'}</td><td class="py-2 px-3 text-center">${h||'-'}</td></tr>`;
+                            inactives.push(`<tr class="border-b border-white/10"><td class="px-4 py-2 text-rose-300">${p.name}</td><td class="px-4 py-2 text-center">-</td><td class="px-4 py-2 text-center">-</td></tr>`);
                         }
-                    } else {
-                        pendingCount++;
-                        pendingHtml += `<tr class="border-b border-white/5 text-teal-100/40"><td class="py-2 px-3">${p.name}</td><td colspan="3" class="py-2 px-3 text-center italic text-xs">Pending</td></tr>`;
                     }
                 });
-
-                let finalHtml = '';
-                if (inactiveCount > 0) {
-                    finalHtml += `<div class="mb-6"><h4 class="text-rose-400 font-bold mb-2 border-b border-rose-500/30 pb-2">Inactive This Month (${inactiveCount})</h4><table class="w-full text-sm text-left"><tbody>${inactiveHtml}</tbody></table></div>`;
-                }
                 
-                finalHtml += `<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h4 class="text-teal-300 font-bold mb-2 border-b border-teal-500/30 pb-2">Active Publishers</h4>
-                        <table class="w-full text-sm text-left"><thead class="bg-black/30 text-xs text-teal-100/60 uppercase tracking-wider"><tr><th class="py-2 px-3 rounded-tl-lg">Name</th><th class="py-2 px-3 text-center">Shared</th><th class="py-2 px-3 text-center">Studies</th><th class="py-2 px-3 text-center rounded-tr-lg">Hours</th></tr></thead><tbody class="text-teal-50">${activeHtml}</tbody></table>
-                    </div>
-                    <div>
-                        <h4 class="text-teal-100/50 font-bold mb-2 border-b border-white/10 pb-2">Pending Reports (${pendingCount})</h4>
-                        <table class="w-full text-sm text-left"><tbody class="text-teal-50">${pendingHtml}</tbody></table>
-                    </div>
-                </div>`;
-                
-                rosterDiv.innerHTML = finalHtml;
+                const box = (title, rows, color) => `<div class="bg-black/30 border border-${color}-500/30 rounded-xl overflow-hidden"><div class="bg-black/60 text-${color}-300 font-bold px-4 py-3 text-sm flex justify-between"><span>${title}</span><span>${rows.length}</span></div><table class="w-full text-left text-sm text-white"><thead class="bg-black/40 text-${color}-100/50 text-xs uppercase"><tr><th class="px-4 py-2">Name</th><th class="px-4 py-2 text-center w-20">Hours</th><th class="px-4 py-2 text-center w-20">Studies</th></tr></thead><tbody>${rows.length ? rows.join('') : `<tr><td colspan="3" class="px-4 py-3 text-center text-white/30 italic">None</td></tr>`}</tbody></table></div>`;
+                area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${box('Inactive (Marked No)', inactives, 'rose')} ${box('Regular Pioneers', rps, 'cyan')} ${box('Auxiliary Pioneers', aps, 'teal')}</div>`;
             },
 
             setupS21Tab: () => {
-                const pSelect = document.getElementById('s21-publisher-select'); if(!pSelect) return;
-                const pubs = window.db.getPublishers().sort((a,b)=>a.name.localeCompare(b.name));
-                pSelect.innerHTML = '<option value="ALL">-- All Publishers --</option><option value="RP_ONLY">-- Regular Pioneers --</option>' + pubs.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                window.ui.renderS21();
+                const sel = document.getElementById('s21-publisher-select'); if(!sel) return;
+                sel.innerHTML = `<option value="ALL">-- All Publishers --</option><option value="BATCH_RP">All Regular Pioneers</option><option value="BATCH_AP">All Auxiliary Pioneers (Current)</option><option value="BATCH_ELDER">All Elders</option><option value="BATCH_MS">All Ministerial Servants</option><option value="BATCH_UBP">All Unbaptized</option><optgroup label="Individuals">`;
+                window.db.getPublishers().sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`); sel.innerHTML += `</optgroup>`;
+            },
+            
+            openMissingReportsModal: () => {
+                const istInfo = window.utils.getISTPreviousMonthInfo();
+                document.getElementById('missing-reports-month-label').textContent = `For ${istInfo.displayString}`;
+
+                const pubs = window.db.getPublishers();
+                const reports = window.db.getReports(istInfo.serviceYear, istInfo.month);
+                const missingList = document.getElementById('missing-reports-list');
+                missingList.innerHTML = '';
+
+                const missingPubs = pubs.filter(p => !reports.find(r => r.pubId === p.id)).sort((a,b)=>a.name.localeCompare(b.name));
+
+                if (missingPubs.length === 0) {
+                    missingList.innerHTML = '<div class="text-center text-emerald-400 py-4 font-medium">All publishers have submitted their reports!</div>';
+                } else {
+                    missingPubs.forEach(p => {
+                        missingList.innerHTML += `
+                            <div class="flex justify-between items-center p-3 bg-black/20 rounded-xl border border-white/5">
+                                <div>
+                                    <div class="font-bold text-white">${p.name}</div>
+                                    <div class="text-[10px] text-teal-300 uppercase font-semibold tracking-wider">${p.group || 'UNASSIGNED'}</div>
+                                </div>
+                                <button onclick="window.ui.sendReminder('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${(p.group || '').replace(/'/g, "\\'")}')" class="bg-teal-900/50 hover:bg-teal-800 text-teal-300 px-3 py-1.5 rounded-lg border border-teal-500/30 transition text-xs flex items-center gap-1 font-medium shadow-sm">📱 Remind</button>
+                            </div>
+                        `;
+                    });
+                }
+                window.ui.openModal('modal-missing-reports');
             },
 
-            // --- CORE FIX: PRINTER SCALING LOGIC ---
             scaleS21Preview: () => {
-                const area = document.getElementById('s21-render-area');
-                const frame = document.getElementById('s21-render-frame');
-                if (!area || !frame) return;
-
-                const baseWidth = 1448; // The exact pixel width of the S-21 card CSS
-                const pageHeight = 1025; 
-                
-                let numPages = 1;
-                try {
-                    const innerDoc = frame.contentDocument || frame.contentWindow.document;
-                    const pages = innerDoc.querySelectorAll('.page');
-                    if (pages.length > 0) numPages = pages.length;
-                } catch(e) {}
-
-                // Force iframe to generate the full native size without scrollbars
-                frame.style.width = `${baseWidth}px`;
-                frame.style.height = `${pageHeight * numPages}px`;
-
-                // Calculate exact scale required to fit the screen
-                const containerWidth = area.clientWidth; 
-                let scale = containerWidth / baseWidth;
-                
-                // Never scale larger than 100% on big screens
-                if (scale > 1) scale = 1;
-
-                // Apply Perfect Transform (Anchored Top-Left so it doesn't wander)
-                frame.style.transform = `scale(${scale})`;
-                frame.style.transformOrigin = 'top left';
-                
-                // Magic: Collapse the container height exactly to match the shrunken iframe
-                const finalHeight = (pageHeight * numPages) * scale;
-                area.style.height = `${finalHeight}px`;
+                const frame = document.getElementById('s21-render-frame'); const wrapper = document.getElementById('s21-render-area');
+                if(frame && wrapper && frame.srcdoc) {
+                    const isMobile = window.innerWidth < 768;
+                    const scale = isMobile ? Math.max(0.45, wrapper.clientWidth / 1448) : Math.min(1, wrapper.clientWidth / 1448);
+                    
+                    frame.style.transform = `scale(${scale})`; 
+                    frame.style.transformOrigin = isMobile ? 'top left' : 'top center';
+                    wrapper.style.display = isMobile ? 'block' : 'flex';
+                    
+                    const numPages = (frame.srcdoc.match(/<div class="page">/g) || []).length;
+                    if(numPages > 0) {
+                        wrapper.style.height = (numPages * 1025 * scale + 40) + 'px';
+                    }
+                }
             },
 
             renderS21: () => {
-                const sy = parseInt(document.getElementById('s21-year-select').value); const pId = document.getElementById('s21-publisher-select').value;
-                if(isNaN(sy) || !pId) return;
-                const frame = document.getElementById('s21-render-frame'); if(!frame) return;
-                const doc = frame.contentWindow.document;
+                const sy = parseInt(document.getElementById('s21-year-select').value); const filter = document.getElementById('s21-publisher-select').value;
+                let pubs = window.db.getPublishers(); const currentMonth = window.utils.getISTPreviousMonthInfo().month; const currentReports = window.db.getReports(sy, currentMonth);
                 
-                let targetPubs = []; const pubs = window.db.getPublishers().sort((a,b)=>a.name.localeCompare(b.name));
-                if (pId === 'ALL') targetPubs = pubs;
-                else if (pId === 'RP_ONLY') targetPubs = pubs.filter(p => p.isRP || p.isSP || p.isFM);
-                else targetPubs = pubs.filter(p => p.id === pId);
-
-                let html = `<!DOCTYPE html><html><head><style>${S21_ENGINE_CSS}</style></head><body>`;
+                if (filter === 'BATCH_RP') pubs = pubs.filter(p => p.isRP);
+                else if (filter === 'BATCH_AP') pubs = pubs.filter(p => { const r = currentReports.find(x => x.pubId === p.id); return r && r.isAP; });
+                else if (filter === 'BATCH_ELDER') pubs = pubs.filter(p => p.isElder);
+                else if (filter === 'BATCH_MS') pubs = pubs.filter(p => p.isMS);
+                else if (filter === 'BATCH_UBP') pubs = pubs.filter(p => !p.baptized);
+                else if (filter !== 'ALL') pubs = pubs.filter(p => p.id === filter);
                 
-                targetPubs.forEach((pub, idx) => {
-                    const reports = window.db.getReports(sy); const age = pub.dob ? window.utils.calculateAge(pub.dob) : '';
-                    let rHtml = ''; let tHours = 0;
-                    
-                    for(let m=0; m<12; m++) {
-                        let repMonth = m + 8; if(repMonth > 11) repMonth -= 12;
-                        const r = reports.find(x => x.month === repMonth && x.pubId === pub.id);
-                        if(r) {
-                            let h = parseFloat(r.hours || 0); let s = parseInt(r.studies || 0);
-                            let isShared = r.sharedInMinistry || h > 0 || s > 0;
-                            if(!isShared) { h = 0; s = 0; }
-                            
-                            tHours += h;
-                            rHtml += `<div class="cell month">${window.utils.getMonthName(repMonth)}</div><div class="cell center"><div class="box-check">${isShared?'✔':''}</div></div><div class="cell center"><div class="cell-input">${isShared && s>0?s:''}</div></div><div class="cell center"><div class="box-check">${r.isAP?'✔':''}</div></div><div class="cell center"><div class="cell-input">${isShared && h>0?h:''}</div></div><div class="cell center"><div class="remarks-input">${r.comments||''}</div></div>`;
-                        } else {
-                            rHtml += `<div class="cell month">${window.utils.getMonthName(repMonth)}</div><div class="cell center"></div><div class="cell center"></div><div class="cell center"></div><div class="cell center"></div><div class="cell center"></div>`;
-                        }
-                    }
+                const iframe = document.getElementById('s21-render-frame');
+                if(pubs.length === 0) { iframe.srcdoc = `<html><body style="font-family:sans-serif; text-align:center; padding: 50px;">No records found.</body></html>`; setTimeout(window.ui.scaleS21Preview, 50); return; }
 
-                    html += `
-                    <div class="page" id="page-${idx}">
-                        <h1 class="title">CONGREGATION’S PUBLISHER RECORD</h1>
-                        <section class="personal">
-                            <div class="detail name"><div class="detail-label">Name:</div><div class="detail-input">${pub.name}</div></div>
-                            <div class="detail birth"><div class="detail-label">Date of birth:</div><div class="detail-input">${pub.dob || ''}</div></div>
-                            <div class="detail baptism"><div class="detail-label">Date of baptism:</div><div class="detail-input">${pub.baptized || ''}</div></div>
-                            <div class="identity">
-                                <label class="male"><span class="box-check">${pub.gender!=='Female'?'✔':''}</span> Male</label>
-                                <label class="female"><span class="box-check">${pub.gender==='Female'?'✔':''}</span> Female</label>
-                                <label class="sheep"><span class="box-check">${pub.hope!=='Anointed'?'✔':''}</span> Other sheep</label>
-                                <label class="anointed"><span class="box-check">${pub.hope==='Anointed'?'✔':''}</span> Anointed</label>
-                            </div>
-                            <div class="role-options">
-                                <label class="check-label"><span class="box-check">${pub.isElder?'✔':''}</span> Elder</label>
-                                <label class="check-label"><span class="box-check">${pub.isMS?'✔':''}</span> Ministerial servant</label>
-                                <label class="check-label"><span class="box-check">${pub.isRP?'✔':''}</span> Regular pioneer</label>
-                                <label class="check-label"><span class="box-check">${pub.isSP?'✔':''}</span> Special pioneer</label>
-                                <label class="check-label"><span class="box-check">${pub.isFM?'✔':''}</span> Field missionary</label>
-                            </div>
-                        </section>
-                        <section class="form-table">
-                            <div class="table-grid">
-                                <div class="cell header">Service Year<br>${sy-1}-${sy}</div><div class="cell header">Shared in<br>Ministry</div><div class="cell header">Bible<br>Studies</div><div class="cell header">Auxiliary<br>Pioneer</div><div class="cell header hours-header">Hours<br><span class="sub">(If pioneer<br>or field<br>missionary)</span></div><div class="cell header">Remarks</div>
-                                ${rHtml}
-                            </div>
-                            <div class="total-row"><div class="total-label">Total</div><div class="total-box"><div class="slot"><div class="total-input">${tHours>0?tHours:''}</div></div><div class="slot"><div class="total-input remarks"></div></div></div></div>
-                        </section>
-                        <footer class="footer">S-21-E <span class="footer-date">11/23</span></footer>
-                    </div>`;
+                let pagesHtml = '';
+                const monthOrder = [8,9,10,11,0,1,2,3,4,5,6,7];
+                
+                pubs.forEach(pub => {
+                    let rowsHtml = '', totalHours = 0, totalRemarksNum = 0;
+                    monthOrder.forEach(m => {
+                        const r = window.db.getReports(sy, m).find(x => x.pubId === pub.id) || {};
+                        if(r.hours && !isNaN(parseFloat(r.hours))) totalHours += parseFloat(r.hours);
+                        if(r.comments) totalRemarksNum += window.utils.extractNumbers(r.comments);
+                        rowsHtml += `
+                            <div class="cell month">${window.utils.getMonthName(m)}</div>
+                            <div class="cell center"><div class="month-check">${r.sharedInMinistry ? '✔' : ''}</div></div>
+                            <div class="cell"><div class="cell-input">${r.studies||''}</div></div>
+                            <div class="cell center"><div class="month-check">${r.isAP ? '✔' : ''}</div></div>
+                            <div class="cell"><div class="cell-input">${r.hours||''}</div></div>
+                            <div class="cell"><div class="remarks-input">${r.comments||''}</div></div>
+                        `;
+                    });
+
+                    let remarksOutput = totalRemarksNum > 0 ? `Additional hours: ${totalRemarksNum}` : '';
+                    const bapText = !pub.baptized ? 'UBP' : pub.baptized;
+
+                    pagesHtml += `<div class="page">
+                            <h1 class="title">CONGREGATION’S PUBLISHER RECORD</h1>
+                            <section class="personal">
+                                <div class="detail name"><label class="detail-label">Name:</label><div class="detail-input">${pub.name}</div></div>
+                                <div class="detail birth"><label class="detail-label">Date of birth:</label><div class="detail-input">${pub.dob||''}</div></div>
+                                <div class="detail baptism"><label class="detail-label">Date of baptism:</label><div class="detail-input">${bapText}</div></div>
+                                <div class="identity">
+                                    <label class="male"><div class="box-check">${pub.gender==='Male'?'✔':''}</div><span>Male</span></label>
+                                    <label class="female"><div class="box-check">${pub.gender==='Female'?'✔':''}</div><span>Female</span></label>
+                                    <label class="sheep"><div class="box-check">${pub.hope==='Other Sheep'?'✔':''}</div><span>Other sheep</span></label>
+                                    <label class="anointed"><div class="box-check">${pub.hope==='Anointed'?'✔':''}</div><span>Anointed</span></label>
+                                </div>
+                                <div class="role-options">
+                                    <label class="check-label"><div class="box-check">${pub.isElder?'✔':''}</div><span>Elder</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isMS?'✔':''}</div><span>Ministerial servant</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isRP?'✔':''}</div><span>Regular pioneer</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isSP?'✔':''}</div><span>Special pioneer</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isFM?'✔':''}</div><span>Field missionary</span></label>
+                                </div>
+                            </section>
+                            <section class="form-table">
+                                <div class="table-grid">
+                                    <div class="cell header">Service Year<br>${sy-1}-${sy}</div>
+                                    <div class="cell header">Shared in<br>Ministry</div>
+                                    <div class="cell header">Bible<br>Studies</div>
+                                    <div class="cell header">Auxiliary<br>Pioneer</div>
+                                    <div class="cell header hours-header"><span>Hours</span><span class="sub">(If pioneer<br>or field<br>missionary)</span></div>
+                                    <div class="cell header">Remarks</div>
+                                    ${rowsHtml}
+                                </div>
+                                <div class="total-row">
+                                    <div class="total-label">Total</div>
+                                    <div class="total-box">
+                                        <div class="slot"><div class="total-input">${totalHours > 0 ? totalHours : ''}</div></div>
+                                        <div class="slot"><div class="total-input remarks">${remarksOutput}</div></div>
+                                    </div>
+                                </div>
+                            </section>
+                            <footer class="footer"><span>S-21-E</span><span class="footer-date">11/23</span></footer>
+                        </div>`;
                 });
-                html += '</body></html>';
                 
-                doc.open(); doc.write(html); doc.close();
+                pagesHtml = pagesHtml.replace(/<\/div>\s*<div class="page">/g, '</div><div class="page">');
                 
-                // Allow iframe to render, then run the flawless scale function
-                setTimeout(window.ui.scaleS21Preview, 200);
+                iframe.srcdoc = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>${S21_ENGINE_CSS}</style></head><body>${pagesHtml}</body></html>`;
+                iframe.onload = () => setTimeout(window.ui.scaleS21Preview, 100);
             },
 
             printCards: () => {
-                const frame = document.getElementById('s21-render-frame'); if(!frame) return;
-                frame.contentWindow.focus(); frame.contentWindow.print();
+                const iframe = document.getElementById('s21-render-frame'); const wrapper = document.getElementById('s21-render-area');
+                if (!iframe.srcdoc || iframe.srcdoc.includes('No records found')) { window.ui.showToast('Please select publishers to print.', 'error'); return; }
+                
+                iframe.style.transform = 'none'; wrapper.style.height = 'auto';
+                
+                setTimeout(() => {
+                    iframe.contentWindow.focus(); iframe.contentWindow.print();
+                    setTimeout(window.ui.scaleS21Preview, 1000);
+                }, 50);
             },
 
             setupS4Tab: () => {
-                const sel = document.getElementById('s4-pub-select'); if(!sel) return;
-                let pubs = window.db.getPublishers().sort((a,b)=>a.name.localeCompare(b.name));
+                const pubs = window.db.getPublishers(); const sel = document.getElementById('s4-pub-select'); if (!sel) return;
+                sel.innerHTML = '<option value="">-- Please select your name --</option>';
+                let filtered = window.ui.publicGroup ? pubs.filter(p => p.group === window.ui.publicGroup) : pubs;
+                filtered.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+                document.getElementById('s4-month-display').value = window.utils.getISTPreviousMonthInfo().displayString;
                 
-                if (window.ui.publicGroup) pubs = pubs.filter(p => p.group === window.ui.publicGroup);
-                sel.innerHTML = '<option value="">-- Please select your name --</option>' + pubs.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                
-                // PRE-SELECT LOGIC: If a Publisher ID was in the link, pick them!
-                if (window.ui.preselectedPub && pubs.find(p => p.id === window.ui.preselectedPub)) {
-                    sel.value = window.ui.preselectedPub;
-                }
-                
-                window.ui.loadS4();
-            },
-
-            loadS4: () => {
-                const pubId = document.getElementById('s4-pub-select').value;
-                const istInfo = window.utils.getISTPreviousMonthInfo();
-                document.getElementById('s4-month-display').value = istInfo.displayString;
-                document.getElementById('s4-ministry').checked = true;
-                document.getElementById('s4-studies').value = '';
-                document.getElementById('s4-hours').value = '';
-                document.getElementById('s4-comments').value = '';
-                window.ui.enforceS4Logic();
-
-                if(pubId) {
-                    const r = window.db.getReports(istInfo.serviceYear, istInfo.month).find(x => x.pubId === pubId);
-                    if (r) {
-                        document.getElementById('s4-ministry').checked = r.sharedInMinistry || r.hours > 0 || r.studies > 0;
-                        document.getElementById('s4-studies').value = r.studies || '';
-                        document.getElementById('s4-hours').value = r.hours || '';
-                        document.getElementById('s4-comments').value = r.comments || '';
-                        window.ui.enforceS4Logic();
-                    }
+                const urlParams = new URLSearchParams(window.location.search);
+                const pId = urlParams.get('pub');
+                if(pId && pubs.find(x => x.id === pId)) {
+                    sel.value = pId;
+                    window.ui.loadS4();
                 }
             },
 
             enforceS4Logic: () => {
-                const shared = document.getElementById('s4-ministry').checked;
-                const sIn = document.getElementById('s4-studies');
-                const hIn = document.getElementById('s4-hours');
-                if (!shared) { sIn.value = ''; hIn.value = ''; sIn.disabled = true; hIn.disabled = true; sIn.classList.add('opacity-30'); hIn.classList.add('opacity-30'); }
-                else { sIn.disabled = false; hIn.disabled = false; sIn.classList.remove('opacity-30'); hIn.classList.remove('opacity-30'); }
+                const ministryCheckbox = document.getElementById('s4-ministry');
+                const h = document.getElementById('s4-hours');
+                const s = document.getElementById('s4-studies');
+                if (!ministryCheckbox.checked) { 
+                    h.value = '0'; s.value = '0'; 
+                    h.disabled = true; s.disabled = true;
+                    h.style.opacity = '0.4'; s.style.opacity = '0.4';
+                } else {
+                    h.disabled = false; s.disabled = false;
+                    h.style.opacity = '1'; s.style.opacity = '1';
+                }
+            },
+
+            loadS4: () => {
+                const pubId = document.getElementById('s4-pub-select').value; if(!pubId) return;
+                document.getElementById('s4-ministry').checked = true; 
+                document.getElementById('s4-studies').value = '0'; 
+                document.getElementById('s4-hours').value = '0'; 
+                document.getElementById('s4-comments').value = '';
+                window.ui.enforceS4Logic(); 
             },
 
             saveS4: async () => {
-                const pubId = document.getElementById('s4-pub-select').value;
-                if (!pubId) { alert("Please select your name."); return; }
-                const btn = document.querySelector('#s4-form-area button');
-                btn.textContent = "Submitting..."; btn.disabled = true;
+                const pubId = document.getElementById('s4-pub-select').value; if(!pubId) { window.ui.showToast('Please select your name.', 'error'); return; }
+                const pub = window.db.getPublishers().find(p => p.id === pubId); const istInfo = window.utils.getISTPreviousMonthInfo();
+                const sharedInMinistry = document.getElementById('s4-ministry').checked;
+                let hours = parseFloat(document.getElementById('s4-hours').value) || 0; let studies = parseInt(document.getElementById('s4-studies').value) || 0; let isAP = false;
+                if (!sharedInMinistry) { hours = 0; studies = 0; } else if (hours > 0 && !pub.isRP && !pub.isSP && !pub.isFM) { isAP = true; }
+                const report = { pubId: pubId, serviceYear: istInfo.serviceYear, month: istInfo.month, sharedInMinistry: sharedInMinistry, studies: studies, hours: hours, comments: document.getElementById('s4-comments').value, isAP: isAP };
                 
-                const istInfo = window.utils.getISTPreviousMonthInfo();
-                const pub = window.db.getPublishers().find(p => p.id === pubId);
-                const isShared = document.getElementById('s4-ministry').checked;
-                const hours = isShared ? window.utils.extractNumbers(document.getElementById('s4-hours').value) : 0;
+                await window.db.saveReport(report);
                 
-                let isAP = false; 
-                if (pub && !pub.isRP && !pub.isSP && !pub.isFM && hours > 0) isAP = true;
-
-                const rep = {
-                    pubId: pubId, serviceYear: istInfo.serviceYear, month: istInfo.month,
-                    sharedInMinistry: isShared,
-                    studies: isShared ? parseInt(document.getElementById('s4-studies').value || 0) : 0,
-                    hours: hours,
-                    comments: document.getElementById('s4-comments').value.trim(),
-                    isAP: isAP
-                };
-
-                await window.db.saveReport(rep);
                 document.getElementById('s4-form-area').classList.add('hidden');
                 document.getElementById('s4-success-msg').classList.remove('hidden');
-                document.getElementById('s4-success-msg').classList.add('flex');
+            }
+        };
+
+        window.addEventListener('load', () => window.db.initPublicS4OrLogin());
+
+        window.db.initPublicS4OrLogin = () => {
+            if(window.auth.check()) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('cong') && !localStorage.getItem('fs_auth')) {
+                    window.db.initPublicS4(urlParams.get('cong'));
+                } else {
+                    const type = localStorage.getItem('fs_auth_type');
+                    if (type === 'super') { window.db.initSuperAdmin(); }
+                    else if (type === 'admin') { window.db.initAdmin(localStorage.getItem('fs_cong_id'), localStorage.getItem('fs_cong_name')); }
+                }
             }
         };
     </script>
