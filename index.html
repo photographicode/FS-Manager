@@ -161,14 +161,14 @@
     <!-- Navigation Header -->
     <nav id="app-header" class="glass-panel sticky top-0 z-50 border-b border-teal-400/20">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 shrink-0">
                 <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.3)]">FS</div>
                 <span class="hidden sm:inline font-bold text-xl tracking-wide text-white drop-shadow-lg">Service Reports Manager</span>
             </div>
             
             <!-- Standard Admin Navigation -->
-            <div id="nav-admin" class="flex flex-1 justify-end sm:justify-start items-center gap-1 sm:ml-6 hidden">
-                <div class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 overflow-x-auto max-w-full custom-scrollbar">
+            <div id="nav-admin" class="flex flex-1 justify-end sm:justify-start items-center gap-1 sm:ml-6 hidden min-w-0">
+                <div class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 overflow-x-auto flex-1 min-w-0 custom-scrollbar">
                     <span id="nav-cong-name" class="px-4 py-2 text-teal-300 font-bold text-sm tracking-wide hidden lg:block"></span>
                     <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
                     <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
@@ -176,14 +176,14 @@
                     <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
                     <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
                 </div>
-                <div class="flex items-center gap-2 ml-2">
+                <div class="flex items-center gap-2 ml-2 shrink-0">
                     <button onclick="window.ui.openModal('modal-change-password')" class="p-2 rounded-lg transition-all hover:bg-white/10 text-teal-50/70" title="Settings">⚙️</button>
                     <button onclick="window.auth.logout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap">Log Out</button>
                 </div>
             </div>
 
             <!-- Super Admin Navigation -->
-            <div id="nav-superadmin" class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 hidden">
+            <div id="nav-superadmin" class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 hidden shrink-0">
                 <span class="px-4 py-2 text-amber-400 font-bold text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2">👑 Super Admin</span>
                 <button onclick="window.auth.logout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300">Log Out</button>
             </div>
@@ -321,9 +321,9 @@
                     </button>
                 </div>
             </div>
-            <!-- Unrestricted Iframe container -->
-            <div id="s21-render-area">
-                <iframe id="s21-render-frame"></iframe>
+            <!-- Unrestricted Iframe container with mobile scrolling fix -->
+            <div id="s21-render-area" style="overflow-x: auto; -webkit-overflow-scrolling: touch; background: #111; padding: 20px; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: height 0.3s; display: flex; justify-content: center;">
+                <iframe id="s21-render-frame" style="width: 1448px; border: none; background: #fff; transform-origin: top center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);"></iframe>
             </div>
         </div>
 
@@ -1228,14 +1228,14 @@
 
                 document.getElementById('dash-stats').innerHTML = `
                     <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-slate-300">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Publishers</div>
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Publishers</div>
                         <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.pubCount}</div>
                         <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-slate-300/80">
                             <div><span class="font-bold text-white text-sm">${stats.pubStudies}</span> Studies</div>
                         </div>
                     </div>
                     <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-cyan-400">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Reg. Pioneers</div>
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Reg. Pioneers</div>
                         <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.rpCount}</div>
                         <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-cyan-200/80">
                             <div><span class="font-bold text-cyan-100 text-sm">${stats.rpHours}</span> Hrs</div>
@@ -1243,7 +1243,7 @@
                         </div>
                     </div>
                     <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-emerald-400">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Aux. Pioneers</div>
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Aux. Pioneers</div>
                         <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.apCount}</div>
                         <div class="flex gap-4 mt-3 text-[10px] sm:text-xs text-emerald-200/80">
                             <div><span class="font-bold text-emerald-100 text-sm">${stats.apHours}</span> Hrs</div>
@@ -1251,7 +1251,7 @@
                         </div>
                     </div>
                     <div class="glass-panel p-4 sm:p-6 rounded-2xl border-l-4 border-amber-400 flex flex-col justify-center">
-                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Submitted</div>
+                        <div class="text-teal-100/70 text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Submitted</div>
                         <div class="text-2xl sm:text-3xl font-bold text-white mt-2">${stats.totalRep} <span class="text-base sm:text-lg text-teal-100/40">/ ${pubs.length}</span></div>
                         <div class="text-[10px] sm:text-xs text-amber-200/70 mt-1">${pubs.length - stats.totalRep} pending</div>
                     </div>
@@ -1378,9 +1378,16 @@
             scaleS21Preview: () => {
                 const frame = document.getElementById('s21-render-frame'); const wrapper = document.getElementById('s21-render-area');
                 if(frame && wrapper && frame.srcdoc) {
-                    const scale = Math.min(1, wrapper.clientWidth / 1448);
+                    const isMobile = window.innerWidth < 768;
+                    // On mobile, do not shrink smaller than 0.45 scale so it remains legible. 
+                    const scale = isMobile ? Math.max(0.45, wrapper.clientWidth / 1448) : Math.min(1, wrapper.clientWidth / 1448);
+                    
                     frame.style.transform = `scale(${scale})`; 
-                    // Dynamic height based on number of generated pages
+                    
+                    // On mobile, pin the anchor to the top-left so horizontal scrolling works beautifully
+                    frame.style.transformOrigin = isMobile ? 'top left' : 'top center';
+                    wrapper.style.display = isMobile ? 'block' : 'flex';
+                    
                     const numPages = (frame.srcdoc.match(/<div class="page">/g) || []).length;
                     if(numPages > 0) {
                         wrapper.style.height = (numPages * 1025 * scale + 40) + 'px';
