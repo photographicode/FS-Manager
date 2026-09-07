@@ -519,37 +519,9 @@
             </form>
         </div>
     </div>
-
-    <!-- Modal Form (Super Admin - Add Congregation) -->
-    <div id="modal-add-cong" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[999] flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/20">
-            <div class="bg-black/40 px-8 py-5 flex justify-between items-center border-b border-white/10">
-                <h3 class="text-xl font-bold text-white tracking-tight">Provision New Congregation</h3>
-                <button onclick="window.ui.closeModal('modal-add-cong')" class="text-teal-200/50 hover:text-white transition-colors">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <form onsubmit="window.db.createCongregation(event)" class="p-8 space-y-6">
-                <div class="space-y-2">
-                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Congregation Name</label>
-                    <input type="text" id="saas-cong-name" required placeholder="e.g. Central New York" class="w-full px-4 py-3 rounded-xl">
-                </div>
-                <div class="grid grid-cols-2 gap-5">
-                    <div class="space-y-2">
-                        <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Login ID</label>
-                        <input type="text" id="saas-cong-id" required placeholder="e.g. central-ny" class="w-full px-4 py-3 rounded-xl lowercase">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
-                        <input type="text" id="saas-cong-pwd" required placeholder="Generate password" class="w-full px-4 py-3 rounded-xl">
-                    </div>
-                </div>
-                <div class="pt-6 flex justify-end gap-4 border-t border-white/10">
-                    <button type="button" onclick="window.ui.closeModal('modal-add-cong')" class="px-6 py-2.5 rounded-xl text-sm font-medium text-amber-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-8 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Provision Tenant</button>
-                </div>
-            </form>
-        </div>
+    <div id="toast" class="glass-panel text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-teal-500/40">
+        <span id="toast-icon" class="text-2xl drop-shadow-md">✅</span>
+        <span id="toast-msg" class="font-medium tracking-wide"></span>
     </div>
 
     <script type="module">
@@ -561,7 +533,7 @@
         const isCloudEnabled = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL.startsWith('http');
         const supabaseClient = isCloudEnabled ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-        // SUPER ADMIN MASTER PASSWORD (For creating new congregations)
+        // SUPER ADMIN MASTER PASSWORD
         window.config = { MASTER_PASSWORD: 'Admin' + '1234' };
         
         window.sysPromptState = { actionCallback: null, requiresPassword: false };
@@ -585,12 +557,10 @@
                 
                 // ADMIN OR SUPERADMIN SESSION BYPASS
                 if (localStorage.getItem('fs_auth') === 'true') { 
-                    // AUTO-FIX: Detect if this is an old "ghost" session from the previous version
                     if (!localStorage.getItem('fs_auth_type')) {
-                        localStorage.removeItem('fs_auth'); // Wipe the ghost session
-                        return false; // Force the login screen to show
+                        localStorage.removeItem('fs_auth'); // Wipe ghost sessions
+                        return false; 
                     }
-                    
                     document.getElementById('auth-screen').classList.add('hidden'); 
                     return true; 
                 }
@@ -599,11 +569,10 @@
             login: async () => {
                 const cid = document.getElementById('auth-cong-id').value.trim();
                 const pwd = document.getElementById('auth-pass').value.trim();
-                
                 const btn = document.getElementById('auth-btn');
+                
                 btn.textContent = "Authenticating..."; btn.disabled = true;
 
-                // 1. Check for Super Admin
                 if (cid === 'SUPERADMIN' && pwd === window.config.MASTER_PASSWORD) {
                     localStorage.setItem('fs_auth', 'true');
                     localStorage.setItem('fs_auth_type', 'super');
@@ -612,7 +581,6 @@
                     return;
                 }
 
-                // 2. Authenticate Regular Congregation
                 if (!isCloudEnabled) { window.ui.showToast("Cloud connection required for SaaS", "error"); return; }
                 
                 const { data, error } = await supabaseClient.from('congregations').select('*').eq('id', cid).eq('admin_password', pwd).single();
@@ -681,7 +649,7 @@
             initPublicS4: async (congId) => {
                 if (isCloudEnabled) {
                     const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
-                    if (data) window.db.publishers = data.map(db.mapPubFromDB);
+                    if (data) window.db.publishers = data.map(window.db.mapPubFromDB);
                 }
                 window.ui.setupS4Tab();
             },
@@ -705,9 +673,9 @@
                 if (isCloudEnabled) {
                     try {
                         const { data: pData } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
-                        if (pData) window.db.publishers = pData.map(db.mapPubFromDB);
+                        if (pData) window.db.publishers = pData.map(window.db.mapPubFromDB);
                         const { data: rData } = await supabaseClient.from('reports').select('*').eq('cong_id', congId);
-                        if (rData) window.db.reports = rData.map(db.mapRepFromDB);
+                        if (rData) window.db.reports = rData.map(window.db.mapRepFromDB);
                     } catch (e) { console.error("Cloud fetch failed:", e); }
                 }
                 window.ui.initAdminUI();
@@ -998,9 +966,7 @@
             handleSysPromptConfirm: () => {
                 if (window.sysPromptState.requiresPassword) {
                     const p = document.getElementById('sys-prompt-input').value;
-                    // Validate against the specific congregation password
                     const storedPwd = window.db.congregations?.find(c => c.id === window.currentCongId)?.admin_password;
-                    // Fallback to checking DB directly if needed, but for simplicity here we assume if they logged in they know it, or require master
                     if (p !== window.config.MASTER_PASSWORD) { window.ui.showToast("Incorrect Password", "error"); return; }
                 }
                 if (typeof window.sysPromptState.actionCallback === 'function') { window.sysPromptState.actionCallback(); }
@@ -1023,6 +989,42 @@
                 document.getElementById(id).classList.remove('hidden');
             },
             closeModal: (id) => document.getElementById(id).classList.add('hidden'),
+
+            savePublisher: async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('pub-id').value;
+                const pub = {
+                    id: id || window.utils.generateUUID(), 
+                    name: document.getElementById('pub-name').value, 
+                    gender: document.querySelector('input[name="pub-gender"]:checked')?.value || 'Male', 
+                    hope: document.querySelector('input[name="pub-hope"]:checked')?.value || 'Other Sheep',
+                    dob: document.getElementById('pub-dob').value, 
+                    baptized: document.getElementById('pub-baptized').value, 
+                    isElder: document.getElementById('pub-elder').checked, 
+                    isMS: document.getElementById('pub-ms').checked, 
+                    isRP: document.getElementById('pub-rp').checked, 
+                    isSP: document.getElementById('pub-sp').checked, 
+                    isFM: document.getElementById('pub-fm').checked, 
+                    phone: document.getElementById('pub-phone').value, 
+                    address: document.getElementById('pub-address').value, 
+                    group: document.getElementById('pub-group').value
+                };
+                await window.db.savePublisher(pub); 
+                window.ui.showToast(id ? 'Profile updated!' : 'Profile successfully provisioned!'); 
+                window.ui.closeModal('modal-add-publisher'); 
+                window.ui.renderPublishers();
+            },
+
+            editPublisher: (id) => {
+                const pub = window.db.getPublishers().find(p => p.id === id); if (!pub) return;
+                document.getElementById('pub-id').value = pub.id; document.getElementById('pub-name').value = pub.name;
+                const gSel = document.querySelector(`input[name="pub-gender"][value="${pub.gender==='Female'?'Female':'Male'}"]`); if(gSel) gSel.checked = true;
+                const hSel = document.querySelector(`input[name="pub-hope"][value="${pub.hope==='Anointed'?'Anointed':'Other Sheep'}"]`); if(hSel) hSel.checked = true;
+                document.getElementById('pub-dob').value = pub.dob || ''; document.getElementById('pub-baptized').value = pub.baptized || '';
+                document.getElementById('pub-elder').checked = !!pub.isElder; document.getElementById('pub-ms').checked = !!pub.isMS; document.getElementById('pub-rp').checked = !!pub.isRP; document.getElementById('pub-sp').checked = !!pub.isSP; document.getElementById('pub-fm').checked = !!pub.isFM;
+                document.getElementById('pub-phone').value = pub.phone || ''; document.getElementById('pub-address').value = pub.address || ''; document.getElementById('pub-group').value = pub.group || '';
+                document.getElementById('modal-pub-title').textContent = 'Edit Publisher Record'; window.ui.openModal('modal-add-publisher', true);
+            },
 
             downloadContacts: () => {
                 const pubs = window.db.getPublishers(); if (pubs.length === 0) { window.ui.showToast('No contacts to export', 'error'); return; }
@@ -1158,7 +1160,6 @@
 
             copyGroupLink: (groupName) => {
                 const baseUrl = window.location.href.split('?')[0]; 
-                // Add the specific congregation ID to the public link
                 const url = `${baseUrl}?cong=${window.currentCongId}&group=${encodeURIComponent(groupName)}`;
                 const textArea = document.createElement("textarea"); textArea.value = url; document.body.appendChild(textArea);
                 textArea.focus(); textArea.select(); try { document.execCommand('copy'); window.ui.showToast('Public SaaS Link Copied!'); } catch (err) { console.error(err); } document.body.removeChild(textArea);
@@ -1388,7 +1389,6 @@
         };
 
         window.addEventListener('load', () => {
-            // Check if URL has ?cong=... for public mode
             if(window.auth.check()) {
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('cong')) {
