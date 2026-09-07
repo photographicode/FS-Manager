@@ -51,12 +51,14 @@
         #toast.show { transform: translateY(0) scale(1); opacity: 1; }
 
         body.public-mode #app-header { display: none !important; }
-        body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh;}
+        body.public-mode .tab-content:not(#tab-s4) { display: none !important; }
+        body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%;}
         body.public-mode #tab-s4 { display: flex !important; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh;}
         
-        /* New lighter theme specifically for the body in public mode to match the mockup */
+        /* New background gradient for public mode form */
         body.public-mode {
-            background: #eef2f6; /* Lighter background */
+            background: linear-gradient(135deg, #0d9488 0%, #0f172a 100%);
+            background-attachment: fixed;
         }
         
         input[type="text"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
@@ -106,14 +108,15 @@
             width: 100%;
             max-width: 480px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         .s4-modern-card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,1);
             padding: 40px 32px;
             color: #1e293b;
         }
@@ -567,12 +570,14 @@
 
         <div id="tab-s4" class="tab-content">
             <div id="s4-success-msg" class="hidden flex flex-col items-center justify-center min-h-[60vh] text-center px-4 w-full">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-teal-500/20 rounded-full flex items-center justify-center mb-6 border-2 border-teal-500 shadow-[0_0_30px_rgba(20,184,166,0.3)]">
-                    <span class="text-4xl sm:text-5xl text-teal-400">✓</span>
+                <div class="s4-modern-card flex flex-col items-center max-w-md w-full text-center p-8 sm:p-10">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border-2 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                        <span class="text-4xl sm:text-5xl text-emerald-500">✓</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold mb-3" style="color: #0f172a;">Report Submitted</h2>
+                    <p class="text-base mb-8" style="color: #64748b;">Thank you. Your field service report has been securely recorded.</p>
+                    <button onclick="location.reload()" class="px-8 py-3 bg-teal-500 hover:bg-teal-400 rounded-xl transition-all text-white font-bold shadow-lg w-full">Submit Another Report</button>
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">Report Submitted Successfully</h2>
-                <p class="text-teal-100/80 text-base mb-8">Thank you. Your field service report has been securely recorded.</p>
-                <button onclick="location.reload()" class="px-8 py-3 bg-slate-100 hover:bg-white rounded-xl transition-all text-slate-800 font-bold shadow-lg">Submit Another Report</button>
             </div>
         
             <div id="s4-form-area" class="s4-modern-wrapper">
@@ -1707,7 +1712,12 @@
             setupS4Tab: () => {
                 const pubs = window.db.getPublishers(); const sel = document.getElementById('s4-pub-select'); if (!sel) return;
                 sel.innerHTML = '<option value="">-- Please select your name --</option>';
-                let filtered = window.ui.publicGroup ? pubs.filter(p => p.group === window.ui.publicGroup) : pubs;
+                
+                let filtered = pubs;
+                if (window.ui.publicGroup) {
+                    filtered = pubs.filter(p => p.group && p.group.trim().toLowerCase() === window.ui.publicGroup.trim().toLowerCase());
+                }
+                
                 filtered.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
                 document.getElementById('s4-month-display').value = window.utils.getISTPreviousMonthInfo().displayString;
                 
@@ -1763,7 +1773,9 @@
         window.db.initPublicS4OrLogin = () => {
             if(window.auth.check()) {
                 const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('cong') && !localStorage.getItem('fs_auth')) {
+                
+                // If a congregation parameter is present, force the public view even if an admin is logged in.
+                if (urlParams.get('cong')) {
                     window.db.initPublicS4(urlParams.get('cong'));
                 } else {
                     const type = localStorage.getItem('fs_auth_type');
