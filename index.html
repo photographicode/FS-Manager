@@ -8,6 +8,10 @@
     <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Added PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -313,6 +317,12 @@
 </head>
 <body class="text-sm">
 
+    <!-- Global Loading Screen -->
+    <div id="global-loader" class="fixed inset-0 bg-slate-900 z-[100000] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(20,184,166,0.5)]"></div>
+        <p class="text-teal-300 mt-4 font-bold tracking-widest uppercase text-sm animate-pulse">Initializing System</p>
+    </div>
+
     <div id="auth-screen" class="fixed inset-0 bg-gradient-to-br from-slate-900 to-teal-900 z-[10000] flex flex-col items-center justify-center p-4">
         <div class="glass-panel p-8 sm:p-10 rounded-3xl text-center max-w-md w-full border border-teal-500/30 shadow-2xl">
             <div class="w-16 h-16 rounded-2xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-lg mx-auto mb-6 text-2xl">FS</div>
@@ -493,7 +503,7 @@
                 <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
                     <select id="s21-year-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm"></select>
                     <select id="s21-publisher-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm max-w-[250px]"></select>
-                    <button onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)] flex items-center justify-center gap-2">
+                    <button id="s21-print-btn" onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)] flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> 
                         Print Cards
                     </button>
@@ -654,6 +664,7 @@
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
                     <input type="text" id="saas-cong-pwd" required placeholder="e.g. Sec1234!" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                    <p class="text-[10px] text-amber-200/60 mt-1">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char.</p>
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-add-cong')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
@@ -673,11 +684,19 @@
                 </button>
             </div>
             <form id="form-edit-congregation" onsubmit="window.db.updateCongregation(event)" class="p-6 sm:p-8 space-y-5">
+                <input type="hidden" id="edit-cong-original-id">
                 <div class="space-y-2">
-                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider flex justify-between">
-                        <span>Login ID</span> <span class="text-rose-300 text-[10px]">(Locked to preserve data)</span>
-                    </label>
-                    <input type="text" id="edit-cong-id" readonly class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-white/50 cursor-not-allowed font-mono">
+                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Login ID</label>
+                    <input type="text" id="edit-cong-id" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Congregation Name</label>
+                    <input type="text" id="edit-cong-name" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
+                    <input type="text" id="edit-cong-pwd" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                    <p class="text-[10px] text-amber-200/60 mt-1">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char.</p>
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Congregation Name</label>
@@ -720,6 +739,7 @@
                 <div class="space-y-2">
                     <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">New Password</label>
                     <input type="text" id="cp-new" required class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 font-mono">
+                    <p class="text-[10px] text-teal-200/60 mt-1">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char.</p>
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-change-password')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
@@ -838,7 +858,7 @@
         const isCloudEnabled = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL.startsWith('http');
         const supabaseClient = isCloudEnabled ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-        window.config = { MASTER_PASSWORD: 'Admin' + '1234' };
+        window.config = { MASTER_PASSWORD: '3xqrWauMQCbp' };
         window.sysPromptState = { actionCallback: null, requiresPassword: false };
         window.currentCongId = null;
 
@@ -890,8 +910,22 @@
                     const { data, error } = await supabaseClient.from('congregations').select('*').eq('id', cid).eq('admin_password', pwd).single();
                     
                     if (data) {
-                        localStorage.setItem('fs_auth', 'true');
-                        localStorage.setItem('fs_auth_type', 'admin');
+                    if (data.status === 'trial') {
+                        const createdDate = data.created_at ? new Date(data.created_at) : new Date();
+                        const now = new Date();
+                        const diffTime = Math.abs(now - createdDate);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        if (diffDays > 10) {
+                            window.ui.showToast("Trial period of 10 days has expired. Please contact SuperAdmin.", "error");
+                            btn.textContent = "Unlock Database"; btn.disabled = false;
+                            return;
+                        } else {
+                            window.ui.showToast(`Trial active: ${10 - diffDays} days remaining.`);
+                        }
+                    }
+
+                    localStorage.setItem('fs_auth', 'true');
+                    localStorage.setItem('fs_auth_type', 'admin');
                         localStorage.setItem('fs_cong_id', data.id);
                         localStorage.setItem('fs_cong_name', data.name);
                         
@@ -916,6 +950,9 @@
         };
 
         window.utils = {
+            isValidPassword: (pwd) => {
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/.test(pwd);
+            },
             generateUUID: () => {
                 if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -988,6 +1025,11 @@
                 const name = document.getElementById('saas-cong-name').value.trim();
                 const pwd = document.getElementById('saas-cong-pwd').value.trim();
 
+                if (!window.utils.isValidPassword(pwd)) {
+                    window.ui.showToast("Password must contain min 8 chars, 1 uppercase, 1 lowercase, 1 number, and 1 special character.", "error");
+                    return;
+                }
+
                 const { data, error } = await supabaseClient.from('congregations').insert([{ id: id, name: name, admin_password: pwd, status: 'trial' }]);
                 if (error) { window.ui.showToast(error.message, "error"); } 
                 else { window.ui.showToast("Tenant Provisioned!"); window.ui.closeModal('modal-add-cong'); window.db.initSuperAdmin(); }
@@ -995,12 +1037,18 @@
 
             updateCongregation: async (e) => {
                 e.preventDefault();
-                const id = document.getElementById('edit-cong-id').value;
+                const oldId = document.getElementById('edit-cong-original-id').value;
+                const newId = document.getElementById('edit-cong-id').value.trim();
                 const name = document.getElementById('edit-cong-name').value.trim();
                 const pwd = document.getElementById('edit-cong-pwd').value.trim();
                 const status = document.getElementById('edit-cong-status').value;
 
-                const { error } = await supabaseClient.from('congregations').update({ name: name, admin_password: pwd, status: status }).eq('id', id);
+                if (!window.utils.isValidPassword(pwd)) {
+                    window.ui.showToast("Password must contain min 8 chars, 1 uppercase, 1 lowercase, 1 number, and 1 special character.", "error");
+                    return;
+                }
+
+                const { error } = await supabaseClient.from('congregations').update({ id: newId, name: name, admin_password: pwd, status: status }).eq('id', oldId);
                 if (error) { window.ui.showToast(error.message, "error"); } 
                 else { window.ui.showToast("Tenant Updated!"); window.ui.closeModal('modal-edit-cong'); window.db.initSuperAdmin(); }
             },
@@ -1018,6 +1066,11 @@
                 const currentP = document.getElementById('cp-current').value;
                 const newP = document.getElementById('cp-new').value.trim();
                 
+                if (!window.utils.isValidPassword(newP)) {
+                    window.ui.showToast("Password must contain min 8 chars, 1 uppercase, 1 lowercase, 1 number, and 1 special character.", "error");
+                    return;
+                }
+
                 const { data } = await supabaseClient.from('congregations').select('admin_password').eq('id', window.currentCongId).single();
                 if (data && data.admin_password === currentP) {
                     const { error } = await supabaseClient.from('congregations').update({ admin_password: newP }).eq('id', window.currentCongId);
@@ -1243,6 +1296,7 @@
             
             editCongregation: (id) => {
                 const c = window.db.congregations.find(x => x.id === id); if(!c) return;
+                document.getElementById('edit-cong-original-id').value = c.id;
                 document.getElementById('edit-cong-id').value = c.id;
                 document.getElementById('edit-cong-name').value = c.name;
                 document.getElementById('edit-cong-pwd').value = c.admin_password;
@@ -1698,15 +1752,73 @@
             },
 
             printCards: () => {
-                const iframe = document.getElementById('s21-render-frame'); const wrapper = document.getElementById('s21-render-area');
-                if (!iframe.srcdoc || iframe.srcdoc.includes('No records found')) { window.ui.showToast('Please select publishers to print.', 'error'); return; }
+                const iframe = document.getElementById('s21-render-frame'); 
+                const wrapper = document.getElementById('s21-render-area');
+                if (!iframe.srcdoc || iframe.srcdoc.includes('No records found')) { 
+                    window.ui.showToast('Please select publishers to print.', 'error'); 
+                    return; 
+                }
                 
-                iframe.style.transform = 'none'; wrapper.style.height = 'auto';
+                const btn = document.getElementById('s21-print-btn');
+                const originalText = btn.innerHTML;
                 
-                setTimeout(() => {
-                    iframe.contentWindow.focus(); iframe.contentWindow.print();
-                    setTimeout(window.ui.scaleS21Preview, 1000);
-                }, 50);
+                btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating PDF...`;
+                btn.disabled = true;
+                window.ui.showToast('Compiling Publisher Cards... Please wait.', 'success');
+
+                // Temporarily unscale the iframe to ensure perfect pixel capture
+                iframe.style.transform = 'none'; 
+                wrapper.style.height = 'auto';
+                
+                setTimeout(async () => {
+                    try {
+                        const { jsPDF } = window.jspdf;
+                        
+                        // Initialize jsPDF with the exact pixel dimensions of a single card
+                        const doc = new jsPDF({ 
+                            orientation: 'landscape', 
+                            unit: 'px', 
+                            format: [1448, 1025],
+                            hotfixes: ["px_scaling"]
+                        });
+
+                        const pages = iframe.contentDocument.querySelectorAll('.page');
+                        
+                        for (let i = 0; i < pages.length; i++) {
+                            const page = pages[i];
+                            // html2canvas configuration for precision rendering
+                            const canvas = await window.html2canvas(page, {
+                                scale: 2, 
+                                logging: false,
+                                useCORS: true,
+                                width: 1448,
+                                height: 1025,
+                                windowWidth: 1448
+                            });
+                            
+                            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                            
+                            if (i > 0) {
+                                doc.addPage([1448, 1025], 'landscape');
+                            }
+                            
+                            // Paste the perfect image to exactly match the page size
+                            doc.addImage(imgData, 'JPEG', 0, 0, 1448, 1025);
+                        }
+                        
+                        doc.save('S-21_Publisher_Cards.pdf');
+                        window.ui.showToast('PDF successfully downloaded!');
+                        
+                    } catch (error) {
+                        console.error("PDF Generation Error: ", error);
+                        window.ui.showToast('Failed to compile PDF.', 'error');
+                    } finally {
+                        // Restore button and UI scale
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        window.ui.scaleS21Preview();
+                    }
+                }, 100);
             },
 
             setupS4Tab: () => {
@@ -1771,6 +1883,12 @@
 
         // Setup the initial load logic explicitly
         window.db.initPublicS4OrLogin = () => {
+            const loader = document.getElementById('global-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }
+
             if(window.auth.check()) {
                 const urlParams = new URLSearchParams(window.location.search);
                 
