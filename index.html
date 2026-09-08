@@ -27,7 +27,6 @@
             color: #f8fafc;
             min-height: 100vh;
             overflow-x: hidden;
-            transition: filter 0.3s ease;
         }
         
         .glass-panel {
@@ -551,7 +550,7 @@
         </div>
 
         <div id="tab-publishers" class="tab-content space-y-6">
-            <div class="flex justify-between items-center flex-wrap gap-4">
+            <div class="flex justify-between items-center flex-wrap gap-4 mb-6">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Publishers</h2>
                     <p class="text-teal-200/70 mt-1">Manage profiles for this congregation</p>
@@ -568,6 +567,16 @@
                     <button onclick="window.ui.openModal('modal-add-publisher')" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)] flex items-center justify-center gap-2">
                         + Add Publisher
                     </button>
+                </div>
+            </div>
+
+            <!-- New Summary Box -->
+            <div class="glass-panel p-4 sm:p-6 rounded-2xl mb-6 flex flex-col md:flex-row gap-6 items-center">
+                <!-- SVG Pie Chart -->
+                <div class="relative w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-full border-4 border-slate-800 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all duration-500" id="pub-pie-chart" style="background: conic-gradient(#64748b 0% 100%);"></div>
+                
+                <!-- Legend and Stats Boxes -->
+                <div class="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 w-full" id="pub-stats-container">
                 </div>
             </div>
             
@@ -683,10 +692,6 @@
                     </ul>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Contact Phone</label>
-                    <input type="text" id="saas-cong-phone" placeholder="+1..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
-                </div>
-                <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Contact Email</label>
                     <input type="email" id="saas-cong-email" placeholder="admin@example.com" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
                 </div>
@@ -733,10 +738,6 @@
                     </ul>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Contact Phone</label>
-                    <input type="text" id="edit-cong-phone" placeholder="+1..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
-                </div>
-                <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Contact Email</label>
                     <input type="email" id="edit-cong-email" placeholder="admin@example.com" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400">
                 </div>
@@ -770,12 +771,6 @@
                 </button>
             </div>
             <div class="p-6 space-y-6">
-                <!-- Theme Section -->
-                <div class="space-y-3 pb-5 border-b border-white/10">
-                    <h4 class="text-sm font-bold text-teal-300 uppercase tracking-wider">Theme Hue Customization</h4>
-                    <input type="range" id="theme-hue-picker" min="0" max="360" value="0" oninput="window.ui.changeTheme(this.value)" class="w-full h-2 accent-teal-400 bg-teal-900 rounded-full appearance-none outline-none">
-                </div>
-
                 <!-- Password Section -->
                 <form onsubmit="window.db.changeAdminPassword(event)" class="space-y-4 pb-5 border-b border-white/10">
                     <h4 class="text-sm font-bold text-teal-300 uppercase tracking-wider">Change Password</h4>
@@ -1060,7 +1055,6 @@
                     if (data) window.db.congregations = data;
                     window.ui.renderSuperAdmin();
                 }
-                window.ui.applyTheme();
             },
 
             initAdmin: async (congId, congName) => {
@@ -1078,7 +1072,6 @@
                     } catch (e) { console.error("Cloud fetch failed:", e); }
                 }
                 window.ui.initAdminUI();
-                window.ui.applyTheme();
             },
 
             createCongregation: async (e) => {
@@ -1086,7 +1079,6 @@
                 const id = document.getElementById('saas-cong-id').value.trim();
                 const name = document.getElementById('saas-cong-name').value.trim();
                 const pwd = document.getElementById('saas-cong-pwd').value.trim();
-                const phone = document.getElementById('saas-cong-phone').value.trim();
                 const email = document.getElementById('saas-cong-email').value.trim();
                 const notes = document.getElementById('saas-cong-notes').value.trim();
 
@@ -1096,7 +1088,7 @@
                 }
 
                 // Sending phone, email, notes in payload if DB is updated, otherwise they might be ignored if strict.
-                const { data, error } = await supabaseClient.from('congregations').insert([{ id: id, name: name, admin_password: pwd, status: 'trial', phone: phone, email: email, notes: notes }]);
+                const { data, error } = await supabaseClient.from('congregations').insert([{ id: id, name: name, admin_password: pwd, status: 'trial', email: email, notes: notes }]);
                 if (error) { window.ui.showToast(error.message, "error"); } 
                 else { window.ui.showToast("Tenant Provisioned!"); window.ui.closeModal('modal-add-cong'); window.db.initSuperAdmin(); }
             },
@@ -1108,7 +1100,6 @@
                 const name = document.getElementById('edit-cong-name').value.trim();
                 const pwd = document.getElementById('edit-cong-pwd').value.trim();
                 const status = document.getElementById('edit-cong-status').value;
-                const phone = document.getElementById('edit-cong-phone').value.trim();
                 const email = document.getElementById('edit-cong-email').value.trim();
                 const notes = document.getElementById('edit-cong-notes').value.trim();
 
@@ -1117,7 +1108,7 @@
                     return;
                 }
 
-                const { error } = await supabaseClient.from('congregations').update({ id: newId, name: name, admin_password: pwd, status: status, phone: phone, email: email, notes: notes }).eq('id', oldId);
+                const { error } = await supabaseClient.from('congregations').update({ id: newId, name: name, admin_password: pwd, status: status, email: email, notes: notes }).eq('id', oldId);
                 if (error) { window.ui.showToast(error.message, "error"); } 
                 else { window.ui.showToast("Tenant Updated!"); window.ui.closeModal('modal-edit-cong'); window.db.initSuperAdmin(); }
             },
@@ -1192,10 +1183,9 @@
                 if(idx > -1) {
                     window.db.reports[idx].isAP = false; 
                     window.db.reports[idx].hours = 0;
-                    window.db.reports[idx].studies = 0;
                     window.db.reports[idx].comments = '';
                     if (isCloudEnabled) await supabaseClient.from('reports').upsert(window.db.mapRepToDB(window.db.reports[idx])); 
-                    window.ui.renderDashboard(); window.ui.showToast('AP hours & studies revoked.');
+                    window.ui.renderDashboard(); window.ui.showToast('AP hours & comments revoked.');
                 }
             },
             
@@ -1295,13 +1285,18 @@
             .detail-label { flex: 0 0 205px; white-space: nowrap; }
             .detail-input { flex: 0 0 645px; width: 645px; height: 35px; padding: 0 4px; font: 700 27px/35px Arial; }
             .identity { position: absolute; left: 898px; top: 35px; width: 470px; height: 70px; font-size: 27px; font-weight: 700; }
-            .identity label { position: absolute; display: flex; align-items: center; justify-content: flex-start; width: 220px; height: 35px; white-space: nowrap; }
+            .identity label { position: absolute; display: block; width: 220px; height: 35px; white-space: nowrap; line-height: 35px; }
+            .identity label span { vertical-align: middle; }
             .identity .male { left: 0; top: 0; } .identity .female { left: 248px; top: 0; } .identity .sheep { left: 0; top: 35px; } .identity .anointed { left: 248px; top: 35px; }
-            .check-label { display: inline-flex; align-items: center; justify-content: flex-start; height: 35px; white-space: nowrap; }
+            .check-label { display: inline-block; height: 35px; white-space: nowrap; line-height: 35px; }
+            .check-label span { vertical-align: middle; }
             .role-options { position: absolute; left: 0; top: 105px; width: 1370px; height: 35px; display: flex; align-items: center; justify-content: space-between; font-size: 27px; font-weight: 700; }
             
-            .box-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 2px solid var(--heavy); font-size: 22px; font-weight: bold; color: #000; line-height: 21px; overflow: hidden; box-sizing: border-box; flex-shrink: 0; margin: 0 8px 0 0; padding: 0; text-align: center; }
-            .month-check { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 2px solid var(--heavy); font-size: 28px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
+            .box-check { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--heavy); color: #000; margin-right: 8px; vertical-align: middle; position: relative; box-sizing: border-box; }
+            .box-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 19px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
+            
+            .month-check { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--heavy); position: relative; box-sizing: border-box; }
+            .month-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
             
             .form-table { position: absolute; top: 264px; left: var(--x); width: var(--table-w); }
             .table-grid { width: var(--table-w); display: grid; grid-template-columns: var(--c1) var(--c2) var(--c3) var(--c4) var(--c5) var(--c6); grid-template-rows: var(--header-h) repeat(12, var(--row-h)); border: 3px solid var(--heavy); background: #fff; }
@@ -1328,22 +1323,8 @@
         `;
 
         window.ui = {
-            currentTab: 'dashboard', publicGroup: null,
+            currentTab: 'dashboard', publicGroup: null, currentPubFilter: 'ALL',
             
-            applyTheme: () => {
-                const hue = localStorage.getItem('theme_hue') || 0;
-                document.body.style.filter = `hue-rotate(${hue}deg)`;
-                const p = document.getElementById('theme-hue-picker');
-                if(p) p.value = hue;
-            },
-            
-            changeTheme: (val) => {
-                document.body.style.filter = `hue-rotate(${val}deg)`;
-                localStorage.setItem('theme_hue', val);
-                const p = document.getElementById('theme-hue-picker');
-                if(p && p.value !== val) p.value = val;
-            },
-
             checkPassword: (pwd, listId, btnId) => {
                 const list = document.getElementById(listId);
                 const btn = btnId ? document.getElementById(btnId) : null;
@@ -1420,7 +1401,6 @@
                 document.getElementById('edit-cong-name').value = c.name;
                 document.getElementById('edit-cong-pwd').value = c.admin_password;
                 document.getElementById('edit-cong-status').value = c.status;
-                document.getElementById('edit-cong-phone').value = c.phone || '';
                 document.getElementById('edit-cong-email').value = c.email || '';
                 document.getElementById('edit-cong-notes').value = c.notes || '';
                 window.ui.checkPassword(c.admin_password, 'edit-cong-pwd-reqs', 'btn-edit-cong');
@@ -1434,7 +1414,7 @@
                 const btn = document.getElementById(`btn-tab-${tabId}`); if (btn) { btn.classList.remove('hover:bg-white/10', 'text-teal-50/70'); btn.classList.add('bg-teal-500/80', 'text-white', 'shadow-lg'); }
                 window.ui.currentTab = tabId;
                 if (tabId === 'dashboard') window.ui.renderDashboard();
-                if (tabId === 'publishers') window.ui.renderPublishers();
+                if (tabId === 'publishers') window.ui.renderPublishers(window.ui.currentPubFilter || 'ALL');
                 if (tabId === 'groups') window.ui.renderGroups();
                 if (tabId === 's4') window.ui.setupS4Tab();
                 if (tabId === 's21') { window.ui.setupS21Tab(); setTimeout(window.ui.scaleS21Preview, 100); }
@@ -1625,10 +1605,75 @@
                 `;
             },
 
-            renderPublishers: () => {
+            renderPublishers: (filterType = 'ALL') => {
+                window.ui.currentPubFilter = filterType;
                 const tbody = document.getElementById('publisher-table-body'); if(!tbody) return;
-                const pubs = window.db.getPublishers(); tbody.innerHTML = '';
-                pubs.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p => {
+                const allPubs = window.db.getPublishers();
+                
+                let elders = 0, ms = 0, rps = 0, ubps = 0, baptized = 0, others = 0;
+                allPubs.forEach(p => {
+                    if(p.isElder) elders++;
+                    if(p.isMS) ms++;
+                    if(p.isRP) rps++;
+                    if(!p.baptized) ubps++;
+                    if(p.baptized) baptized++;
+                    if(!p.isElder && !p.isMS && !p.isRP) others++;
+                });
+
+                let displayPubs = allPubs;
+                if (filterType === 'ELDERS') displayPubs = allPubs.filter(p => p.isElder);
+                else if (filterType === 'MS') displayPubs = allPubs.filter(p => p.isMS);
+                else if (filterType === 'RPS') displayPubs = allPubs.filter(p => p.isRP);
+                else if (filterType === 'UBP') displayPubs = allPubs.filter(p => !p.baptized);
+                else if (filterType === 'BAPTIZED') displayPubs = allPubs.filter(p => !!p.baptized);
+
+                const statsContainer = document.getElementById('pub-stats-container');
+                if (statsContainer) {
+                    statsContainer.innerHTML = `
+                        <button onclick="window.ui.renderPublishers('ALL')" class="p-3 rounded-xl border ${filterType==='ALL'?'border-slate-400 bg-slate-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
+                            <div class="text-xl sm:text-2xl font-bold text-white">${allPubs.length}</div>
+                            <div class="text-[9px] sm:text-[10px] text-slate-300 uppercase tracking-widest mt-1">Total</div>
+                        </button>
+                        <button onclick="window.ui.renderPublishers('ELDERS')" class="p-3 rounded-xl border ${filterType==='ELDERS'?'border-cyan-400 bg-cyan-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
+                            <div class="text-xl sm:text-2xl font-bold text-cyan-400">${elders}</div>
+                            <div class="text-[9px] sm:text-[10px] text-cyan-200/70 uppercase tracking-widest mt-1">Elders</div>
+                        </button>
+                        <button onclick="window.ui.renderPublishers('MS')" class="p-3 rounded-xl border ${filterType==='MS'?'border-blue-400 bg-blue-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
+                            <div class="text-xl sm:text-2xl font-bold text-blue-400">${ms}</div>
+                            <div class="text-[9px] sm:text-[10px] text-blue-200/70 uppercase tracking-widest mt-1">Min. Serv.</div>
+                        </button>
+                        <button onclick="window.ui.renderPublishers('RPS')" class="p-3 rounded-xl border ${filterType==='RPS'?'border-emerald-400 bg-emerald-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
+                            <div class="text-xl sm:text-2xl font-bold text-emerald-400">${rps}</div>
+                            <div class="text-[9px] sm:text-[10px] text-emerald-200/70 uppercase tracking-widest mt-1">Reg. Pio.</div>
+                        </button>
+                        <button onclick="window.ui.renderPublishers('BAPTIZED')" class="p-3 rounded-xl border ${filterType==='BAPTIZED'?'border-teal-400 bg-teal-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
+                            <div class="text-xl sm:text-2xl font-bold text-teal-400">${baptized}</div>
+                            <div class="text-[9px] sm:text-[10px] text-teal-200/70 uppercase tracking-widest mt-1">Baptized</div>
+                        </button>
+                        <button onclick="window.ui.renderPublishers('UBP')" class="p-3 rounded-xl border ${filterType==='UBP'?'border-rose-400 bg-rose-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
+                            <div class="text-xl sm:text-2xl font-bold text-rose-400">${ubps}</div>
+                            <div class="text-[9px] sm:text-[10px] text-rose-200/70 uppercase tracking-widest mt-1">Unbaptized</div>
+                        </button>
+                    `;
+                }
+
+                const chart = document.getElementById('pub-pie-chart');
+                if (chart && allPubs.length > 0) {
+                    const total = allPubs.length;
+                    const ePct = (elders/total)*100;
+                    const mPct = (ms/total)*100;
+                    const rPct = (rps/total)*100;
+                    
+                    chart.style.background = `conic-gradient(
+                        #22d3ee 0% ${ePct}%, 
+                        #60a5fa ${ePct}% ${ePct+mPct}%, 
+                        #34d399 ${ePct+mPct}% ${ePct+mPct+rPct}%, 
+                        #475569 ${ePct+mPct+rPct}% 100%
+                    )`;
+                }
+
+                tbody.innerHTML = '';
+                displayPubs.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p => {
                     let badges = [];
                     if(p.isElder) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">Elder</span>');
                     if(p.isMS) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">MS</span>');
@@ -1667,7 +1712,7 @@
                 });
                 
                 let pendingHtml = pending.length > 0 ? `<ol class="list-decimal pl-5 space-y-1 text-rose-300 text-sm">${pending.map(name => `<li>${name}</li>`).join('')}</ol>` : '<div class="text-emerald-400 text-sm">All submitted!</div>';
-                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex gap-2"><button onclick="window.ui.copyGroupLink('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy S-4 Link</button></div></div><div class="grid grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
+                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex gap-2"><button onclick="window.ui.copyGroupLink('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy Form Link</button></div></div><div class="grid grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
             },
 
             copyGroupLink: (groupName) => {
@@ -1821,9 +1866,9 @@
                         if(r.comments) totalRemarksNum += window.utils.extractNumbers(r.comments);
                         rowsHtml += `
                             <div class="cell month">${window.utils.getMonthName(m)}</div>
-                            <div class="cell center"><div class="month-check">${r.sharedInMinistry ? '✔' : ''}</div></div>
+                            <div class="cell center"><div class="month-check">${r.sharedInMinistry ? '<span class="month-check-text">✔</span>' : ''}</div></div>
                             <div class="cell"><div class="cell-input">${r.studies||''}</div></div>
-                            <div class="cell center"><div class="month-check">${r.isAP ? '✔' : ''}</div></div>
+                            <div class="cell center"><div class="month-check">${r.isAP ? '<span class="month-check-text">✔</span>' : ''}</div></div>
                             <div class="cell"><div class="cell-input">${r.hours||''}</div></div>
                             <div class="cell"><div class="remarks-input">${r.comments||''}</div></div>
                         `;
@@ -1839,17 +1884,17 @@
                                 <div class="detail birth"><label class="detail-label">Date of birth:</label><div class="detail-input">${pub.dob||''}</div></div>
                                 <div class="detail baptism"><label class="detail-label">Date of baptism:</label><div class="detail-input">${bapText}</div></div>
                                 <div class="identity">
-                                    <label class="male"><div class="box-check">${pub.gender==='Male'?'✔':''}</div><span>Male</span></label>
-                                    <label class="female"><div class="box-check">${pub.gender==='Female'?'✔':''}</div><span>Female</span></label>
-                                    <label class="sheep"><div class="box-check">${pub.hope==='Other Sheep'?'✔':''}</div><span>Other sheep</span></label>
-                                    <label class="anointed"><div class="box-check">${pub.hope==='Anointed'?'✔':''}</div><span>Anointed</span></label>
+                                    <label class="male"><div class="box-check">${pub.gender==='Male'?'<span class="box-check-text">✔</span>':''}</div><span>Male</span></label>
+                                    <label class="female"><div class="box-check">${pub.gender==='Female'?'<span class="box-check-text">✔</span>':''}</div><span>Female</span></label>
+                                    <label class="sheep"><div class="box-check">${pub.hope==='Other Sheep'?'<span class="box-check-text">✔</span>':''}</div><span>Other sheep</span></label>
+                                    <label class="anointed"><div class="box-check">${pub.hope==='Anointed'?'<span class="box-check-text">✔</span>':''}</div><span>Anointed</span></label>
                                 </div>
                                 <div class="role-options">
-                                    <label class="check-label"><div class="box-check">${pub.isElder?'✔':''}</div><span>Elder</span></label>
-                                    <label class="check-label"><div class="box-check">${pub.isMS?'✔':''}</div><span>Ministerial servant</span></label>
-                                    <label class="check-label"><div class="box-check">${pub.isRP?'✔':''}</div><span>Regular pioneer</span></label>
-                                    <label class="check-label"><div class="box-check">${pub.isSP?'✔':''}</div><span>Special pioneer</span></label>
-                                    <label class="check-label"><div class="box-check">${pub.isFM?'✔':''}</div><span>Field missionary</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isElder?'<span class="box-check-text">✔</span>':''}</div><span>Elder</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isMS?'<span class="box-check-text">✔</span>':''}</div><span>Ministerial servant</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isRP?'<span class="box-check-text">✔</span>':''}</div><span>Regular pioneer</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isSP?'<span class="box-check-text">✔</span>':''}</div><span>Special pioneer</span></label>
+                                    <label class="check-label"><div class="box-check">${pub.isFM?'<span class="box-check-text">✔</span>':''}</div><span>Field missionary</span></label>
                                 </div>
                             </section>
                             <section class="form-table">
