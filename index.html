@@ -701,7 +701,7 @@
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-add-cong')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" id="btn-add-cong" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)] disabled:opacity-50" disabled>Provision</button>
+                    <button type="submit" id="btn-add-cong" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Provision</button>
                 </div>
             </form>
         </div>
@@ -728,7 +728,7 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs text-amber-200/80 font-bold uppercase tracking-wider">Admin Password</label>
-                    <input type="text" id="edit-cong-pwd" required oninput="window.ui.checkPassword(this.value, 'edit-cong-pwd-reqs', 'btn-edit-cong')" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
+                    <input type="text" id="edit-cong-pwd" required oninput="window.ui.checkPassword(this.value, 'edit-cong-pwd-reqs')" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-amber-400 font-mono">
                     <ul id="edit-cong-pwd-reqs" class="text-[10px] text-amber-200/60 mt-2 space-y-1 validation-list">
                         <li class="text-rose-400">❌ Min 8 chars</li>
                         <li class="text-rose-400">❌ 1 Uppercase</li>
@@ -755,7 +755,7 @@
                 </div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-white/10">
                     <button type="button" onclick="window.ui.closeModal('modal-edit-cong')" class="px-4 py-2.5 rounded-xl text-sm font-medium text-teal-100/70 hover:bg-white/10 transition-all">Cancel</button>
-                    <button type="submit" id="btn-edit-cong" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)] disabled:opacity-50">Update Tenant</button>
+                    <button type="submit" id="btn-edit-cong" class="bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]">Update Tenant</button>
                 </div>
             </form>
         </div>
@@ -780,7 +780,7 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">New Password</label>
-                        <input type="text" id="cp-new" required oninput="window.ui.checkPassword(this.value, 'cp-new-pwd-reqs', 'btn-cp-save')" class="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 font-mono">
+                        <input type="text" id="cp-new" required oninput="window.ui.checkPassword(this.value, 'cp-new-pwd-reqs')" class="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 font-mono">
                         <ul id="cp-new-pwd-reqs" class="text-[10px] text-teal-200/60 mt-2 space-y-1 validation-list">
                             <li class="text-rose-400">❌ Min 8 chars</li>
                             <li class="text-rose-400">❌ 1 Uppercase</li>
@@ -790,7 +790,7 @@
                         </ul>
                     </div>
                     <div class="flex justify-end pt-2">
-                        <button type="submit" id="btn-cp-save" class="bg-teal-600 hover:bg-teal-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition-all shadow-lg disabled:opacity-50" disabled>Save Password</button>
+                        <button type="submit" id="btn-cp-save" class="bg-teal-600 hover:bg-teal-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition-all shadow-lg">Save Password</button>
                     </div>
                 </form>
 
@@ -1293,7 +1293,7 @@
             .role-options { position: absolute; left: 0; top: 105px; width: 1370px; height: 35px; display: flex; align-items: center; justify-content: space-between; font-size: 27px; font-weight: 700; }
             
             .box-check { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--heavy); color: #000; margin-right: 8px; vertical-align: middle; position: relative; box-sizing: border-box; }
-            .box-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -78%); font-size: 19px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
+            .box-check-text { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -60%); font-size: 19px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
             
             .month-check { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--heavy); position: relative; box-sizing: border-box; }
             .month-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -65%); font-size: 24px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
@@ -1467,11 +1467,11 @@
                 if(id === 'modal-add-publisher' && !isEdit) { document.getElementById('form-publisher').reset(); document.getElementById('pub-id').value = ''; document.getElementById('modal-pub-title').textContent = 'Publisher Record'; }
                 if(id === 'modal-change-password') { 
                     document.getElementById('cp-current').value = ''; document.getElementById('cp-new').value = ''; 
-                    window.ui.checkPassword('', 'cp-new-pwd-reqs', 'btn-cp-save');
+                    window.ui.checkPassword('', 'cp-new-pwd-reqs');
                 }
                 if(id === 'modal-add-cong') {
                     document.getElementById('form-congregation').reset();
-                    window.ui.checkPassword('', 'add-cong-pwd-reqs', 'btn-add-cong');
+                    window.ui.checkPassword('', 'add-cong-pwd-reqs');
                 }
                 document.getElementById(id).classList.remove('hidden');
             },
