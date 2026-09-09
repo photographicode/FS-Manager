@@ -1282,8 +1282,8 @@
             .personal { position: absolute; top: 95px; left: 39px; width: 1370px; height: 137px; font-size: 27px; line-height: 35px; font-weight: 700; }
             .detail { position: absolute; left: 0; width: 850px; height: 35px; display: flex; align-items: center; }
             .detail.name { top: 0; } .detail.birth { top: 35px; } .detail.baptism { top: 70px; }
-            .detail-label { flex: 0 0 205px; white-space: nowrap; }
-            .detail-input { flex: 0 0 645px; width: 645px; height: 35px; padding: 0 4px; font: 700 27px/35px Arial; }
+            .detail-label { white-space: nowrap; margin-right: 12px; }
+            .detail-input { flex: 1; height: 35px; font: 700 27px/35px Arial; }
             .identity { position: absolute; left: 898px; top: 35px; width: 470px; height: 70px; font-size: 27px; font-weight: 700; }
             .identity label { position: absolute; display: block; width: 220px; height: 35px; white-space: nowrap; line-height: 35px; }
             .identity label span { vertical-align: middle; }
@@ -1293,10 +1293,10 @@
             .role-options { position: absolute; left: 0; top: 105px; width: 1370px; height: 35px; display: flex; align-items: center; justify-content: space-between; font-size: 27px; font-weight: 700; }
             
             .box-check { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--heavy); color: #000; margin-right: 8px; vertical-align: middle; position: relative; box-sizing: border-box; }
-            .box-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 19px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
+            .box-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -78%); font-size: 19px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
             
             .month-check { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--heavy); position: relative; box-sizing: border-box; }
-            .month-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
+            .month-check-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -65%); font-size: 24px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; }
             
             .form-table { position: absolute; top: 264px; left: var(--x); width: var(--table-w); }
             .table-grid { width: var(--table-w); display: grid; grid-template-columns: var(--c1) var(--c2) var(--c3) var(--c4) var(--c5) var(--c6); grid-template-rows: var(--header-h) repeat(12, var(--row-h)); border: 3px solid var(--heavy); background: #fff; }
@@ -1308,15 +1308,15 @@
             .center { display: flex; align-items: center; justify-content: center; }
             .hours-header { display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 25px; font-weight: 700; text-align: center; } .hours-header .sub { font-weight: 400; }
             
-            .cell-input { width: 100%; height: 41px; padding: 0 5px; text-align: center; font: 400 24px/41px Arial; overflow: hidden;}
-            .remarks-input { width: 100%; height: 41px; padding: 0 7px; text-align: center; font: 400 21px/41px Arial; overflow: hidden;}
+            .cell-input { width: 100%; height: 41px; padding: 0 5px; text-align: center; font: 400 24px/41px Arial; overflow: hidden; position: relative; top: -2px;}
+            .remarks-input { width: 100%; height: 41px; padding: 0 7px; text-align: center; font: 400 21px/41px Arial; overflow: hidden; position: relative; top: -2px;}
             
             .total-row { width: var(--table-w); height: 45px; position: relative; }
             .total-label { position: absolute; left: 648px; top: 7px; width: 74px; text-align: right; font-size: 25px; font-weight: 700; }
             .total-box { position: absolute; left: 723px; top: 0; width: 646px; height: 45px; display: grid; grid-template-columns: var(--c5) var(--c6); border: 3px solid var(--heavy); border-top: 3px solid var(--heavy); background: #fff; }
             .total-box .slot { height: 41px; overflow: hidden; }
             .total-box .slot + .slot { border-left: 2px solid var(--line); }
-            .total-input { width: 100%; height: 41px; padding: 0 6px; text-align: center; font: 700 23px/41px Arial; overflow: hidden; }
+            .total-input { width: 100%; height: 41px; padding: 0 6px; text-align: center; font: 700 23px/41px Arial; overflow: hidden; position: relative; top: -2px; }
             .total-input.remarks { font-weight: 700; }
             
             .footer { position: absolute; left: 39px; top: 970px; font-size: 19px; } .footer-date { margin-left: 18px; }
