@@ -64,10 +64,10 @@
             #toast.show { transform: translateX(-50%) translateY(0) scale(1); }
         }
 
-        body.public-mode #app-header, body.public-mode #mobile-nav { display: none !important; }
-        body.public-mode .tab-content:not(#tab-s4):not(#tab-public-attendance) { display: none !important; }
-        body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%;}
-        body.public-mode #tab-s4, body.public-mode #tab-public-attendance { display: flex !important; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh;}
+        body.public-mode #app-header, body.public-mode #mobile-nav, body.public-mode #mobile-top-header { display: none !important; }
+        body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; width: 100%; }
+        body.public-mode .tab-content { display: none !important; }
+        body.public-mode .tab-content.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; }
         
         body.public-mode {
             background: linear-gradient(135deg, #0d9488 0%, #0f172a 100%);
