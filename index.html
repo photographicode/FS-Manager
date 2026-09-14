@@ -58,16 +58,16 @@
         }
         #toast.show { transform: translateY(0) scale(1); opacity: 1; }
 
-        body.public-mode #app-header { display: none !important; }
-        body.public-mode .tab-content:not(#tab-s4):not(#tab-public-attendance) { display: none !important; }
-        body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%;}
-        body.public-mode #tab-s4, body.public-mode #tab-public-attendance { display: flex !important; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; padding: 16px;}
-        
-        body.public-mode {
-            background: linear-gradient(135deg, #0d9488 0%, #0f172a 100%);
-            background-attachment: fixed;
+        /* Mobile Specific Overrides */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        @media (max-width: 640px) {
+            .main-content { padding-bottom: 80px !important; }
+            #toast { bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px) scale(0.9); right: auto;}
+            #toast.show { transform: translateX(-50%) translateY(0) scale(1); }
         }
 
+        body.public-mode #app-header, body.public-mode #mobile-nav { display: none !important; }
+        body.public-mode .tab-content:not(#tab-s4) { display: none !important; }
         /* SUPER ADMIN BATMAN THEME */
         body.super-admin-theme {
             background: radial-gradient(circle at top, #111827 0%, #000000 100%);
@@ -196,57 +196,87 @@
     </div>
 
     <div id="sys-prompt-overlay" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-4">
-        <div class="glass-panel p-6 sm:p-8 rounded-3xl text-center max-w-md w-full border border-teal-500/30 shadow-[0_0_30px_rgba(20,184,166,0.15)]">
-            <div id="sys-prompt-icon" class="w-16 h-16 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400 font-bold border border-teal-500/30 shadow-lg mx-auto mb-6 text-3xl">⚠️</div>
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl text-center max-w-md w-full border border-rose-500/30 shadow-[0_0_30px_rgba(225,29,72,0.3)]">
+            <div class="w-16 h-16 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold border border-rose-500/30 shadow-lg mx-auto mb-6 text-3xl">⚠️</div>
             <h2 id="sys-prompt-title" class="text-2xl font-bold text-white mb-2">Confirm Action</h2>
-            <p id="sys-prompt-desc" class="text-teal-100/80 text-sm mb-6"></p>
+            <p id="sys-prompt-desc" class="text-rose-200/80 text-sm mb-6"></p>
             
             <form id="sys-prompt-form" onsubmit="event.preventDefault(); window.ui.handleSysPromptConfirm();">
                 <input type="text" autocomplete="username" style="display:none">
-                <input type="password" id="sys-prompt-input" autocomplete="current-password" placeholder="Enter Password to confirm" class="w-full px-5 py-3.5 rounded-xl mb-6 text-center hidden">
-                <div class="flex gap-3">
-                    <button type="button" onclick="window.ui.closeSysPrompt()" class="flex-1 bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-xl font-bold transition-all">Cancel</button>
-                    <button type="submit" id="sys-prompt-confirm-btn" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white px-4 py-3 rounded-xl font-bold transition-all shadow-lg">Confirm</button>
+                <input type="password" id="sys-prompt-input" autocomplete="current-password" placeholder="Enter Password to confirm" class="w-full px-5 py-3 rounded-xl mb-6 text-center hidden">
+                <div class="flex gap-4">
+                    <button type="button" onclick="window.ui.closeSysPrompt()" class="flex-1 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold transition-all">Cancel</button>
+                    <button type="submit" id="sys-prompt-confirm-btn" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg">Confirm</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <nav id="app-header" class="sticky top-0 z-50 border-b border-teal-400/20 bg-slate-900/70 backdrop-blur-xl shadow-lg transition-colors duration-300">
+    <!-- Top Desktop Navigation -->
+    <nav id="app-header" class="sticky top-0 z-50 border-b border-teal-400/20 bg-slate-900/70 backdrop-blur-xl shadow-lg transition-colors duration-300 hidden sm:block">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 shrink-0">
-                <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.3)] hidden sm:flex">FS</div>
-                <span class="font-bold text-lg sm:text-xl tracking-wide text-white drop-shadow-lg truncate" id="nav-mobile-title">Service Reports</span>
+                <div class="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 shadow-[0_0_15px_rgba(20,184,166,0.3)]">FS</div>
+                <span class="font-bold text-xl tracking-wide text-white drop-shadow-lg" id="nav-desktop-title">Service Reports</span>
             </div>
             
             <div id="nav-admin" class="flex flex-1 justify-end items-center gap-1 sm:ml-6 hidden min-w-0">
-                <div class="flex gap-1 bg-black/30 p-1 rounded-xl border border-white/10 overflow-x-auto flex-1 min-w-0 custom-scrollbar items-center">
-                    <span id="nav-cong-name" class="px-3 py-2 text-teal-300 font-bold text-xs tracking-wide hidden lg:block truncate max-w-[150px]"></span>
-                    <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
-                    <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
-                    <button onclick="window.ui.switchTab('attendance')" id="btn-tab-attendance" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap hidden">Attendance</button>
-                    <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Printer</button>
-                    <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
-                    <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
+                <div class="flex gap-1 bg-black/30 p-1 rounded-xl border border-white/10 overflow-x-auto flex-1 min-w-0 custom-scrollbar items-center justify-end pr-2">
+                    <span id="nav-cong-name" class="px-4 py-2 text-teal-300 font-bold text-sm tracking-wide hidden lg:block truncate max-w-[150px]"></span>
+                    <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Dashboard</button>
+                    <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
+                    <button onclick="window.ui.switchTab('attendance')" id="btn-tab-attendance" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap hidden">Attendance</button>
+                    <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Printer</button>
+                    <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
+                    <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
                 </div>
-                <div class="flex items-center gap-1 sm:gap-2 ml-1 shrink-0">
+                <div class="flex items-center gap-2 ml-1 shrink-0">
                     <span id="nav-trial-timer" class="px-2 py-1 bg-amber-500/20 text-amber-300 rounded-lg text-[10px] font-bold border border-amber-500/50 hidden whitespace-nowrap"></span>
                     <button onclick="window.ui.openModal('modal-settings')" class="p-2 rounded-lg transition-all hover:bg-white/10 text-teal-50/70" title="Settings">⚙️</button>
-                    <button onclick="window.ui.confirmLogout()" class="p-2 sm:px-4 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap" title="Log Out">
-                        <span class="hidden sm:inline">Log Out</span>
-                        <span class="sm:hidden">🚪</span>
-                    </button>
+                    <button onclick="window.ui.confirmLogout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap" title="Log Out">Log Out</button>
                 </div>
             </div>
 
             <div id="nav-superadmin" class="flex items-center gap-3 bg-black/40 p-1.5 rounded-xl border border-amber-500/20 hidden shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-                <span class="px-4 py-2 text-amber-400 font-bold text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2">👑 Admin Portal</span>
+                <span class="px-4 py-2 text-amber-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2">👑 Admin Portal</span>
                 <button onclick="window.ui.confirmLogout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300">Log Out</button>
             </div>
         </div>
     </nav>
 
-    <main class="main-content max-w-7xl mx-auto px-4 py-6 sm:py-8">
+    <!-- Mobile Bottom Navigation (Only visible on small screens) -->
+    <nav id="mobile-nav" class="sm:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-teal-500/20 z-[100] pb-safe hidden">
+        <div class="flex justify-around items-center h-16 px-2">
+            <button onclick="window.ui.switchTab('dashboard')" id="m-btn-tab-dashboard" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[10px] font-medium">Home</span>
+            </button>
+            <button onclick="window.ui.switchTab('attendance')" id="m-btn-tab-attendance" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors hidden">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span class="text-[10px] font-medium">Meetings</span>
+            </button>
+            <button onclick="window.ui.switchTab('s21')" id="m-btn-tab-s21" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                <span class="text-[10px] font-medium">Print</span>
+            </button>
+            <button onclick="window.ui.switchTab('publishers')" id="m-btn-tab-publishers" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <span class="text-[10px] font-medium">Profiles</span>
+            </button>
+            <button onclick="window.ui.openModal('modal-mobile-menu')" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                <span class="text-[10px] font-medium">More</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Top Header Context -->
+    <div class="sm:hidden sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-teal-500/20 px-4 py-3 flex justify-between items-center" id="mobile-top-header">
+        <div class="font-bold text-lg tracking-wide text-white drop-shadow-lg" id="nav-mobile-title">Overview</div>
+        <div class="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 text-xs">FS</div>
+    </div>
+
+    <main class="main-content max-w-7xl mx-auto px-4 py-6 sm:py-8 relative">
         
         <!-- SUPER ADMIN TAB -->
         <div id="tab-superadmin" class="tab-content space-y-6">
@@ -275,7 +305,7 @@
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Congregation Overview</h2>
                     <p class="text-teal-200/70 mt-1 text-xs sm:text-sm">Real-time telemetry and service totals</p>
                 </div>
-                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                <div class="flex gap-2 sm:gap-3 w-full sm:w-auto flex-wrap">
                     <select id="dash-year" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-3 rounded-xl text-sm"></select>
                     <select id="dash-month" onchange="window.ui.renderDashboard()" class="flex-1 sm:flex-none px-3 py-3 rounded-xl text-sm">
                         <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
@@ -939,6 +969,42 @@
         </div>
     </div>
 
+    <!-- Mobile "More" Menu Modal -->
+    <div id="modal-mobile-menu" class="hidden sm:hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[1000] flex items-end justify-center">
+        <div class="glass-panel w-full rounded-t-3xl overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-white/10 pb-safe">
+            <div class="bg-black/40 px-6 py-4 flex justify-between items-center border-b border-white/10">
+                <h3 class="text-lg font-bold text-white tracking-tight">More Options</h3>
+                <button type="button" onclick="window.ui.closeModal('modal-mobile-menu')" class="text-teal-200/50 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-2">
+                <button onclick="window.ui.switchTab('groups')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-white font-medium flex items-center gap-3 border border-transparent">
+                    <span class="bg-teal-900/50 p-2 rounded-lg text-teal-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></span>
+                    Service Groups
+                </button>
+                <button onclick="window.ui.switchTab('analytics')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-white font-medium flex items-center gap-3 border border-transparent">
+                    <span class="bg-teal-900/50 p-2 rounded-lg text-teal-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></span>
+                    Analytics & Rosters
+                </button>
+                <div class="h-px w-full bg-white/10 my-2"></div>
+                <button onclick="window.ui.openModal('modal-settings'); window.ui.closeModal('modal-mobile-menu');" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-teal-100/80 font-medium flex items-center gap-3">
+                    <span class="bg-white/5 p-2 rounded-lg text-teal-200/50"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></span>
+                    System Settings
+                </button>
+                <button onclick="window.ui.confirmLogout(); window.ui.closeModal('modal-mobile-menu');" class="w-full text-left px-4 py-3 rounded-xl hover:bg-rose-500/10 text-rose-300 font-medium flex items-center gap-3">
+                    <span class="bg-rose-500/10 p-2 rounded-lg text-rose-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></span>
+                    Log Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="glass-panel text-white px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-3 sm:gap-4 border border-teal-500/40">
+        <span id="toast-icon" class="text-xl sm:text-2xl drop-shadow-md">✅</span>
+        <span id="toast-msg" class="font-medium tracking-wide text-sm sm:text-base"></span>
+    </div>
+
     <script type="module">
         const { createClient } = window.supabase;
         
@@ -958,17 +1024,18 @@
                 const congParam = urlParams.get('cong');
                 const modeParam = urlParams.get('mode');
                 
+                // If a congregation ID is present in the URL, this is a public link. Bypass admin login.
                 if (congParam) { 
                     window.currentCongId = congParam;
                     document.body.classList.add('public-mode'); 
+                    window.ui.publicGroup = urlParams.get('group'); 
                     
                     if (modeParam === 'attendance') {
                         window.ui.switchTab('public-attendance');
-                        window.ui.setupPublicAttendance();
                     } else {
-                        window.ui.publicGroup = urlParams.get('group'); 
                         window.ui.switchTab('s4'); 
                     }
+                    
                     document.getElementById('auth-screen').classList.add('hidden');
                     return true; 
                 }
@@ -1571,7 +1638,8 @@
                         el.value = istInfo.serviceYear;
                     }
                 });
-                const mSelects = ['dash-month', 'analytics-month', 'att-month']; mSelects.forEach(id => { const el = document.getElementById(id); if(el) el.value = istInfo.month; });
+                const mSelects = ['dash-month', 'analytics-month', 'att-month']; 
+                mSelects.forEach(id => { const el = document.getElementById(id); if(el) el.value = istInfo.month; });
                 
                 const trialBadge = document.getElementById('nav-trial-timer');
                 const trialDays = localStorage.getItem('fs_trial_days');
@@ -1588,6 +1656,15 @@
                 const savedName = localStorage.getItem('fs_print_cong_name');
                 const attNameInput = document.getElementById('att-cong-name');
                 if(attNameInput) attNameInput.value = savedName || window.db.currentCongData?.name || '';
+
+                if(window.db.currentCongData && window.db.currentCongData.feature_attendance === true) {
+                    document.getElementById('btn-tab-attendance').classList.remove('hidden');
+                    const mBtnAtt = document.getElementById('m-btn-tab-attendance');
+                    if(mBtnAtt) mBtnAtt.classList.remove('hidden');
+                }
+
+                // Show Mobile Nav
+                document.getElementById('mobile-nav').classList.remove('hidden');
 
                 window.ui.switchTab('dashboard');
                 window.addEventListener('resize', () => { window.ui.scaleS21Preview(); });
@@ -1668,14 +1745,24 @@
             switchTab: (tabId) => {
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
                 const targetTab = document.getElementById(`tab-${tabId}`); if (targetTab) targetTab.classList.add('active');
-                document.querySelectorAll('nav button').forEach(el => { el.classList.remove('bg-teal-500/80', 'text-white', 'shadow-lg'); el.classList.add('hover:bg-white/10', 'text-teal-50/70'); });
+                
+                // Desktop Top Nav Styling
+                document.querySelectorAll('nav button[id^="btn-tab-"]').forEach(el => { el.classList.remove('bg-teal-500/80', 'text-white', 'shadow-lg'); el.classList.add('hover:bg-white/10', 'text-teal-50/70'); });
                 const btn = document.getElementById(`btn-tab-${tabId}`); if (btn) { btn.classList.remove('hover:bg-white/10', 'text-teal-50/70'); btn.classList.add('bg-teal-500/80', 'text-white', 'shadow-lg'); }
+                
+                // Mobile Bottom Nav Styling
+                document.querySelectorAll('#mobile-nav button[id^="m-btn-tab-"]').forEach(el => { el.classList.remove('text-teal-300'); el.classList.add('text-teal-50/50'); });
+                const mBtn = document.getElementById(`m-btn-tab-${tabId}`); if (mBtn) { mBtn.classList.remove('text-teal-50/50'); mBtn.classList.add('text-teal-300'); }
+
                 window.ui.currentTab = tabId;
 
                 // Update Mobile Title
-                const titles = { 'dashboard': 'Overview', 'groups': 'Groups', 's21': 'Document Printer', 'analytics': 'Analytics', 'publishers': 'Publishers', 'attendance': 'Meeting Attendance' };
+                const titles = { 'dashboard': 'Overview', 'groups': 'Groups', 's21': 'Document Printer', 'analytics': 'Analytics', 'publishers': 'Publishers', 'attendance': 'Meeting Attendance', 'superadmin': 'SaaS Control Center' };
                 const mTitle = document.getElementById('nav-mobile-title');
                 if(mTitle && titles[tabId]) mTitle.textContent = titles[tabId];
+
+                // Ensure mobile menu is closed when switching tabs
+                window.ui.closeModal('modal-mobile-menu');
 
                 if (tabId === 'dashboard') window.ui.renderDashboard();
                 if (tabId === 'publishers') window.ui.renderPublishers(window.ui.currentPubFilter || 'ALL');
@@ -2114,7 +2201,7 @@
                         wrapper.classList.add('hidden');
                         wrapper.style.display = 'none';
                     }
-                }, 500);
+                }, 500); // Allow iframe to render
             }
         };
 
