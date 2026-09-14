@@ -258,22 +258,27 @@
     <!-- Mobile Bottom Navigation (Only visible on small screens) -->
     <nav id="mobile-nav" class="sm:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-teal-500/20 z-[100] pb-safe hidden">
         <div class="flex justify-around items-center h-16 px-2">
+            <!-- Priority 1: Home -->
             <button onclick="window.ui.switchTab('dashboard')" id="m-btn-tab-dashboard" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 <span class="text-[10px] font-medium">Home</span>
             </button>
-            <button onclick="window.ui.switchTab('attendance')" id="m-btn-tab-attendance" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors hidden">
+            <!-- Priority 2: Groups -->
+            <button onclick="window.ui.switchTab('groups')" id="m-btn-tab-groups" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                <span class="text-[10px] font-medium">Meetings</span>
+                <span class="text-[10px] font-medium">Groups</span>
             </button>
+            <!-- Priority 3: Print -->
             <button onclick="window.ui.switchTab('s21')" id="m-btn-tab-s21" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                 <span class="text-[10px] font-medium">Print</span>
             </button>
+            <!-- Priority 4: Publishers -->
             <button onclick="window.ui.switchTab('publishers')" id="m-btn-tab-publishers" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 <span class="text-[10px] font-medium">Profiles</span>
             </button>
+            <!-- Priority 5: More -->
             <button onclick="window.ui.openModal('modal-mobile-menu')" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 <span class="text-[10px] font-medium">More</span>
@@ -297,10 +302,12 @@
                 </button>
             </div>
             <div class="p-4 space-y-2">
-                <button onclick="window.ui.switchTab('groups')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-white font-medium flex items-center gap-3 border border-transparent">
-                    <span class="bg-teal-900/50 p-2 rounded-lg text-teal-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></span>
-                    Service Groups
+                <!-- Attendance Tab (Relocated to 'More' menu and conditionally displayed) -->
+                <button id="m-btn-menu-attendance" onclick="window.ui.switchTab('attendance'); window.ui.closeModal('modal-mobile-menu');" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-white font-medium flex items-center gap-3 border border-transparent hidden">
+                    <span class="bg-teal-900/50 p-2 rounded-lg text-teal-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></span>
+                    Meeting Attendance
                 </button>
+
                 <button onclick="window.ui.switchTab('analytics')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-white font-medium flex items-center gap-3 border border-transparent">
                     <span class="bg-teal-900/50 p-2 rounded-lg text-teal-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></span>
                     Analytics & Rosters
@@ -1086,35 +1093,35 @@
                     const { data, error } = await supabaseClient.from('congregations').select('*').eq('id', cid).eq('admin_password', pwd).single();
                     
                     if (data) {
-                    window.db.currentCongData = data; 
-                    if (data.status === 'trial') {
-                        const createdDate = data.created_at ? new Date(data.created_at) : new Date();
-                        const now = new Date();
-                        const diffTime = Math.abs(now - createdDate);
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        const maxTrial = data.trial_days || 7;
-                        
-                        if (diffDays > maxTrial) {
-                            window.ui.showToast(`Trial period of ${maxTrial} days has expired. Please contact SuperAdmin.`, "error");
+                        window.db.currentCongData = data; 
+                        if (data.status === 'trial') {
+                            const createdDate = data.created_at ? new Date(data.created_at) : new Date();
+                            const now = new Date();
+                            const diffTime = Math.abs(now - createdDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            const maxTrial = data.trial_days || 7;
+                            
+                            if (diffDays > maxTrial) {
+                                window.ui.showToast(`Trial period of ${maxTrial} days has expired. Please contact SuperAdmin.`, "error");
+                                btn.textContent = "Unlock Database"; btn.disabled = false;
+                                return;
+                            } else {
+                                localStorage.setItem('fs_trial_days', maxTrial - diffDays);
+                                window.ui.showToast(`Trial active: ${maxTrial - diffDays} days remaining.`);
+                            }
+                        } else if (data.status === 'expired') {
+                            window.ui.showToast("Subscription expired. Admin access disabled.", "error");
                             btn.textContent = "Unlock Database"; btn.disabled = false;
                             return;
                         } else {
-                            localStorage.setItem('fs_trial_days', maxTrial - diffDays);
-                            window.ui.showToast(`Trial active: ${maxTrial - diffDays} days remaining.`);
+                            localStorage.removeItem('fs_trial_days');
                         }
-                    } else if (data.status === 'expired') {
-                        window.ui.showToast("Subscription expired. Admin access disabled.", "error");
-                        btn.textContent = "Unlock Database"; btn.disabled = false;
-                        return;
-                    } else {
-                        localStorage.removeItem('fs_trial_days');
-                    }
 
-                    localStorage.setItem('fs_auth', 'true');
-                    localStorage.setItem('fs_auth_type', 'admin');
+                        localStorage.setItem('fs_auth', 'true');
+                        localStorage.setItem('fs_auth_type', 'admin');
                         localStorage.setItem('fs_cong_id', data.id);
                         localStorage.setItem('fs_cong_name', data.name);
-                        
+                            
                         document.getElementById('auth-screen').classList.add('hidden');
                         window.db.initAdmin(data.id, data.name);
                     } else {
@@ -1173,6 +1180,28 @@
         window.db = {
             publishers: [], reports: [], congregations: [], currentCongData: null, attendance: [],
 
+            initPublicS4OrLogin: () => {
+                const loader = document.getElementById('global-loader');
+                if (loader) {
+                    setTimeout(() => {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.classList.add('hidden'), 500);
+                    }, 3000);
+                }
+
+                if(window.auth.check()) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    
+                    if (urlParams.get('cong')) {
+                        window.db.initPublicS4(urlParams.get('cong'));
+                    } else {
+                        const type = localStorage.getItem('fs_auth_type');
+                        if (type === 'super') { window.db.initSuperAdmin(); }
+                        else if (type === 'admin') { window.db.initAdmin(localStorage.getItem('fs_cong_id'), localStorage.getItem('fs_cong_name')); }
+                    }
+                }
+            },
+
             initPublicS4: async (congId) => {
                 if (isCloudEnabled) {
                     const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
@@ -1216,7 +1245,8 @@
 
                         if(window.db.currentCongData && window.db.currentCongData.feature_attendance === true) {
                             document.getElementById('btn-tab-attendance').classList.remove('hidden');
-                            document.getElementById('m-btn-tab-attendance').classList.remove('hidden');
+                            const mMenuAtt = document.getElementById('m-btn-menu-attendance');
+                            if(mMenuAtt) mMenuAtt.classList.remove('hidden');
                         }
                     } catch (e) { console.error("Cloud fetch failed:", e); }
                 }
@@ -1518,94 +1548,6 @@
             }
         };
 
-        const S3_ENGINE_CSS = `
-            @media print {
-                @page { size: letter landscape; margin: 0; }
-                html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; height: 100% !important; overflow: hidden !important; }
-                .s3-wrapper { width: 1000px; margin: 0 auto; padding-top: 40px; box-sizing: border-box; }
-                * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box; }
-            }
-            :root { --line-color: #000; }
-            html, body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #fff; color: #000; overflow: hidden; }
-            .s3-wrapper { width: 1000px; height: 750px; background: #fff; position: relative; margin: 0 auto; box-sizing: border-box; padding: 40px 50px; display: flex; flex-direction: column; }
-            .s3-title { font-family: "Times New Roman", Times, serif; font-size: 34px; font-weight: bold; text-align: center; margin-bottom: 22px; letter-spacing: 0.5px; }
-            .s3-subtitle { font-size: 19px; font-weight: bold; text-align: center; margin: 0 auto 50px auto; max-width: 900px; line-height: 1.4; }
-            
-            .s3-header-row { display: flex; justify-content: space-between; align-items: flex-end; font-size: 22px; font-weight: bold; margin-bottom: 8px; }
-            .s3-header-col { display: flex; align-items: flex-end; }
-            .s3-header-col.left { width: 65%; }
-            .s3-header-col.right { width: 32%; }
-            .s3-header-label { white-space: nowrap; margin-right: 8px; }
-            .s3-header-input { flex: 1; border-bottom: 2px dotted #000; font-size: 24px; font-weight: normal; padding-left: 5px; height: 32px; line-height: 32px; overflow: visible;}
-            
-            .s3-table { width: 100%; border-collapse: collapse; border: 2px solid var(--line-color); flex: 1; margin-bottom: 20px;}
-            .s3-table th, .s3-table td { border: 1px solid var(--line-color); text-align: center; font-size: 22px; font-weight: bold; padding: 0; }
-            .s3-table th { height: 60px; font-size: 21px;}
-            .s3-table td { height: 110px; }
-            
-            .s3-table th:first-child { width: 18%; border-right: 2px solid var(--line-color); }
-            .s3-table td:first-child { font-size: 22px; font-weight: bold; line-height: 1.2; text-align: left; padding-left: 15px; border-right: 2px solid var(--line-color); display: flex; flex-direction: column; justify-content: center; height: 100%; }
-            
-            .s3-table th:nth-last-child(-n+2), .s3-table td:nth-last-child(-n+2) { border-left: 2px solid var(--line-color); }
-            
-            .s3-cell-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif; font-size: 26px; font-weight: normal;}
-            .s3-cell-content.string-val { font-size: 16px; font-weight: bold; text-transform: uppercase; color: #444;}
-            
-            .s3-footer { display: flex; font-size: 20px; color: #000; margin-top: auto; }
-            .s3-footer span { margin-right: 20px; }
-        `;
-
-        const S21_ENGINE_CSS = `
-            @media print {
-                @page { size: A4 landscape; margin: 0; }
-                html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; height: auto !important; overflow: visible !important; }
-                .page { width: 1448px !important; height: 1025px !important; margin: 0 !important; padding: 0 !important; border: none !important; page-break-inside: avoid !important; page-break-after: always !important; zoom: 0.76 !important; box-sizing: border-box !important; }
-                .page:last-of-type { page-break-after: auto !important; }
-                * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            }
-            :root { --page-w: 1448px; --page-h: 1025px; --x: 40px; --table-w: 1369px; --c1: 206px; --c2: 173px; --c3: 172px; --c4: 172px; --c5: 173px; --c6: 473px; --header-h: 120px; --row-h: 43px; --line: #202020; --heavy: #202020; }
-            * { box-sizing: border-box; }
-            html, body { margin: 0; padding: 0; width: 100%; min-height: 100%; background: #fff; color: #000; font-family: Arial, Helvetica, sans-serif; overflow: hidden; }
-            .page { position: relative; width: var(--page-w); height: var(--page-h); min-width: var(--page-w); margin: 0 auto; background: #fff; overflow: hidden; }
-            .title { position: absolute; top: 33px; left: 0; width: var(--page-w); margin: 0; text-align: center; font-size: 34px; line-height: 42px; font-weight: 700; white-space: nowrap; }
-            .personal { position: absolute; top: 95px; left: 39px; width: 1370px; height: 137px; font-size: 27px; line-height: 35px; font-weight: 700; }
-            .detail { position: absolute; left: 0; width: 850px; height: 35px; display: flex; align-items: center; }
-            .detail.name { top: 0; } .detail.birth { top: 35px; } .detail.baptism { top: 70px; }
-            .detail-label { flex: 0 0 205px; white-space: nowrap; }
-            .detail-input { flex: 0 0 645px; width: 645px; height: 35px; padding: 0 4px; font: 700 27px/35px Arial; }
-            .identity { position: absolute; left: 898px; top: 35px; width: 470px; height: 70px; font-size: 27px; font-weight: 700; }
-            .identity label { position: absolute; display: flex; align-items: center; width: 220px; height: 35px; white-space: nowrap; }
-            .identity .male { left: 0; top: 0; } .identity .female { left: 248px; top: 0; } .identity .sheep { left: 0; top: 35px; } .identity .anointed { left: 248px; top: 35px; }
-            .check-label { display: inline-flex; align-items: center; height: 35px; white-space: nowrap; }
-            .role-options { position: absolute; left: 0; top: 105px; width: 1370px; height: 35px; display: flex; align-items: center; justify-content: space-between; font-size: 27px; font-weight: 700; }
-            
-            .box-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 2px solid var(--heavy); margin-right: 9px; font-size: 22px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
-            .month-check { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 2px solid var(--heavy); font-size: 28px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
-            
-            .form-table { position: absolute; top: 264px; left: var(--x); width: var(--table-w); }
-            .table-grid { width: var(--table-w); display: grid; grid-template-columns: var(--c1) var(--c2) var(--c3) var(--c4) var(--c5) var(--c6); grid-template-rows: var(--header-h) repeat(12, var(--row-h)); border: 3px solid var(--heavy); background: #fff; }
-            .cell { border-right: 2px solid var(--line); border-bottom: 2px solid var(--line); overflow: hidden; background: #fff; }
-            .cell:nth-child(6n) { border-right: 0; }
-            .cell.header { height: var(--header-h); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 25px; font-weight: 700; }
-            .table-grid .cell:nth-last-child(-n+6) { border-bottom: 0; }
-            .month { display: flex; align-items: center; padding-left: 9px; font-size: 25px; }
-            .center { display: flex; align-items: center; justify-content: center; }
-            .hours-header { display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 25px; font-weight: 700; text-align: center; } .hours-header .sub { font-weight: 400; }
-            
-            .cell-input { width: 100%; height: 41px; padding: 0 5px; text-align: center; font: 400 24px/41px Arial; overflow: hidden;}
-            .remarks-input { width: 100%; height: 41px; padding: 0 7px; text-align: center; font: 400 21px/41px Arial; overflow: hidden;}
-            
-            .total-row { width: var(--table-w); height: 45px; position: relative; }
-            .total-label { position: absolute; left: 648px; top: 7px; width: 74px; text-align: right; font-size: 25px; font-weight: 700; }
-            .total-box { position: absolute; left: 723px; top: 0; width: 646px; height: 45px; display: grid; grid-template-columns: var(--c5) var(--c6); border: 3px solid var(--heavy); border-top: 3px solid var(--heavy); background: #fff; }
-            .total-box .slot { height: 41px; overflow: hidden; }
-            .total-box .slot + .slot { border-left: 2px solid var(--line); }
-            .total-input { width: 100%; height: 41px; padding: 0 6px; text-align: center; font: 700 23px/41px Arial; overflow: hidden; }
-            .total-input.remarks { font-weight: 700; }
-            
-            .footer { position: absolute; left: 39px; top: 970px; font-size: 19px; } .footer-date { margin-left: 18px; }
-        `;
-
         window.ui = {
             currentTab: 'dashboard', publicGroup: null, currentPubFilter: 'ALL',
             
@@ -1662,7 +1604,8 @@
 
                 if(window.db.currentCongData && window.db.currentCongData.feature_attendance === true) {
                     document.getElementById('btn-tab-attendance').classList.remove('hidden');
-                    document.getElementById('m-btn-tab-attendance').classList.remove('hidden');
+                    const mMenuAtt = document.getElementById('m-btn-menu-attendance');
+                    if(mMenuAtt) mMenuAtt.classList.remove('hidden');
                 }
 
                 // Show Mobile Nav
@@ -2798,28 +2741,6 @@
 
         window.addEventListener('load', () => window.db.initPublicS4OrLogin());
 
-        // Setup the initial load logic explicitly
-        window.db.initPublicS4OrLogin = () => {
-            const loader = document.getElementById('global-loader');
-            if (loader) {
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.classList.add('hidden'), 500);
-                }, 3000);
-            }
-
-            if(window.auth.check()) {
-                const urlParams = new URLSearchParams(window.location.search);
-                
-                if (urlParams.get('cong')) {
-                    window.db.initPublicS4(urlParams.get('cong'));
-                } else {
-                    const type = localStorage.getItem('fs_auth_type');
-                    if (type === 'super') { window.db.initSuperAdmin(); }
-                    else if (type === 'admin') { window.db.initAdmin(localStorage.getItem('fs_cong_id'), localStorage.getItem('fs_cong_name')); }
-                }
-            }
-        };
     </script>
 </body>
 </html>
