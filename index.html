@@ -551,10 +551,13 @@
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Emergency Contacts</h2>
                     <p class="text-teal-200/70 mt-1">Quick-access directory for urgent situations</p>
                 </div>
-                <button onclick="window.ui.printEmergencyContacts()" class="w-full sm:w-auto bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.4)] flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Download PDF
-                </button>
+                <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
+                    <input type="text" id="emergency-search" oninput="window.ui.renderEmergencyContacts()" placeholder="Search names..." class="px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 text-sm">
+                    <button onclick="window.ui.printEmergencyContacts()" class="w-full sm:w-auto bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.4)] flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Download PDF
+                    </button>
+                </div>
             </div>
             <div class="glass-panel rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
@@ -1068,7 +1071,7 @@
                         <div class="grid grid-cols-2 gap-4 sm:gap-5">
                             <div class="col-span-2 md:col-span-1 space-y-2">
                                 <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Contact Name</label>
-                                <input type="text" id="pub-emergency-name" class="w-full px-4 py-2.5 rounded-xl">
+                                <select id="pub-emergency-name" class="w-full px-4 py-2.5 rounded-xl"></select>
                             </div>
                             <div class="col-span-2 md:col-span-1 space-y-2">
                                 <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Relationship</label>
@@ -1150,7 +1153,6 @@
         <span id="toast-icon" class="text-xl sm:text-2xl drop-shadow-md">✅</span>
         <span id="toast-msg" class="font-medium tracking-wide text-sm sm:text-base"></span>
     </div>
-
     <script type="module">
         const { createClient } = window.supabase;
         
@@ -1709,9 +1711,9 @@
             .s88-title { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 6px; }
             .s88-subtitle { font-size: 15px; font-weight: bold; text-align: center; margin-bottom: 24px; }
             .s88-section-title { font-size: 17px; font-weight: bold; margin: 20px 0 10px 0; border-bottom: 2px solid #000; padding-bottom: 4px; }
-            .s88-year-row { display: flex; gap: 16px; }
-            .s88-table { flex: 1; width: 50%; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; }
-            .s88-table th, .s88-table td { border: 1px solid #000; font-size: 10px; padding: 4px 5px; text-align: center; }
+            .s88-year-row { display: flex; gap: 24px; width: 100%; justify-content: space-between; }
+            .s88-table { flex: 1; width: 48%; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; }
+            .s88-table th, .s88-table td { border: 1px solid #000; font-size: 11px; padding: 6px 5px; text-align: center; }
             .s88-table th { font-weight: bold; background: #f2f2f2; font-size: 9.5px; }
             .s88-month { text-align: left !important; font-weight: bold; }
             .s88-summary td { font-weight: bold; background: #f7f7f7; }
@@ -1734,15 +1736,15 @@
             .personal { position: absolute; top: 95px; left: 39px; width: 1370px; height: 137px; font-size: 27px; line-height: 35px; font-weight: 700; }
             .detail { position: absolute; left: 0; width: 850px; height: 35px; display: flex; align-items: center; }
             .detail.name { top: 0; } .detail.birth { top: 35px; } .detail.baptism { top: 70px; }
-            .detail-label { flex: 0 0 205px; white-space: nowrap; }
-            .detail-input { flex: 0 0 645px; width: 645px; height: 35px; padding: 0 4px; font: 700 27px/35px Arial; }
+            .detail-label { flex: 0 0 auto; margin-right: 12px; white-space: nowrap; }
+            .detail-input { flex: 1; height: 35px; padding: 0 4px; font: 700 27px/35px Arial; border-bottom: 1px dotted #ccc; }
             .identity { position: absolute; left: 898px; top: 35px; width: 470px; height: 70px; font-size: 27px; font-weight: 700; }
             .identity label { position: absolute; display: flex; align-items: center; width: 220px; height: 35px; white-space: nowrap; }
             .identity .male { left: 0; top: 0; } .identity .female { left: 248px; top: 0; } .identity .sheep { left: 0; top: 35px; } .identity .anointed { left: 248px; top: 35px; }
             .check-label { display: inline-flex; align-items: center; height: 35px; white-space: nowrap; }
             .role-options { position: absolute; left: 0; top: 105px; width: 1370px; height: 35px; display: flex; align-items: center; justify-content: space-between; font-size: 27px; font-weight: 700; }
             
-            .box-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 2px solid var(--heavy); margin-right: 9px; margin-top: -4px; font-size: 22px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
+            .box-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 2px solid var(--heavy); margin-right: 9px; margin-top: -10px; font-size: 22px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
             .month-check { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 2px solid var(--heavy); font-size: 28px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
             
             .form-table { position: absolute; top: 264px; left: var(--x); width: var(--table-w); }
@@ -2000,7 +2002,11 @@
             },
 
             openModal: (id, isEdit = false) => {
-                if(id === 'modal-add-publisher' && !isEdit) { document.getElementById('form-publisher').reset(); document.getElementById('pub-id').value = ''; document.getElementById('modal-pub-title').textContent = 'Publisher Record'; }
+                if(id === 'modal-add-publisher' && !isEdit) { 
+                    document.getElementById('form-publisher').reset(); 
+                    document.getElementById('pub-id').value = ''; 
+                    document.getElementById('modal-pub-title').textContent = 'Publisher Record'; 
+                }
                 if(id === 'modal-settings') { 
                     document.getElementById('cp-current').value = ''; document.getElementById('cp-new').value = ''; 
                     window.ui.checkPassword('', 'cp-new-pwd-reqs', 'btn-cp-save');
@@ -2434,7 +2440,8 @@
                 document.getElementById('pub-dob').value = pub.dob || ''; document.getElementById('pub-baptized').value = pub.baptized || '';
                 document.getElementById('pub-elder').checked = !!pub.isElder; document.getElementById('pub-ms').checked = !!pub.isMS; document.getElementById('pub-rp').checked = !!pub.isRP; document.getElementById('pub-sp').checked = !!pub.isSP; document.getElementById('pub-fm').checked = !!pub.isFM;
                 document.getElementById('pub-phone').value = pub.phone || ''; document.getElementById('pub-group').value = pub.group || '';
-                document.getElementById('pub-address').value = pub.address || ''; document.getElementById('pub-emergency-name').value = pub.emergencyName || '';
+                document.getElementById('pub-address').value = pub.address || ''; 
+                document.getElementById('pub-emergency-name').value = pub.emergencyName || '';
                 document.getElementById('pub-emergency-relationship').value = pub.emergencyRelationship || ''; document.getElementById('pub-emergency-phone').value = pub.emergencyPhone || '';
                 document.getElementById('modal-pub-title').textContent = 'Edit Publisher Record'; window.ui.openModal('modal-add-publisher', true);
             },
@@ -2538,6 +2545,17 @@
                 window.ui.currentPubFilter = filterType;
                 const tbody = document.getElementById('publisher-table-body'); if(!tbody) return;
                 const allPubs = window.db.getPublishers();
+                
+                // Populate Emergency Contacts Dropdown
+                const ecSelect = document.getElementById('pub-emergency-name');
+                if (ecSelect) {
+                    const currentVal = ecSelect.value;
+                    ecSelect.innerHTML = '<option value="">-- Select Family Head --</option>';
+                    allPubs.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => {
+                        ecSelect.innerHTML += `<option value="${p.name}">${p.name}</option>`;
+                    });
+                    ecSelect.value = currentVal;
+                }
                 
                 let elders = 0, ms = 0, rps = 0, ubps = 0, baptized = 0, others = 0;
                 allPubs.forEach(p => {
@@ -2801,14 +2819,28 @@
                 const month = parseInt(document.getElementById('dash-month').value);
                 const rows = document.querySelectorAll('#bulk-entry-table-body tr[data-pubid]');
                 let count = 0;
+                
                 for (const row of rows) {
                     const pubId = row.getAttribute('data-pubid');
+                    const pub = window.db.getPublishers().find(p => p.id === pubId);
                     const shared = row.querySelector('.bulk-shared').checked;
-                    const studies = parseInt(row.querySelector('.bulk-studies').value) || 0;
-                    const hours = parseFloat(row.querySelector('.bulk-hours').value) || 0;
-                    const isAP = row.querySelector('.bulk-ap').checked;
-                    const comments = row.querySelector('.bulk-comments').value;
-                    const report = { pubId: pubId, serviceYear: sy, month: month, sharedInMinistry: shared, studies: shared ? studies : 0, hours: shared ? hours : 0, comments: shared ? comments : (comments || ''), isAP: shared ? isAP : false };
+                    let studies = parseInt(row.querySelector('.bulk-studies').value) || 0;
+                    let hours = parseFloat(row.querySelector('.bulk-hours').value) || 0;
+                    let isAP = row.querySelector('.bulk-ap').checked;
+                    let comments = row.querySelector('.bulk-comments').value;
+
+                    // Apply Universal Logic
+                    if (!shared) {
+                        comments = "Not Participated";
+                        isAP = false;
+                        hours = 0;
+                        studies = 0;
+                    } else if (hours > 0 && pub && !pub.isRP && !pub.isSP && !pub.isFM) {
+                        // Auto-update to AP if they have hours and aren't full-time servants
+                        isAP = true;
+                    }
+
+                    const report = { pubId: pubId, serviceYear: sy, month: month, sharedInMinistry: shared, studies: studies, hours: hours, comments: comments, isAP: isAP };
                     await window.db.saveReport(report);
                     count++;
                 }
@@ -2922,7 +2954,13 @@
 
             renderEmergencyContacts: () => {
                 const tbody = document.getElementById('emergency-table-body'); if(!tbody) return;
-                const pubs = window.db.getPublishers().slice().sort((a,b)=>a.name.localeCompare(b.name));
+                const searchStr = (document.getElementById('emergency-search')?.value || '').toLowerCase();
+                
+                let pubs = window.db.getPublishers().slice().sort((a,b)=>a.name.localeCompare(b.name));
+                if (searchStr) {
+                    pubs = pubs.filter(p => p.name.toLowerCase().includes(searchStr) || (p.emergencyName && p.emergencyName.toLowerCase().includes(searchStr)));
+                }
+
                 tbody.innerHTML = '';
                 if (pubs.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-teal-100/40 italic">No publishers found.</td></tr>';
@@ -2938,6 +2976,8 @@
             printEmergencyContacts: () => {
                 const iframe = document.getElementById('emergency-render-frame');
                 const wrapper = document.getElementById('emergency-render-area');
+                
+                // Using unfiltered publishers for full PDF download, optionally you could filter it based on current search view
                 const pubs = window.db.getPublishers().slice().sort((a,b)=>a.name.localeCompare(b.name));
 
                 let rowsHtml = pubs.map(p => `
@@ -3249,22 +3289,32 @@
         // Setup the initial load logic explicitly
         window.db.initPublicS4OrLogin = () => {
             const loader = document.getElementById('global-loader');
-            if (loader) {
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.classList.add('hidden'), 500);
-                }, 3000);
-            }
-
-            if(window.auth.check()) {
+            
+            if (window.auth.check()) {
                 const urlParams = new URLSearchParams(window.location.search);
-                
                 if (urlParams.get('cong')) {
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        loader.style.display = 'none';
+                    }
                     window.db.initPublicS4(urlParams.get('cong'));
                 } else {
+                    if (loader) {
+                        setTimeout(() => {
+                            loader.style.opacity = '0';
+                            setTimeout(() => loader.classList.add('hidden'), 500);
+                        }, 1000);
+                    }
                     const type = localStorage.getItem('fs_auth_type');
                     if (type === 'super') { window.db.initSuperAdmin(); }
                     else if (type === 'admin') { window.db.initAdmin(localStorage.getItem('fs_cong_id'), localStorage.getItem('fs_cong_name')); }
+                }
+            } else {
+                if (loader) {
+                    setTimeout(() => {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.classList.add('hidden'), 500);
+                    }, 1000);
                 }
             }
         };
