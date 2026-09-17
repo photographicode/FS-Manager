@@ -468,6 +468,10 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> 
                         Download PDF
                     </button>
+                    <button id="s21-print-all-btn" onclick="window.ui.printAllCards()" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.5)] flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Download All Publishers
+                    </button>
                 </div>
             </div>
             <div id="s21-render-area" style="overflow-x: auto; -webkit-overflow-scrolling: touch; background: #111; padding: 20px; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: height 0.3s; display: flex; justify-content: center;">
@@ -551,13 +555,13 @@
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Emergency Contacts</h2>
                     <p class="text-teal-200/70 mt-1">Quick-access directory for urgent situations</p>
                 </div>
-                <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
-                    <input type="text" id="emergency-search" oninput="window.ui.renderEmergencyContacts()" placeholder="Search names..." class="px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-white outline-none focus:border-teal-400 text-sm">
-                    <button onclick="window.ui.printEmergencyContacts()" class="w-full sm:w-auto bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.4)] flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Download PDF
-                    </button>
-                </div>
+                <button onclick="window.ui.printEmergencyContacts()" class="w-full sm:w-auto bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.4)] flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Download PDF
+                </button>
+            </div>
+            <div class="glass-panel p-3 sm:p-4 rounded-2xl">
+                <input type="text" id="emergency-search" oninput="window.ui.renderEmergencyContacts()" placeholder="🔍 Search by name..." class="w-full px-4 py-2.5 rounded-xl text-sm">
             </div>
             <div class="glass-panel rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
@@ -570,6 +574,7 @@
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Emergency Contact</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Relationship</th>
                                 <th class="px-4 sm:px-6 py-4 font-semibold">Emergency Phone</th>
+                                <th class="px-4 sm:px-6 py-4 font-semibold">Status</th>
                             </tr>
                         </thead>
                         <tbody id="emergency-table-body" class="divide-y divide-white/10 text-teal-50"></tbody>
@@ -1071,7 +1076,7 @@
                         <div class="grid grid-cols-2 gap-4 sm:gap-5">
                             <div class="col-span-2 md:col-span-1 space-y-2">
                                 <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Contact Name</label>
-                                <select id="pub-emergency-name" class="w-full px-4 py-2.5 rounded-xl"></select>
+                                <input type="text" id="pub-emergency-name" class="w-full px-4 py-2.5 rounded-xl">
                             </div>
                             <div class="col-span-2 md:col-span-1 space-y-2">
                                 <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Relationship</label>
@@ -1080,6 +1085,14 @@
                             <div class="col-span-2 space-y-2">
                                 <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Emergency Phone</label>
                                 <input type="text" id="pub-emergency-phone" class="w-full px-4 py-2.5 rounded-xl">
+                            </div>
+                            <div class="col-span-2 space-y-2">
+                                <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Spiritual Status</label>
+                                <select id="pub-spiritual-status" class="w-full px-4 py-2.5 rounded-xl">
+                                    <option value="Baptised">Baptised</option>
+                                    <option value="Unbaptised">Unbaptised</option>
+                                    <option value="In Truth">In Truth</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -1153,6 +1166,7 @@
         <span id="toast-icon" class="text-xl sm:text-2xl drop-shadow-md">✅</span>
         <span id="toast-msg" class="font-medium tracking-wide text-sm sm:text-base"></span>
     </div>
+
     <script type="module">
         const { createClient } = window.supabase;
         
@@ -1534,8 +1548,8 @@
                 }
             },
 
-            mapPubToDB: (p) => ({ id: p.id, cong_id: window.currentCongId, name: p.name, service_group: p.group, gender: p.gender, hope: p.hope, dob: p.dob || null, baptized: p.baptized || null, is_elder: p.isElder, is_ms: p.isMS, is_rp: p.isRP, is_sp: p.isSP, is_fm: p.isFM, phone: p.phone, address: p.address || null, emergency_name: p.emergencyName || null, emergency_relationship: p.emergencyRelationship || null, emergency_phone: p.emergencyPhone || null }),
-            mapPubFromDB: (r) => ({ id: r.id, name: r.name, group: r.service_group, gender: r.gender, hope: r.hope, dob: r.dob, baptized: r.baptized, isElder: r.is_elder, isMS: r.is_ms, isRP: r.is_rp, isSP: r.is_sp, isFM: r.is_fm, phone: r.phone, address: r.address, emergencyName: r.emergency_name, emergencyRelationship: r.emergency_relationship, emergencyPhone: r.emergency_phone }),
+            mapPubToDB: (p) => ({ id: p.id, cong_id: window.currentCongId, name: p.name, service_group: p.group, gender: p.gender, hope: p.hope, dob: p.dob || null, baptized: p.baptized || null, is_elder: p.isElder, is_ms: p.isMS, is_rp: p.isRP, is_sp: p.isSP, is_fm: p.isFM, phone: p.phone, address: p.address || null, emergency_name: p.emergencyName || null, emergency_relationship: p.emergencyRelationship || null, emergency_phone: p.emergencyPhone || null, spiritual_status: p.spiritualStatus || null }),
+            mapPubFromDB: (r) => ({ id: r.id, name: r.name, group: r.service_group, gender: r.gender, hope: r.hope, dob: r.dob, baptized: r.baptized, isElder: r.is_elder, isMS: r.is_ms, isRP: r.is_rp, isSP: r.is_sp, isFM: r.is_fm, phone: r.phone, address: r.address, emergencyName: r.emergency_name, emergencyRelationship: r.emergency_relationship, emergencyPhone: r.emergency_phone, spiritualStatus: r.spiritual_status }),
             mapRepToDB: (r) => ({ id: r.id, cong_id: window.currentCongId, pub_id: r.pubId, service_year: r.serviceYear, month: r.month, shared_in_ministry: r.shared_in_ministry, studies: r.studies ? parseInt(r.studies) : 0, hours: r.hours ? parseFloat(r.hours) : 0, comments: r.comments, is_ap: r.isAP }),
             mapRepFromDB: (r) => ({ id: r.id, pubId: r.pub_id, serviceYear: r.service_year, month: r.month, sharedInMinistry: r.shared_in_ministry, studies: r.studies, hours: r.hours, comments: r.comments, isAP: r.is_ap }),
 
@@ -1711,13 +1725,18 @@
             .s88-title { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 6px; }
             .s88-subtitle { font-size: 15px; font-weight: bold; text-align: center; margin-bottom: 24px; }
             .s88-section-title { font-size: 17px; font-weight: bold; margin: 20px 0 10px 0; border-bottom: 2px solid #000; padding-bottom: 4px; }
-            .s88-year-row { display: flex; gap: 24px; width: 100%; justify-content: space-between; }
-            .s88-table { flex: 1; width: 48%; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; }
-            .s88-table th, .s88-table td { border: 1px solid #000; font-size: 11px; padding: 6px 5px; text-align: center; }
-            .s88-table th { font-weight: bold; background: #f2f2f2; font-size: 9.5px; }
+            .s88-year-row { width: 100%; border-collapse: separate; table-layout: fixed; }
+            .s88-year-row > tbody > tr > td { vertical-align: top; width: 50%; padding: 0 8px; }
+            .s88-year-row > tbody > tr > td:first-child { padding-left: 0; }
+            .s88-year-row > tbody > tr > td:last-child { padding-right: 0; }
+            .s88-table { width: 100%; border-collapse: collapse; font-family: Arial, Helvetica, sans-serif; table-layout: fixed; }
+            .s88-table th, .s88-table td { border: 1px solid #000; font-size: 10.5px; padding: 8px 5px; text-align: center; line-height: 1.5; }
+            .s88-table th { font-weight: bold; background: #f2f2f2; font-size: 9px; line-height: 1.3; padding: 9px 4px; }
             .s88-month { text-align: left !important; font-weight: bold; }
             .s88-summary td { font-weight: bold; background: #f7f7f7; }
-            .s88-footer { display: flex; justify-content: space-between; font-size: 13px; margin-top: 24px; font-family: Arial, Helvetica, sans-serif; }
+            .s88-footer { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 24px; font-family: Arial, Helvetica, sans-serif; }
+            .s88-footer td { border: none; padding: 0; }
+            .s88-footer td:last-child { text-align: right; }
         `;
 
         const S21_ENGINE_CSS = `
@@ -1736,15 +1755,15 @@
             .personal { position: absolute; top: 95px; left: 39px; width: 1370px; height: 137px; font-size: 27px; line-height: 35px; font-weight: 700; }
             .detail { position: absolute; left: 0; width: 850px; height: 35px; display: flex; align-items: center; }
             .detail.name { top: 0; } .detail.birth { top: 35px; } .detail.baptism { top: 70px; }
-            .detail-label { flex: 0 0 auto; margin-right: 12px; white-space: nowrap; }
-            .detail-input { flex: 1; height: 35px; padding: 0 4px; font: 700 27px/35px Arial; border-bottom: 1px dotted #ccc; }
+            .detail-label { flex: 0 0 auto; white-space: nowrap; margin-right: 10px; }
+            .detail-input { flex: 1; padding: 0 4px; font: 700 27px/35px Arial; }
             .identity { position: absolute; left: 898px; top: 35px; width: 470px; height: 70px; font-size: 27px; font-weight: 700; }
             .identity label { position: absolute; display: flex; align-items: center; width: 220px; height: 35px; white-space: nowrap; }
             .identity .male { left: 0; top: 0; } .identity .female { left: 248px; top: 0; } .identity .sheep { left: 0; top: 35px; } .identity .anointed { left: 248px; top: 35px; }
             .check-label { display: inline-flex; align-items: center; height: 35px; white-space: nowrap; }
             .role-options { position: absolute; left: 0; top: 105px; width: 1370px; height: 35px; display: flex; align-items: center; justify-content: space-between; font-size: 27px; font-weight: 700; }
             
-            .box-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 2px solid var(--heavy); margin-right: 9px; margin-top: -10px; font-size: 22px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
+            .box-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 2px solid var(--heavy); margin-right: 9px; margin-top: -9px; font-size: 22px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
             .month-check { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 2px solid var(--heavy); font-size: 28px; font-weight: bold; color: #000; line-height: 1; overflow: hidden;}
             
             .form-table { position: absolute; top: 264px; left: var(--x); width: var(--table-w); }
@@ -1839,6 +1858,7 @@
                 document.getElementById('mobile-nav').classList.remove('hidden');
 
                 window.ui.switchTab('dashboard');
+                window.ui.renderWipeBanner();
                 window.addEventListener('resize', () => { window.ui.scaleS21Preview(); });
             },
 
@@ -1859,13 +1879,35 @@
                 filtered.forEach(c => {
                     const isTrial = c.status === 'trial';
                     const isExpired = c.status === 'expired';
+
+                    let trialDaysLeft = null;
+                    if (isTrial) {
+                        const createdDate = c.created_at ? new Date(c.created_at) : new Date();
+                        const diffDays = Math.ceil(Math.abs(new Date() - createdDate) / (1000 * 60 * 60 * 24));
+                        trialDaysLeft = Math.max(0, (c.trial_days || 7) - diffDays);
+                    }
                     
                     let statusBadge = `<span class="px-2.5 py-1 rounded-md text-[10px] uppercase font-bold bg-emerald-900/50 text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">Active</span>`;
-                    if (isTrial) statusBadge = `<span class="px-2.5 py-1 rounded-md text-[10px] uppercase font-bold bg-amber-900/50 text-amber-400 border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.2)]">Trial</span>`;
+                    if (isTrial) statusBadge = `<span class="px-2.5 py-1 rounded-md text-[10px] uppercase font-bold bg-amber-900/50 text-amber-400 border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.2)]">Trial · ${trialDaysLeft}d left</span>`;
                     if (isExpired) statusBadge = `<span class="px-2.5 py-1 rounded-md text-[10px] uppercase font-bold bg-rose-900/50 text-rose-400 border border-rose-500/30 shadow-[0_0_10px_rgba(225,29,72,0.2)]">Expired</span>`;
+
+                    let wipeAlertHtml = '';
+                    if (c.wipe_requested_at) {
+                        const reqAt = new Date(c.wipe_requested_at);
+                        const deadline = new Date(reqAt.getTime() + 24 * 60 * 60 * 1000);
+                        const hrsLeft = Math.max(0, Math.ceil((deadline - new Date()) / (1000 * 60 * 60)));
+                        wipeAlertHtml = `
+                            <div class="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-[11px] text-rose-200 space-y-1">
+                                <div class="font-bold uppercase tracking-wider text-rose-300">⚠️ Wipe Scheduled — ~${hrsLeft}h left</div>
+                                <div>Requested: ${reqAt.toLocaleString()}</div>
+                                <div class="break-all">Device: ${c.wipe_device_info || 'Unknown'}</div>
+                            </div>
+                        `;
+                    }
 
                     grid.innerHTML += `
                         <div class="saas-card relative group">
+                            ${wipeAlertHtml}
                             <div class="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 class="font-bold text-xl leading-tight mb-1 text-white group-hover:text-amber-400 transition-colors">${c.name}</h3>
@@ -1881,7 +1923,7 @@
                                 </div>
                                 <div class="text-sm flex justify-between border-b border-white/5 pb-1">
                                     <span class="text-slate-500">Trial Limit:</span>
-                                    <span class="font-medium text-amber-300">${c.trial_days || 7} Days</span>
+                                    <span class="font-medium text-amber-300">${c.trial_days || 7} Days${isTrial ? ` (${trialDaysLeft} left)` : ''}</span>
                                 </div>
                                 <div class="text-sm flex justify-between pb-1">
                                     <span class="text-slate-500">Attendance Feat:</span>
@@ -1991,22 +2033,66 @@
             },
 
             confirmWipeDatabase: () => {
-                window.ui.openSysPrompt("DANGER: Wipe Congregation Data", "This will permanently delete ALL publishers and reports for this congregation. Enter the SuperAdmin Password to proceed.", true, async () => {
-                    window.db.publishers = []; window.db.reports = [];
-                    if(isCloudEnabled) { 
-                        await supabaseClient.from('reports').delete().eq('cong_id', window.currentCongId); 
-                        await supabaseClient.from('publishers').delete().eq('cong_id', window.currentCongId); 
-                    } 
-                    window.ui.showToast("Data Wiped Permanently.", "error"); window.ui.renderPublishers(); window.ui.renderDashboard();
+                if (window.db.currentCongData && window.db.currentCongData.wipe_requested_at) {
+                    window.ui.showToast('A wipe is already scheduled for this congregation. Use "Cancel Wipe" to stop it.', 'error');
+                    window.ui.renderWipeBanner();
+                    return;
+                }
+                window.ui.openSysPrompt("DANGER: Schedule Data Wipe", "This will schedule a PERMANENT deletion of ALL publishers and reports for this congregation in 24 hours. It can be cancelled anytime before then. Enter the SuperAdmin Password to proceed.", true, async () => {
+                    const deviceInfo = `${navigator.platform || 'Unknown Platform'} · ${navigator.userAgent}`;
+                    const nowIso = new Date().toISOString();
+                    if (isCloudEnabled) {
+                        await supabaseClient.from('congregations').update({ wipe_requested_at: nowIso, wipe_device_info: deviceInfo }).eq('id', window.currentCongId);
+                        try {
+                            await supabaseClient.from('wipe_requests').insert([{ cong_id: window.currentCongId, requested_at: nowIso, device_info: deviceInfo, notify_email: (window.db.currentCongData && window.db.currentCongData.email) || null }]);
+                        } catch (e) { console.error('wipe_requests log failed', e); }
+                    }
+                    if (window.db.currentCongData) { window.db.currentCongData.wipe_requested_at = nowIso; window.db.currentCongData.wipe_device_info = deviceInfo; }
+                    window.ui.showToast("Data wipe scheduled. Permanent erase in 24 hours unless cancelled.", "error");
+                    window.ui.renderWipeBanner();
                 });
             },
 
-            openModal: (id, isEdit = false) => {
-                if(id === 'modal-add-publisher' && !isEdit) { 
-                    document.getElementById('form-publisher').reset(); 
-                    document.getElementById('pub-id').value = ''; 
-                    document.getElementById('modal-pub-title').textContent = 'Publisher Record'; 
+            cancelWipe: () => {
+                window.ui.openSysPrompt("Cancel Scheduled Wipe", "Are you sure you want to cancel the pending data wipe for this congregation?", false, async () => {
+                    if (isCloudEnabled) await supabaseClient.from('congregations').update({ wipe_requested_at: null, wipe_device_info: null }).eq('id', window.currentCongId);
+                    if (window.db.currentCongData) { window.db.currentCongData.wipe_requested_at = null; window.db.currentCongData.wipe_device_info = null; }
+                    window.ui.showToast('Scheduled data wipe cancelled.');
+                    window.ui.renderWipeBanner();
+                });
+            },
+
+            executeScheduledWipe: async () => {
+                window.db.publishers = []; window.db.reports = [];
+                if (isCloudEnabled) {
+                    await supabaseClient.from('reports').delete().eq('cong_id', window.currentCongId);
+                    await supabaseClient.from('publishers').delete().eq('cong_id', window.currentCongId);
+                    await supabaseClient.from('congregations').update({ wipe_requested_at: null, wipe_device_info: null }).eq('id', window.currentCongId);
                 }
+                if (window.db.currentCongData) { window.db.currentCongData.wipe_requested_at = null; window.db.currentCongData.wipe_device_info = null; }
+                window.ui.showToast("Scheduled data wipe has been executed. All data permanently erased.", "error");
+                window.ui.renderPublishers(); window.ui.renderDashboard(); window.ui.renderWipeBanner();
+            },
+
+            renderWipeBanner: () => {
+                const existing = document.getElementById('wipe-banner');
+                if (existing) existing.remove();
+                const cong = window.db.currentCongData;
+                if (!cong || !cong.wipe_requested_at) return;
+                const requestedAt = new Date(cong.wipe_requested_at);
+                const deadline = new Date(requestedAt.getTime() + 24 * 60 * 60 * 1000);
+                const now = new Date();
+                if (now >= deadline) { window.ui.executeScheduledWipe(); return; }
+                const hoursLeft = Math.max(0, Math.ceil((deadline - now) / (1000 * 60 * 60)));
+                const banner = document.createElement('div');
+                banner.id = 'wipe-banner';
+                banner.className = 'fixed top-4 sm:top-20 left-1/2 -translate-x-1/2 z-[500] bg-rose-900/95 border border-rose-500/50 text-white px-5 sm:px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 sm:gap-4 text-xs sm:text-sm font-medium max-w-[92vw]';
+                banner.innerHTML = `⚠️ Data wipe scheduled — permanent erase in ~${hoursLeft}h. <button onclick="window.ui.cancelWipe()" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg font-bold whitespace-nowrap">Cancel Wipe</button>`;
+                document.body.appendChild(banner);
+            },
+
+            openModal: (id, isEdit = false) => {
+                if(id === 'modal-add-publisher' && !isEdit) { document.getElementById('form-publisher').reset(); document.getElementById('pub-id').value = ''; document.getElementById('modal-pub-title').textContent = 'Publisher Record'; }
                 if(id === 'modal-settings') { 
                     document.getElementById('cp-current').value = ''; document.getElementById('cp-new').value = ''; 
                     window.ui.checkPassword('', 'cp-new-pwd-reqs', 'btn-cp-save');
@@ -2424,7 +2510,8 @@
                     address: document.getElementById('pub-address').value,
                     emergencyName: document.getElementById('pub-emergency-name').value,
                     emergencyRelationship: document.getElementById('pub-emergency-relationship').value,
-                    emergencyPhone: document.getElementById('pub-emergency-phone').value
+                    emergencyPhone: document.getElementById('pub-emergency-phone').value,
+                    spiritualStatus: document.getElementById('pub-spiritual-status').value
                 };
                 await window.db.savePublisher(pub); 
                 window.ui.showToast(id ? 'Profile updated!' : 'Profile successfully provisioned!'); 
@@ -2440,9 +2527,9 @@
                 document.getElementById('pub-dob').value = pub.dob || ''; document.getElementById('pub-baptized').value = pub.baptized || '';
                 document.getElementById('pub-elder').checked = !!pub.isElder; document.getElementById('pub-ms').checked = !!pub.isMS; document.getElementById('pub-rp').checked = !!pub.isRP; document.getElementById('pub-sp').checked = !!pub.isSP; document.getElementById('pub-fm').checked = !!pub.isFM;
                 document.getElementById('pub-phone').value = pub.phone || ''; document.getElementById('pub-group').value = pub.group || '';
-                document.getElementById('pub-address').value = pub.address || ''; 
-                document.getElementById('pub-emergency-name').value = pub.emergencyName || '';
+                document.getElementById('pub-address').value = pub.address || ''; document.getElementById('pub-emergency-name').value = pub.emergencyName || '';
                 document.getElementById('pub-emergency-relationship').value = pub.emergencyRelationship || ''; document.getElementById('pub-emergency-phone').value = pub.emergencyPhone || '';
+                document.getElementById('pub-spiritual-status').value = pub.spiritualStatus || (pub.baptized ? 'Baptised' : 'Unbaptised');
                 document.getElementById('modal-pub-title').textContent = 'Edit Publisher Record'; window.ui.openModal('modal-add-publisher', true);
             },
 
@@ -2500,7 +2587,7 @@
                         }
                         
                         const groupTag = p.group ? `<span class="text-[9px] sm:text-[10px] text-teal-400 ml-2 bg-teal-900/40 px-1.5 py-0.5 rounded whitespace-nowrap">${p.group}</span>` : '';
-                        tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors"><td class="px-4 sm:px-6 py-4 font-medium flex items-center flex-wrap gap-y-1">${p.name} ${groupTag} ${tagHtml}</td><td class="px-4 sm:px-6 py-4 text-center text-emerald-400 text-lg">${isShared?'✔':'<span class="text-rose-400 font-semibold text-sm">No</span>'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && s>0 ? s : '-'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-6 py-4 text-center text-xs text-teal-100/70"><div class="mx-auto max-w-[150px] sm:max-w-[200px] truncate" title="${r.comments||''}">${r.comments||''}</div></td><td class="px-4 sm:px-6 py-4 text-center">-</td></tr>`;
+                        tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors"><td class="px-4 sm:px-6 py-4 font-medium flex items-center flex-wrap gap-y-1">${p.name} ${groupTag} ${tagHtml}</td><td class="px-4 sm:px-6 py-4 text-center text-emerald-400 text-lg">${isShared?'✔':'<span class="text-rose-400 font-semibold text-sm">No</span>'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && s>0 ? s : '-'}</td><td class="px-4 sm:px-6 py-4 text-center font-mono">${isShared && h>0 ? h : '-'}</td><td class="px-4 sm:px-6 py-4 text-center text-xs text-teal-100/70"><div class="mx-auto max-w-[150px] sm:max-w-[200px] truncate" title="${isShared ? (r.comments||'') : 'Not Participated'}">${isShared ? (r.comments||'') : 'Not Participated'}</div></td><td class="px-4 sm:px-6 py-4 text-center">-</td></tr>`;
                     } else {
                         tbody.innerHTML += `<tr class="border-b border-white/5 bg-black/20 text-teal-100/30"><td class="px-4 sm:px-6 py-4">${p.name}</td><td colspan="4" class="px-4 sm:px-6 py-4 text-center italic text-xs uppercase tracking-widest">Awaiting Data</td><td class="px-4 sm:px-6 py-4 text-right"><button onclick="window.ui.sendReminder('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${(p.group||'').replace(/'/g, "\\'")}', '${(p.phone||'').replace(/'/g, "\\'")}')" class="bg-teal-900/50 hover:bg-teal-800 text-teal-300 px-3 py-1.5 rounded-lg border border-teal-500/30 transition text-xs flex items-center gap-1 ml-auto">📱 Remind</button></td></tr>`;
                     }
@@ -2545,17 +2632,6 @@
                 window.ui.currentPubFilter = filterType;
                 const tbody = document.getElementById('publisher-table-body'); if(!tbody) return;
                 const allPubs = window.db.getPublishers();
-                
-                // Populate Emergency Contacts Dropdown
-                const ecSelect = document.getElementById('pub-emergency-name');
-                if (ecSelect) {
-                    const currentVal = ecSelect.value;
-                    ecSelect.innerHTML = '<option value="">-- Select Family Head --</option>';
-                    allPubs.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => {
-                        ecSelect.innerHTML += `<option value="${p.name}">${p.name}</option>`;
-                    });
-                    ecSelect.value = currentVal;
-                }
                 
                 let elders = 0, ms = 0, rps = 0, ubps = 0, baptized = 0, others = 0;
                 allPubs.forEach(p => {
@@ -2656,7 +2732,7 @@
                         if(r.isAP) stats.aps++;
                         const gH = parseFloat(r.hours || 0); const gS = parseInt(r.studies || 0);
                         const gIsShared = r.sharedInMinistry || gH > 0 || gS > 0;
-                        tableHtml += `<tr class="border-b border-white/5 hover:bg-white/5"><td class="py-2 px-3 font-medium text-white">${p.name}</td><td class="py-2 px-3 text-center text-emerald-400">${gIsShared?'✔':'No'}</td><td class="py-2 px-3 text-center">${r.studies||'-'}</td><td class="py-2 px-3 text-center">${r.hours||'-'}</td><td class="py-2 px-3 text-center text-xs truncate max-w-[150px] text-teal-100/70">${r.comments||''}</td></tr>`;
+                        tableHtml += `<tr class="border-b border-white/5 hover:bg-white/5"><td class="py-2 px-3 font-medium text-white">${p.name}</td><td class="py-2 px-3 text-center text-emerald-400">${gIsShared?'✔':'No'}</td><td class="py-2 px-3 text-center">${gIsShared && gS>0 ? gS : '-'}</td><td class="py-2 px-3 text-center">${gIsShared && gH>0 ? gH : '-'}</td><td class="py-2 px-3 text-center text-xs truncate max-w-[150px] text-teal-100/70">${gIsShared ? (r.comments||'') : 'Not Participated'}</td></tr>`;
                     } else { pending.push(p.name); tableHtml += `<tr class="border-b border-white/5 text-teal-100/50 bg-black/20"><td class="py-2 px-3">${p.name}</td><td colspan="4" class="py-2 px-3 text-center italic text-xs">Pending</td></tr>`; }
                 });
                 
@@ -2799,14 +2875,17 @@
                 } else {
                     pubs.forEach(p => {
                         const r = reports.find(x => x.pubId === p.id) || {};
+                        const isShared = r.sharedInMinistry !== false;
+                        const disAttr = isShared ? '' : 'disabled style="opacity:0.35"';
+                        const commentsVal = isShared ? (r.comments || '') : 'Not Participated';
                         tbody.innerHTML += `
                             <tr class="border-b border-white/5 hover:bg-white/5" data-pubid="${p.id}">
                                 <td class="px-3 py-2 font-medium text-white">${p.name}</td>
-                                <td class="px-3 py-2 text-center"><input type="checkbox" class="bulk-shared accent-teal-500 w-4 h-4" ${r.sharedInMinistry !== false ? 'checked' : ''}></td>
-                                <td class="px-3 py-2 text-center"><input type="number" min="0" class="bulk-studies att-input" style="width:70px" value="${r.studies || ''}"></td>
-                                <td class="px-3 py-2 text-center"><input type="number" min="0" step="0.25" class="bulk-hours att-input" style="width:70px" value="${r.hours || ''}"></td>
-                                <td class="px-3 py-2 text-center"><input type="checkbox" class="bulk-ap accent-emerald-500 w-4 h-4" ${r.isAP ? 'checked' : ''}></td>
-                                <td class="px-3 py-2"><input type="text" class="bulk-comments att-input" style="text-align:left" value="${(r.comments||'').replace(/"/g,'&quot;')}"></td>
+                                <td class="px-3 py-2 text-center"><input type="checkbox" class="bulk-shared accent-teal-500 w-4 h-4" onchange="window.ui.toggleBulkRow(this)" ${isShared ? 'checked' : ''}></td>
+                                <td class="px-3 py-2 text-center"><input type="number" min="0" class="bulk-studies att-input" style="width:70px" value="${r.studies || ''}" ${disAttr}></td>
+                                <td class="px-3 py-2 text-center"><input type="number" min="0" step="0.25" class="bulk-hours att-input" style="width:70px" value="${r.hours || ''}" ${disAttr}></td>
+                                <td class="px-3 py-2 text-center"><input type="checkbox" class="bulk-ap accent-emerald-500 w-4 h-4" ${r.isAP ? 'checked' : ''} ${disAttr}></td>
+                                <td class="px-3 py-2"><input type="text" class="bulk-comments att-input" style="text-align:left" value="${commentsVal.replace(/"/g,'&quot;')}" ${disAttr}></td>
                             </tr>
                         `;
                     });
@@ -2819,7 +2898,6 @@
                 const month = parseInt(document.getElementById('dash-month').value);
                 const rows = document.querySelectorAll('#bulk-entry-table-body tr[data-pubid]');
                 let count = 0;
-                
                 for (const row of rows) {
                     const pubId = row.getAttribute('data-pubid');
                     const pub = window.db.getPublishers().find(p => p.id === pubId);
@@ -2829,14 +2907,9 @@
                     let isAP = row.querySelector('.bulk-ap').checked;
                     let comments = row.querySelector('.bulk-comments').value;
 
-                    // Apply Universal Logic
                     if (!shared) {
-                        comments = "Not Participated";
-                        isAP = false;
-                        hours = 0;
-                        studies = 0;
+                        studies = 0; hours = 0; isAP = false; comments = 'Not Participated';
                     } else if (hours > 0 && pub && !pub.isRP && !pub.isSP && !pub.isFM) {
-                        // Auto-update to AP if they have hours and aren't full-time servants
                         isAP = true;
                     }
 
@@ -2847,6 +2920,21 @@
                 window.ui.showToast(`Saved ${count} reports successfully!`);
                 window.ui.closeModal('modal-bulk-entry');
                 window.ui.renderDashboard();
+            },
+
+            toggleBulkRow: (checkboxEl) => {
+                const row = checkboxEl.closest('tr');
+                const shared = checkboxEl.checked;
+                const studiesInp = row.querySelector('.bulk-studies');
+                const hoursInp = row.querySelector('.bulk-hours');
+                const apInp = row.querySelector('.bulk-ap');
+                const commentsInp = row.querySelector('.bulk-comments');
+                [studiesInp, hoursInp, apInp, commentsInp].forEach(el => { el.disabled = !shared; el.style.opacity = shared ? '1' : '0.35'; });
+                if (!shared) {
+                    studiesInp.value = ''; hoursInp.value = ''; apInp.checked = false; commentsInp.value = 'Not Participated';
+                } else if (commentsInp.value === 'Not Participated') {
+                    commentsInp.value = '';
+                }
             },
 
             printS88: () => {
@@ -2900,16 +2988,16 @@
                         <div class="s88-title">CONGREGATION MEETING ATTENDANCE RECORD</div>
                         <div class="s88-subtitle">${congName}</div>
                         <div class="s88-section-title">Midweek Meeting</div>
-                        <div class="s88-year-row">
-                            ${buildTableHtml(syLeft, 'mid')}
-                            ${buildTableHtml(syRight, 'mid')}
-                        </div>
+                        <table class="s88-year-row"><tr>
+                            <td>${buildTableHtml(syLeft, 'mid')}</td>
+                            <td>${buildTableHtml(syRight, 'mid')}</td>
+                        </tr></table>
                         <div class="s88-section-title">Weekend Meeting</div>
-                        <div class="s88-year-row">
-                            ${buildTableHtml(syLeft, 'end')}
-                            ${buildTableHtml(syRight, 'end')}
-                        </div>
-                        <div class="s88-footer"><span>S-88-E</span><span class="s88-footer-date">12/18</span></div>
+                        <table class="s88-year-row"><tr>
+                            <td>${buildTableHtml(syLeft, 'end')}</td>
+                            <td>${buildTableHtml(syRight, 'end')}</td>
+                        </tr></table>
+                        <table class="s88-footer"><tr><td>S-88-E</td><td>12/18</td></tr></table>
                     </div>
                 </body>
                 </html>`;
@@ -2955,29 +3043,24 @@
             renderEmergencyContacts: () => {
                 const tbody = document.getElementById('emergency-table-body'); if(!tbody) return;
                 const searchStr = (document.getElementById('emergency-search')?.value || '').toLowerCase();
-                
                 let pubs = window.db.getPublishers().slice().sort((a,b)=>a.name.localeCompare(b.name));
-                if (searchStr) {
-                    pubs = pubs.filter(p => p.name.toLowerCase().includes(searchStr) || (p.emergencyName && p.emergencyName.toLowerCase().includes(searchStr)));
-                }
-
+                if (searchStr) pubs = pubs.filter(p => p.name.toLowerCase().includes(searchStr));
                 tbody.innerHTML = '';
                 if (pubs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-teal-100/40 italic">No publishers found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-teal-100/40 italic">No publishers found.</td></tr>';
                     return;
                 }
                 pubs.forEach(p => {
                     const phoneLink = p.phone ? `<a href="tel:${p.phone.replace(/[^\d+]/g,'')}" class="text-cyan-300 hover:text-cyan-200 underline">${p.phone}</a>` : '-';
                     const ePhoneLink = p.emergencyPhone ? `<a href="tel:${p.emergencyPhone.replace(/[^\d+]/g,'')}" class="text-rose-300 hover:text-rose-200 underline">${p.emergencyPhone}</a>` : '-';
-                    tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5"><td class="px-4 sm:px-6 py-4 font-medium text-white">${p.name}</td><td class="px-4 sm:px-6 py-4">${phoneLink}</td><td class="px-4 sm:px-6 py-4 text-teal-100/80">${p.address || '-'}</td><td class="px-4 sm:px-6 py-4 text-teal-100/80">${p.emergencyName || '-'}</td><td class="px-4 sm:px-6 py-4 text-teal-100/80">${p.emergencyRelationship || '-'}</td><td class="px-4 sm:px-6 py-4">${ePhoneLink}</td></tr>`;
+                    const status = p.spiritualStatus || (p.baptized ? 'Baptised' : 'Unbaptised');
+                    tbody.innerHTML += `<tr class="border-b border-white/5 hover:bg-white/5"><td class="px-4 sm:px-6 py-4 font-medium text-white">${p.name}</td><td class="px-4 sm:px-6 py-4">${phoneLink}</td><td class="px-4 sm:px-6 py-4 text-teal-100/80">${p.address || '-'}</td><td class="px-4 sm:px-6 py-4 text-teal-100/80">${p.emergencyName || '-'}</td><td class="px-4 sm:px-6 py-4 text-teal-100/80">${p.emergencyRelationship || '-'}</td><td class="px-4 sm:px-6 py-4">${ePhoneLink}</td><td class="px-4 sm:px-6 py-4 text-teal-100/80">${status}</td></tr>`;
                 });
             },
 
             printEmergencyContacts: () => {
                 const iframe = document.getElementById('emergency-render-frame');
                 const wrapper = document.getElementById('emergency-render-area');
-                
-                // Using unfiltered publishers for full PDF download, optionally you could filter it based on current search view
                 const pubs = window.db.getPublishers().slice().sort((a,b)=>a.name.localeCompare(b.name));
 
                 let rowsHtml = pubs.map(p => `
@@ -2988,6 +3071,7 @@
                         <td>${p.emergencyName || '-'}</td>
                         <td>${p.emergencyRelationship || '-'}</td>
                         <td>${p.emergencyPhone || '-'}</td>
+                        <td>${p.spiritualStatus || (p.baptized ? 'Baptised' : 'Unbaptised')}</td>
                     </tr>
                 `).join('');
 
@@ -3011,7 +3095,7 @@
                         <div class="ec-title">Emergency Contacts Directory</div>
                         <div class="ec-subtitle">Generated ${new Date().toLocaleDateString()}</div>
                         <table>
-                            <thead><tr><th>Publisher</th><th>Phone</th><th>Address</th><th>Emergency Contact</th><th>Relationship</th><th>Emergency Phone</th></tr></thead>
+                            <thead><tr><th>Publisher</th><th>Phone</th><th>Address</th><th>Emergency Contact</th><th>Relationship</th><th>Emergency Phone</th><th>Status</th></tr></thead>
                             <tbody>${rowsHtml}</tbody>
                         </table>
                     </div>
@@ -3082,15 +3166,19 @@
                     let rowsHtml = '', totalHours = 0, totalRemarksNum = 0;
                     monthOrder.forEach(m => {
                         const r = window.db.getReports(sy, m).find(x => x.pubId === pub.id) || {};
+                        const hasReport = !!r.id;
+                        const rH = parseFloat(r.hours || 0); const rS = parseInt(r.studies || 0);
+                        const rIsShared = hasReport && (r.sharedInMinistry || rH > 0 || rS > 0);
                         if(r.hours && !isNaN(parseFloat(r.hours))) totalHours += parseFloat(r.hours);
                         if(r.comments) totalRemarksNum += window.utils.extractNumbers(r.comments);
+                        const rRemarks = hasReport ? (rIsShared ? (r.comments||'') : 'Not Participated') : '';
                         rowsHtml += `
                             <div class="cell month">${window.utils.getMonthName(m)}</div>
-                            <div class="cell center"><div class="month-check">${r.sharedInMinistry ? '<span class="month-check-text">✔</span>' : ''}</div></div>
+                            <div class="cell center"><div class="month-check">${rIsShared ? '<span class="month-check-text">✔</span>' : ''}</div></div>
                             <div class="cell"><div class="cell-input">${r.studies||''}</div></div>
                             <div class="cell center"><div class="month-check">${r.isAP ? '<span class="month-check-text">✔</span>' : ''}</div></div>
                             <div class="cell"><div class="cell-input">${r.hours||''}</div></div>
-                            <div class="cell"><div class="remarks-input">${r.comments||''}</div></div>
+                            <div class="cell"><div class="remarks-input">${rRemarks}</div></div>
                         `;
                     });
 
@@ -3143,6 +3231,13 @@
                 
                 iframe.srcdoc = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>${S21_ENGINE_CSS}</style></head><body>${pagesHtml}</body></html>`;
                 iframe.onload = () => setTimeout(window.ui.scaleS21Preview, 100);
+            },
+
+            printAllCards: () => {
+                const sel = document.getElementById('s21-publisher-select');
+                sel.value = 'ALL';
+                window.ui.renderS21();
+                setTimeout(() => window.ui.printCards(), 300);
             },
 
             printCards: () => {
@@ -3288,33 +3383,27 @@
 
         // Setup the initial load logic explicitly
         window.db.initPublicS4OrLogin = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isPublicLink = !!urlParams.get('cong');
             const loader = document.getElementById('global-loader');
-            
-            if (window.auth.check()) {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('cong')) {
-                    if (loader) {
-                        loader.style.opacity = '0';
-                        loader.style.display = 'none';
-                    }
-                    window.db.initPublicS4(urlParams.get('cong'));
+            if (loader) {
+                if (isPublicLink) {
+                    loader.classList.add('hidden');
                 } else {
-                    if (loader) {
-                        setTimeout(() => {
-                            loader.style.opacity = '0';
-                            setTimeout(() => loader.classList.add('hidden'), 500);
-                        }, 1000);
-                    }
-                    const type = localStorage.getItem('fs_auth_type');
-                    if (type === 'super') { window.db.initSuperAdmin(); }
-                    else if (type === 'admin') { window.db.initAdmin(localStorage.getItem('fs_cong_id'), localStorage.getItem('fs_cong_name')); }
-                }
-            } else {
-                if (loader) {
                     setTimeout(() => {
                         loader.style.opacity = '0';
                         setTimeout(() => loader.classList.add('hidden'), 500);
-                    }, 1000);
+                    }, 3000);
+                }
+            }
+
+            if(window.auth.check()) {
+                if (urlParams.get('cong')) {
+                    window.db.initPublicS4(urlParams.get('cong'));
+                } else {
+                    const type = localStorage.getItem('fs_auth_type');
+                    if (type === 'super') { window.db.initSuperAdmin(); }
+                    else if (type === 'admin') { window.db.initAdmin(localStorage.getItem('fs_cong_id'), localStorage.getItem('fs_cong_name')); }
                 }
             }
         };
