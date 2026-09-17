@@ -1982,7 +1982,41 @@
             
             .footer { position: absolute; left: 39px; top: 970px; font-size: 19px; } .footer-date { margin-left: 18px; }
         `;
-
+const PDF_CONFIG = {
+            drawCenteredText: (page, text, x, y, font, size) => {
+                if (!text) return;
+                const textWidth = font.widthOfTextAtSize(text.toString(), size);
+                page.drawText(text.toString(), { 
+                    x: x - (textWidth / 2), 
+                    y: y - (size / 3), 
+                    size, 
+                    font 
+                });
+            },
+            s21: {
+                top: {
+                    name: { x: 75, y: 725 }, dob: { x: 380, y: 725 }, baptized: { x: 480, y: 725 },
+                    male: { x: 165, y: 706 }, female: { x: 215, y: 706 }, otherSheep: { x: 310, y: 706 }, anointed: { x: 385, y: 706 },
+                    elder: { x: 165, y: 692 }, ms: { x: 215, y: 692 }, rp: { x: 310, y: 692 },
+                    serviceYear: { x: 400, y: 665 },
+                    months: { 8: 622, 9: 605, 10: 588, 11: 571, 0: 554, 1: 537, 2: 520, 3: 503, 4: 486, 5: 469, 6: 452, 7: 435 },
+                    cols: { shared: 175, studies: 235, aux: 290, hours: 350, remarks: 450 }
+                },
+                bottom: {
+                    name: { x: 75, y: 329 }, dob: { x: 380, y: 329 }, baptized: { x: 480, y: 329 },
+                    male: { x: 165, y: 310 }, female: { x: 215, y: 310 }, otherSheep: { x: 310, y: 310 }, anointed: { x: 385, y: 310 },
+                    elder: { x: 165, y: 296 }, ms: { x: 215, y: 296 }, rp: { x: 310, y: 296 },
+                    serviceYear: { x: 400, y: 269 },
+                    months: { 8: 226, 9: 209, 10: 192, 11: 175, 0: 158, 1: 141, 2: 124, 3: 107, 4: 90, 5: 73, 6: 56, 7: 39 },
+                    cols: { shared: 175, studies: 235, aux: 290, hours: 350, remarks: 450 }
+                }
+            },
+            s3: {
+                congName: { x: 150, y: 535 }, monthYear: { x: 500, y: 535 },
+                midweek: { y: 440, w1: 220, w2: 295, w3: 370, w4: 445, w5: 520, total: 595, avg: 670 },
+                weekend: { y: 310, w1: 220, w2: 295, w3: 370, w4: 445, w5: 520, total: 595, avg: 670 }
+            }
+        };
         window.ui = {
             currentTab: 'dashboard', publicGroup: null, overseerGroup: null, currentPubFilter: 'ALL',
             
@@ -2544,149 +2578,75 @@
                 localStorage.setItem('fs_print_cong_name', n);
             },
 
-            printS3: () => {
-                const iframe = document.getElementById('s3-render-frame');
+            printS3: async () => {
                 const btn = document.getElementById('att-print-btn');
-                const wrapper = document.getElementById('s3-render-area');
-                
-                const sy = parseInt(document.getElementById('att-year').value);
-                const month = parseInt(document.getElementById('att-month').value);
-                const id = `${window.currentCongId}_${sy}_${month}`;
-                const rec = window.db.attendance.find(a => a.id === id) || {};
-                
-                const congName = document.getElementById('att-cong-name').value.trim() || '___________________';
-                const viewYear = month >= 8 ? sy - 1 : sy;
-                const monthName = window.utils.getMonthName(month) + " " + viewYear;
-
-                // Calculate Totals & Averages
-                let mTotal = 0, mCount = 0, eTotal = 0, eCount = 0;
-                const getPrintObj = (v) => {
-                    if (['CA', 'RC', 'Memorial'].includes(v)) return { text: v, isStr: true };
-                    const n = parseInt(v);
-                    if (!isNaN(n) && n > 0) return { text: n, isStr: false, num: n };
-                    return { text: '', isStr: false };
-                };
-
-                const wData = [];
-                for(let w=1; w<=5; w++) {
-                    const midObj = getPrintObj(rec[`w${w}_mid`]);
-                    const endObj = getPrintObj(rec[`w${w}_end`]);
-                    
-                    if(!midObj.isStr && midObj.num) { mTotal += midObj.num; mCount++; }
-                    if(!endObj.isStr && endObj.num) { eTotal += endObj.num; eCount++; }
-                    
-                    wData.push({ mid: midObj, end: endObj });
-                }
-
-                const mAvg = mCount > 0 ? Math.round(mTotal / mCount) : '';
-                const eAvg = eCount > 0 ? Math.round(eTotal / eCount) : '';
-
-                const cellHtml = (obj) => `<div class="s3-cell-content ${obj.isStr ? 'string-val' : ''}">${obj.text}</div>`;
-
-                const htmlContent = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <style>${S3_ENGINE_CSS}</style>
-                </head>
-                <body>
-                    <div class="s3-wrapper">
-                        <div class="s3-title">REPORT OF MEETING ATTENDANCE</div>
-                        <div class="s3-subtitle">(The attendance count should be taken once at the midpoint of each meeting.<br>Remember to include any homebound or isolated individuals who may be tied in.)</div>
-                        
-                        <div class="s3-header-row">
-                            <div class="s3-header-col left">
-                                <span class="s3-header-label">Congregation name:</span>
-                                <div class="s3-header-input">${congName}</div>
-                            </div>
-                            <div class="s3-header-col right">
-                                <span class="s3-header-label">Month:</span>
-                                <div class="s3-header-input">${monthName}</div>
-                            </div>
-                        </div>
-
-                        <table class="s3-table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>1st week</th>
-                                    <th>2nd week</th>
-                                    <th>3rd week</th>
-                                    <th>4th week</th>
-                                    <th>5th week</th>
-                                    <th>Total</th>
-                                    <th>Average</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Midweek Meeting</td>
-                                    <td>${cellHtml(wData[0].mid)}</td>
-                                    <td>${cellHtml(wData[1].mid)}</td>
-                                    <td>${cellHtml(wData[2].mid)}</td>
-                                    <td>${cellHtml(wData[3].mid)}</td>
-                                    <td>${cellHtml(wData[4].mid)}</td>
-                                    <td>${mTotal > 0 ? mTotal : ''}</td>
-                                    <td>${mAvg}</td>
-                                </tr>
-                                <tr>
-                                    <td>Weekend Meeting</td>
-                                    <td>${cellHtml(wData[0].end)}</td>
-                                    <td>${cellHtml(wData[1].end)}</td>
-                                    <td>${cellHtml(wData[2].end)}</td>
-                                    <td>${cellHtml(wData[3].end)}</td>
-                                    <td>${cellHtml(wData[4].end)}</td>
-                                    <td>${eTotal > 0 ? eTotal : ''}</td>
-                                    <td>${eAvg}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="s3-footer">
-                            <span>S-3-E</span>
-                            <span>10/15</span>
-                        </div>
-                    </div>
-                </body>
-                </html>`;
-
-                iframe.srcdoc = htmlContent;
-                
-                const originalText = btn.innerHTML;
-                btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...`;
+                btn.innerHTML = '⏳ Generating S-3...';
                 btn.disabled = true;
-                wrapper.classList.remove('hidden');
-                wrapper.style.display = 'block';
 
-                setTimeout(async () => {
-                    try {
-                        const { jsPDF } = window.jspdf;
-                        const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1000, 750], hotfixes: ["px_scaling"] });
-                        
-                        const canvas = await window.html2canvas(iframe.contentDocument.querySelector('.s3-wrapper'), {
-                            scale: 3, 
-                            logging: false,
-                            useCORS: true,
-                            width: 1000,
-                            height: 750,
-                            windowWidth: 1000
-                        });
-                        
-                        const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                        doc.addImage(imgData, 'JPEG', 0, 0, 1000, 750);
-                        doc.save(`S-3_${congName}_${monthName}.pdf`);
-                        window.ui.showToast('Attendance S-3 Generated Successfully!');
-                    } catch (err) {
-                        console.error("PDF Error: ", err);
-                        window.ui.showToast('Failed to compile PDF.', 'error');
-                    } finally {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                        wrapper.classList.add('hidden');
-                        wrapper.style.display = 'none';
+                try {
+                    const { PDFDocument, StandardFonts } = window.PDFLib;
+                    const existingPdfBytes = await fetch('S-3_E.pdf').then(res => res.arrayBuffer());
+                    
+                    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+                    const page = pdfDoc.getPages()[0];
+                    const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+                    const year = document.getElementById('att-year').value;
+                    const month = document.getElementById('att-month').value;
+                    const congName = document.getElementById('att-cong-name').value || localStorage.getItem('fs_cong_name');
+                    
+                    const c = PDF_CONFIG.s3;
+                    
+                    page.drawText(congName, { x: c.congName.x, y: c.congName.y, size: 14, font: helveticaBold });
+                    page.drawText(`${window.utils.getMonthName(parseInt(month))} ${year}`, { x: c.monthYear.x, y: c.monthYear.y, size: 14, font: helveticaBold });
+
+                    const attRecord = window.db.attendance.find(a => a.id === `${window.currentCongId}_${year}_${month}`) || {};
+
+                    const writeAtt = (weekStr, meetingType, xPos) => {
+                        const val = attRecord[`${weekStr}_${meetingType}`];
+                        if (val) {
+                            PDF_CONFIG.drawCenteredText(page, val, xPos, c[meetingType === 'mid' ? 'midweek' : 'weekend'].y, helvetica, 12);
+                        }
+                    };
+
+                    ['w1', 'w2', 'w3', 'w4', 'w5'].forEach(w => {
+                        writeAtt(w, 'mid', c.midweek[w]);
+                        writeAtt(w, 'end', c.weekend[w]);
+                    });
+
+                    let midTotal = 0, midCount = 0, endTotal = 0, endCount = 0;
+                    ['w1', 'w2', 'w3', 'w4', 'w5'].forEach(w => {
+                        const m = parseInt(attRecord[`${w}_mid`]);
+                        if (!isNaN(m)) { midTotal += m; midCount++; }
+                        const e = parseInt(attRecord[`${w}_end`]);
+                        if (!isNaN(e)) { endTotal += e; endCount++; }
+                    });
+
+                    if (midCount > 0) {
+                        PDF_CONFIG.drawCenteredText(page, midTotal, c.midweek.total, c.midweek.y, helveticaBold, 12);
+                        PDF_CONFIG.drawCenteredText(page, Math.round(midTotal / midCount), c.midweek.avg, c.midweek.y, helveticaBold, 12);
                     }
-                }, 500); // Allow iframe to render
+                    
+                    if (endCount > 0) {
+                        PDF_CONFIG.drawCenteredText(page, endTotal, c.weekend.total, c.weekend.y, helveticaBold, 12);
+                        PDF_CONFIG.drawCenteredText(page, Math.round(endTotal / endCount), c.weekend.avg, c.weekend.y, helveticaBold, 12);
+                    }
+
+                    const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
+                    
+                    const link = document.createElement('a');
+                    link.href = pdfDataUri;
+                    link.download = `S-3_${window.utils.getMonthName(parseInt(month))}_${year}.pdf`;
+                    link.click();
+
+                } catch (error) {
+                    console.error(error);
+                    window.ui.showToast('Error generating S-3 PDF', 'error');
+                } finally {
+                    btn.innerHTML = 'Download S-3-E';
+                    btn.disabled = false;
+                }
             },
 
             savePublisher: async (e) => {
@@ -3476,83 +3436,143 @@
                 iframe.onload = () => setTimeout(window.ui.scaleS21Preview, 100);
             },
 
-            printAllCards: () => {
-                const sel = document.getElementById('s21-publisher-select');
-                sel.value = 'ALL';
-                window.ui.renderS21();
-                setTimeout(() => window.ui.printCards(), 300);
+            printCards: async () => {
+                const btn = document.getElementById('s21-print-btn');
+                btn.innerHTML = '⏳ Generating PDF...';
+                btn.disabled = true;
+
+                try {
+                    const { PDFDocument, StandardFonts } = window.PDFLib;
+                    const existingPdfBytes = await fetch('S-21_s-Mlt_E (1).pdf').then(res => res.arrayBuffer());
+                    const finalPdf = await PDFDocument.create();
+                    const helvetica = await finalPdf.embedFont(StandardFonts.Helvetica);
+                    const helveticaBold = await finalPdf.embedFont(StandardFonts.HelveticaBold);
+                    
+                    const year = document.getElementById('s21-year-select').value;
+                    const pubId = document.getElementById('s21-publisher-select').value;
+                    const pub = window.db.publishers.find(p => p.id === pubId);
+                    if (!pub) throw new Error("Publisher not found");
+
+                    const templateDoc = await PDFDocument.load(existingPdfBytes);
+                    const [templatePage] = await finalPdf.copyPages(templateDoc, [0]);
+                    finalPdf.addPage(templatePage);
+
+                    const fillCard = (pubData, cardCoords) => {
+                        templatePage.drawText(pubData.name, { x: cardCoords.name.x, y: cardCoords.name.y, size: 11, font: helveticaBold });
+                        if (pubData.dob) templatePage.drawText(pubData.dob, { x: cardCoords.dob.x, y: cardCoords.dob.y, size: 10, font: helvetica });
+                        if (pubData.baptized) templatePage.drawText(pubData.baptized, { x: cardCoords.baptized.x, y: cardCoords.baptized.y, size: 10, font: helvetica });
+                        
+                        if (pubData.gender === 'Male') templatePage.drawText('X', { x: cardCoords.male.x, y: cardCoords.male.y, size: 10, font: helveticaBold });
+                        if (pubData.gender === 'Female') templatePage.drawText('X', { x: cardCoords.female.x, y: cardCoords.female.y, size: 10, font: helveticaBold });
+                        if (pubData.hope === 'Other Sheep') templatePage.drawText('X', { x: cardCoords.otherSheep.x, y: cardCoords.otherSheep.y, size: 10, font: helveticaBold });
+                        if (pubData.hope === 'Anointed') templatePage.drawText('X', { x: cardCoords.anointed.x, y: cardCoords.anointed.y, size: 10, font: helveticaBold });
+                        if (pubData.isElder) templatePage.drawText('X', { x: cardCoords.elder.x, y: cardCoords.elder.y, size: 10, font: helveticaBold });
+                        if (pubData.isMS) templatePage.drawText('X', { x: cardCoords.ms.x, y: cardCoords.ms.y, size: 10, font: helveticaBold });
+                        if (pubData.isRP) templatePage.drawText('X', { x: cardCoords.rp.x, y: cardCoords.rp.y, size: 10, font: helveticaBold });
+
+                        templatePage.drawText(`${year}-${parseInt(year) + 1}`, { x: cardCoords.serviceYear.x, y: cardCoords.serviceYear.y, size: 10, font: helveticaBold });
+
+                        const reports = window.db.getReports(parseInt(year)).filter(r => r.pubId === pubData.id);
+                        reports.forEach(rep => {
+                            const yPos = cardCoords.months[rep.month];
+                            if (!yPos) return;
+
+                            if (rep.sharedInMinistry) PDF_CONFIG.drawCenteredText(templatePage, 'X', cardCoords.cols.shared, yPos, helveticaBold, 10);
+                            if (rep.studies > 0) PDF_CONFIG.drawCenteredText(templatePage, rep.studies, cardCoords.cols.studies, yPos, helvetica, 10);
+                            if (rep.isAP) PDF_CONFIG.drawCenteredText(templatePage, 'X', cardCoords.cols.aux, yPos, helveticaBold, 10);
+                            if (rep.hours > 0) PDF_CONFIG.drawCenteredText(templatePage, rep.hours, cardCoords.cols.hours, yPos, helvetica, 10);
+                            if (rep.comments) templatePage.drawText(rep.comments, { x: cardCoords.cols.remarks - 40, y: yPos - 3, size: 8, font: helvetica });
+                        });
+                    };
+
+                    fillCard(pub, PDF_CONFIG.s21.top);
+
+                    const pdfDataUri = await finalPdf.saveAsBase64({ dataUri: true });
+                    document.getElementById('s21-render-frame').src = pdfDataUri;
+                    
+                    const link = document.createElement('a');
+                    link.href = pdfDataUri;
+                    link.download = `S-21_${pub.name}_${year}.pdf`;
+                    link.click();
+                } catch (error) {
+                    console.error(error);
+                    window.ui.showToast('Error rendering S-21 PDF', 'error');
+                } finally {
+                    btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Download PDF';
+                    btn.disabled = false;
+                }
             },
 
-            printCards: () => {
-                const iframe = document.getElementById('s21-render-frame'); 
-                const wrapper = document.getElementById('s21-render-area');
-                if (!iframe.srcdoc || iframe.srcdoc.includes('No records found')) { 
-                    window.ui.showToast('Please select publishers to print.', 'error'); 
-                    return; 
-                }
-                
-                const btn = document.getElementById('s21-print-btn');
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating PDF...`;
+            printAllCards: async () => {
+                const btn = document.getElementById('s21-print-all-btn');
+                btn.innerHTML = '⏳ Generating PDFs...';
                 btn.disabled = true;
-                window.ui.showToast('Compiling Publisher Cards... Please wait.', 'success');
 
-                // Temporarily unscale the iframe to ensure perfect pixel capture
-                iframe.style.transform = 'none'; 
-                wrapper.style.height = 'auto';
-                
-                setTimeout(async () => {
-                    try {
-                        const { jsPDF } = window.jspdf;
+                try {
+                    const { PDFDocument, StandardFonts } = window.PDFLib;
+                    const existingPdfBytes = await fetch('S-21_s-Mlt_E (1).pdf').then(res => res.arrayBuffer());
+                    const finalPdf = await PDFDocument.create();
+                    const helvetica = await finalPdf.embedFont(StandardFonts.Helvetica);
+                    const helveticaBold = await finalPdf.embedFont(StandardFonts.HelveticaBold);
+                    
+                    const year = document.getElementById('s21-year-select').value;
+                    const publishers = window.db.getPublishers();
+                    
+                    const fillCard = (pubData, cardCoords, templatePage) => {
+                        if (!pubData) return;
                         
-                        // Initialize jsPDF with the exact pixel dimensions of a single card
-                        const doc = new jsPDF({ 
-                            orientation: 'landscape', 
-                            unit: 'px', 
-                            format: [1448, 1025],
-                            hotfixes: ["px_scaling"]
+                        templatePage.drawText(pubData.name, { x: cardCoords.name.x, y: cardCoords.name.y, size: 11, font: helveticaBold });
+                        if (pubData.dob) templatePage.drawText(pubData.dob, { x: cardCoords.dob.x, y: cardCoords.dob.y, size: 10, font: helvetica });
+                        if (pubData.baptized) templatePage.drawText(pubData.baptized, { x: cardCoords.baptized.x, y: cardCoords.baptized.y, size: 10, font: helvetica });
+                        
+                        if (pubData.gender === 'Male') templatePage.drawText('X', { x: cardCoords.male.x, y: cardCoords.male.y, size: 10, font: helveticaBold });
+                        if (pubData.gender === 'Female') templatePage.drawText('X', { x: cardCoords.female.x, y: cardCoords.female.y, size: 10, font: helveticaBold });
+                        if (pubData.hope === 'Other Sheep') templatePage.drawText('X', { x: cardCoords.otherSheep.x, y: cardCoords.otherSheep.y, size: 10, font: helveticaBold });
+                        if (pubData.hope === 'Anointed') templatePage.drawText('X', { x: cardCoords.anointed.x, y: cardCoords.anointed.y, size: 10, font: helveticaBold });
+                        if (pubData.isElder) templatePage.drawText('X', { x: cardCoords.elder.x, y: cardCoords.elder.y, size: 10, font: helveticaBold });
+                        if (pubData.isMS) templatePage.drawText('X', { x: cardCoords.ms.x, y: cardCoords.ms.y, size: 10, font: helveticaBold });
+                        if (pubData.isRP) templatePage.drawText('X', { x: cardCoords.rp.x, y: cardCoords.rp.y, size: 10, font: helveticaBold });
+
+                        templatePage.drawText(`${year}-${parseInt(year) + 1}`, { x: cardCoords.serviceYear.x, y: cardCoords.serviceYear.y, size: 10, font: helveticaBold });
+
+                        const reports = window.db.getReports(parseInt(year)).filter(r => r.pubId === pubData.id);
+                        reports.forEach(rep => {
+                            const yPos = cardCoords.months[rep.month];
+                            if (!yPos) return;
+
+                            if (rep.sharedInMinistry) PDF_CONFIG.drawCenteredText(templatePage, 'X', cardCoords.cols.shared, yPos, helveticaBold, 10);
+                            if (rep.studies > 0) PDF_CONFIG.drawCenteredText(templatePage, rep.studies, cardCoords.cols.studies, yPos, helvetica, 10);
+                            if (rep.isAP) PDF_CONFIG.drawCenteredText(templatePage, 'X', cardCoords.cols.aux, yPos, helveticaBold, 10);
+                            if (rep.hours > 0) PDF_CONFIG.drawCenteredText(templatePage, rep.hours, cardCoords.cols.hours, yPos, helvetica, 10);
+                            if (rep.comments) templatePage.drawText(rep.comments, { x: cardCoords.cols.remarks - 40, y: yPos - 3, size: 8, font: helvetica });
                         });
+                    };
 
-                        const pages = iframe.contentDocument.querySelectorAll('.page');
-                        
-                        for (let i = 0; i < pages.length; i++) {
-                            const page = pages[i];
-                            // html2canvas configuration for precision rendering
-                            const canvas = await window.html2canvas(page, {
-                                scale: 2, 
-                                logging: false,
-                                useCORS: true,
-                                width: 1448,
-                                height: 1025,
-                                windowWidth: 1448
-                            });
-                            
-                            const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                            
-                            if (i > 0) {
-                                doc.addPage([1448, 1025], 'landscape');
-                            }
-                            
-                            // Paste the perfect image to exactly match the page size
-                            doc.addImage(imgData, 'JPEG', 0, 0, 1448, 1025);
+                    for (let i = 0; i < publishers.length; i += 2) {
+                        const templateDoc = await PDFDocument.load(existingPdfBytes);
+                        const [templatePage] = await finalPdf.copyPages(templateDoc, [0]);
+                        finalPdf.addPage(templatePage);
+
+                        fillCard(publishers[i], PDF_CONFIG.s21.top, templatePage);
+                        if (publishers[i + 1]) {
+                            fillCard(publishers[i + 1], PDF_CONFIG.s21.bottom, templatePage);
                         }
-                        
-                        const sel = document.getElementById('s21-publisher-select');
-                        const filterText = sel.options[sel.selectedIndex].text;
-                        const sy = parseInt(document.getElementById('s21-year-select').value);
-                        doc.save(`S-21_${filterText}_Publisher Cards_${sy-1}-${sy}.pdf`);
-                        window.ui.showToast('PDF successfully downloaded!');
-                        
-                    } catch (error) {
-                        console.error("PDF Generation Error: ", error);
-                        window.ui.showToast('Failed to compile PDF.', 'error');
-                    } finally {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                        window.ui.scaleS21Preview();
                     }
-                }, 100);
+
+                    const pdfDataUri = await finalPdf.saveAsBase64({ dataUri: true });
+                    document.getElementById('s21-render-frame').src = pdfDataUri;
+                    
+                    const link = document.createElement('a');
+                    link.href = pdfDataUri;
+                    link.download = `S-21_All_Publishers_${year}.pdf`;
+                    link.click();
+                } catch (error) {
+                    console.error(error);
+                    window.ui.showToast('Error rendering S-21 PDFs', 'error');
+                } finally {
+                    btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Download All Publishers';
+                    btn.disabled = false;
+                }
             },
 
             setupS4Tab: () => {
