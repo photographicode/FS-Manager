@@ -1978,9 +1978,14 @@
             const col = { service:59.45, shared:136.71, studies:207.33, ap:277.90, hours:348.47, remarks:480.80 };
             const monthTops = [158.35,176.26,193.99,211.72,229.46,247.28,265.01,282.74,300.47,318.29,336.02,353.75];
             const rowBottom = [176.26,193.99,211.72,229.46,247.28,265.01,282.74,300.47,318.29,336.02,353.75,371.84];
-            const monthBottoms = monthTops.map((t,i)=>i===0 ? 158.35 : monthTops[i-1]);
-            const actualBottoms = monthTops.map((t,i)=>i===0 ? 158.35 : monthTops[i-1]);
-            const monthRows = monthTops.map((top,i)=>({top, bottom: i===0 ? 158.35 : monthTops[i-1]}));
+            // Each month occupies the space BETWEEN two horizontal table lines.
+            // The coordinates below are measured from the top of the original S-21 PDF.
+            // The previous mapping used the preceding line as the bottom, which shifted
+            // every report up one month (August data appeared in July).
+            const monthRows = monthTops.map((top,i)=>({
+                top,
+                bottom: i < monthTops.length - 1 ? monthTops[i+1] : 371.84
+            }));
             const monthOrder=[8,9,10,11,0,1,2,3,4,5,6,7];
 
             const publisherRows = (pub, page, yOffset) => {
