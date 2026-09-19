@@ -12,16 +12,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
+            --app-font: 'Noto Sans', sans-serif;
             --glass-bg: rgba(13, 148, 136, 0.15);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--app-font);
             background: radial-gradient(circle at top left, #064e3b 0%, #020617 50%, #083344 100%);
             background-attachment: fixed;
             color: #f8fafc;
@@ -30,6 +31,9 @@
             transition: background 0.5s ease;
         }
         
+        body, body button, body input, body select, body textarea, body table, body th, body td { font-family: var(--app-font) !important; }
+        .analytics-table { font-family: var(--app-font) !important; }
+
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
@@ -272,17 +276,19 @@
             
             <div id="nav-admin" class="flex flex-1 justify-start items-center gap-1 sm:ml-6 hidden min-w-0">
                 <div class="flex gap-1 bg-black/30 p-1.5 rounded-xl border border-white/10 overflow-x-auto flex-1 min-w-0 custom-scrollbar items-center">
-                    <span id="nav-cong-name" class="px-4 py-2 text-teal-300 font-bold text-sm tracking-wide hidden lg:block"></span>
                     <button onclick="window.ui.switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Home</button>
                     <button onclick="window.ui.switchTab('groups')" id="btn-tab-groups" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Groups</button>
-                    <button onclick="window.ui.switchTab('s21')" id="btn-tab-s21" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Print</button>
                     <button onclick="window.ui.switchTab('publishers')" id="btn-tab-publishers" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Publishers</button>
                     <button onclick="window.ui.switchTab('attendance')" id="btn-tab-attendance" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap hidden">Attendance</button>
                     <button onclick="window.ui.switchTab('analytics')" id="btn-tab-analytics" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap">Analytics</button>
                     <button onclick="window.ui.switchTab('emergency')" id="btn-tab-emergency" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-white/10 text-teal-50/70 whitespace-nowrap hidden">Emergency</button>
                     <span id="nav-trial-timer" class="px-3 py-1 ml-2 bg-amber-500/20 text-amber-300 rounded-full text-[10px] font-bold border border-amber-500/50 hidden whitespace-nowrap"></span>
                 </div>
-                <div class="flex items-center gap-3 ml-2 shrink-0">
+                <div class="flex items-center gap-2 ml-2 shrink-0">
+                    <button id="nav-cong-profile" onclick="window.ui.openModal('modal-profile-menu')" class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 max-w-[240px] transition-all" title="Congregation profile">
+                        <span id="nav-cong-avatar" class="w-8 h-8 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 flex items-center justify-center text-xs font-bold shrink-0">C</span>
+                        <span id="nav-cong-name" class="text-teal-100 font-bold text-sm truncate"></span>
+                    </button>
                     <button onclick="window.ui.openModal('modal-settings')" class="p-2 rounded-lg transition-all hover:bg-white/10 text-teal-50/70" title="Settings">⚙️</button>
                     <button onclick="window.ui.confirmLogout()" class="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:bg-rose-500/20 text-rose-300 whitespace-nowrap">Log Out</button>
                 </div>
@@ -306,10 +312,6 @@
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 <span class="text-[10px] font-medium">Groups</span>
             </button>
-            <button onclick="window.ui.switchTab('s21')" id="m-btn-tab-s21" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
-                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                <span class="text-[10px] font-medium">Print</span>
-            </button>
             <button onclick="window.ui.switchTab('publishers')" id="m-btn-tab-publishers" class="flex flex-col items-center justify-center w-16 h-full text-teal-50/50 hover:text-teal-300 transition-colors">
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 <span class="text-[10px] font-medium">Profiles</span>
@@ -323,8 +325,8 @@
 
     <!-- Mobile Top Header Context -->
     <div class="sm:hidden sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-teal-500/20 px-4 py-3 flex justify-between items-center" id="mobile-top-header">
-        <div class="font-bold text-lg tracking-wide text-white drop-shadow-lg" id="nav-mobile-title">Overview</div>
-        <div class="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 text-xs">SA</div>
+        <button onclick="window.ui.openModal('modal-profile-menu')" class="font-bold text-lg tracking-wide text-white drop-shadow-lg truncate max-w-[78%] text-left hover:text-teal-200 transition-colors" id="nav-mobile-title">Congregation</button>
+        <button onclick="window.ui.openModal('modal-profile-menu')" class="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center text-teal-300 font-bold border border-teal-500/30 text-xs">SA</button>
     </div>
 
     <!-- Mobile "More" Menu Modal -->
@@ -362,6 +364,13 @@
         </div>
     </div>
 
+    <div id="system-notice-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-[70] w-[min(92vw,760px)] glass-panel border border-amber-400/40 bg-amber-950/90 text-amber-100 rounded-2xl shadow-2xl p-4">
+        <div class="flex items-start gap-3">
+            <div class="text-xl">📢</div><div class="flex-1"><div class="font-bold" id="system-notice-title">System Notice</div><div class="text-sm mt-1 text-amber-100/80 whitespace-pre-wrap" id="system-notice-message"></div></div>
+            <button onclick="document.getElementById('system-notice-banner').classList.add('hidden')" class="text-amber-200/60 hover:text-white">✕</button>
+        </div>
+    </div>
+
     <main class="main-content max-w-7xl mx-auto px-4 py-6 sm:py-8 relative">
         
         <!-- SUPER ADMIN TAB -->
@@ -371,14 +380,15 @@
                     <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">SaaS Control Center</h2>
                     <p class="text-teal-200/70 mt-1 text-slate-400">Manage tenant congregations and system access</p>
                 </div>
-                <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                    <input type="text" id="saas-search" oninput="window.ui.renderSuperAdmin()" placeholder="Search ID or Name..." class="flex-1 sm:w-64 px-4 py-2.5 rounded-xl border border-white/10 text-white bg-black/50 placeholder-slate-500 focus:outline-none focus:border-amber-400 shadow-sm transition-all focus:shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-                    <button onclick="window.ui.openModal('modal-add-cong')" class="shrink-0 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)] flex items-center gap-2">
-                        + New Tenant
-                    </button>
-                    <button onclick="window.ui.confirmLogout()" class="shrink-0 px-4 py-2.5 rounded-xl font-bold text-sm text-rose-300 border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 transition-all whitespace-nowrap" title="Log out of SuperAdmin">
-                        Log Out
-                    </button>
+                <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap">
+                    <input type="text" id="saas-search" oninput="window.ui.renderSuperAdmin()" placeholder="Search ID or Name..." class="flex-1 sm:w-56 px-4 py-2.5 rounded-xl border border-white/10 text-white bg-black/50 placeholder-slate-500 focus:outline-none focus:border-amber-400 shadow-sm transition-all">
+                    <select id="saas-filter" onchange="window.ui.renderSuperAdmin()" class="px-3 py-2.5 rounded-xl text-sm">
+                        <option value="ALL">All Congregations</option><option value="ACTIVE">Active</option><option value="TRIAL">Trial</option><option value="EXPIRED">Expired</option><option value="ATTENDANCE">Attendance Enabled</option><option value="EMERGENCY">Emergency Enabled</option>
+                    </select>
+                    <button onclick="window.ui.selectAllSuperAdmin(true)" class="shrink-0 px-3 py-2.5 rounded-xl font-bold text-sm text-amber-200 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20">Select Visible</button><button onclick="window.ui.selectAllSuperAdmin(false); window.db.congregations.forEach(c=>window.ui.superAdminSelected.add(c.id)); window.ui.renderSuperAdmin();" class="shrink-0 px-3 py-2.5 rounded-xl font-bold text-sm text-fuchsia-200 border border-fuchsia-500/30 bg-fuchsia-500/10 hover:bg-fuchsia-500/20">Select All Tenants</button>
+                    <button onclick="window.ui.openNotificationComposer()" class="shrink-0 bg-gradient-to-r from-fuchsia-500 to-amber-400 hover:from-fuchsia-400 hover:to-amber-300 text-slate-900 px-4 py-2.5 rounded-xl font-bold text-sm shadow-lg">📢 Send Notification</button>
+                    <button onclick="window.ui.openModal('modal-add-cong')" class="shrink-0 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black px-5 py-2.5 rounded-xl font-bold">+ New Tenant</button>
+                    <button onclick="window.ui.confirmLogout()" class="shrink-0 px-4 py-2.5 rounded-xl font-bold text-sm text-rose-300 border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20">Log Out</button>
                 </div>
             </div>
             
@@ -469,31 +479,6 @@
                 <div class="md:col-span-3">
                     <div id="group-details" class="hidden glass-panel p-4 sm:p-8 rounded-2xl"></div>
                 </div>
-            </div>
-        </div>
-
-        <!-- S21 PRINTER TAB -->
-        <div id="tab-s21" class="tab-content space-y-6">
-            <div class="flex justify-between items-center glass-panel p-4 sm:p-6 rounded-2xl flex-wrap gap-4">
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">Document Printer</h2>
-                    <p class="text-teal-200/70 mt-1">Compile and print pixel-perfect S-21 records</p>
-                </div>
-                <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
-                    <select id="s21-year-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm"></select>
-                    <select id="s21-publisher-select" onchange="window.ui.renderS21()" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm max-w-[250px]"></select>
-                    <button id="s21-print-btn" onclick="window.ui.printCards()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.5)] flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> 
-                        Download PDF
-                    </button>
-                    <button id="s21-print-all-btn" onclick="window.ui.printAllCards()" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(245,158,11,0.5)] flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Download All Publishers
-                    </button>
-                </div>
-            </div>
-            <div id="s21-render-area" style="overflow-x: auto; -webkit-overflow-scrolling: touch; background: #111; padding: 20px; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: height 0.3s; display: flex; justify-content: center;">
-                <iframe id="s21-render-frame" style="width: 1448px; border: none; background: #fff; transform-origin: top center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);"></iframe>
             </div>
         </div>
 
@@ -638,15 +623,9 @@
                     <p class="text-teal-200/70 mt-1">Manage profiles for this congregation</p>
                 </div>
                 <div class="flex gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
-                    <button onclick="document.getElementById('csv-file').click()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">Import Contacts</button>
-                    <input type="file" id="csv-file" accept=".csv" class="hidden" onchange="window.db.importContacts(event)">
-                    <button onclick="window.ui.downloadContacts()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">Export Contacts</button>
-                    
-                    <button onclick="document.getElementById('csv-report-file').click()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Import Reports</button>
-                    <input type="file" id="csv-report-file" accept=".csv" class="hidden" onchange="window.db.importReports(event)">
-                    <button onclick="window.ui.downloadReports()" class="glass-panel flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10 border border-amber-500/30 text-amber-200">Export Reports</button>
-
-                    <button onclick="window.ui.confirmWipeDatabase()" class="bg-rose-900/50 flex-1 sm:flex-none hover:bg-rose-800/80 text-rose-200 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border border-rose-500/50 shadow-lg">⚠️ Wipe Data</button>
+                    <select id="pub-s21-year" onchange="window.ui.renderPublishers(window.ui.currentPubFilter || 'ALL', window.ui.currentPubFilterValue || '')" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm" title="S-21 Service Year"></select>
+                    <select id="pub-filter-month" onchange="window.ui.renderPublishers(window.ui.currentPubFilter || 'ALL', window.ui.currentPubFilterValue || '')" class="flex-1 sm:flex-none px-3 py-2.5 rounded-xl text-sm" title="Report month"></select>
+                    <button id="pub-download-filtered-s21" onclick="window.ui.downloadS21Filtered()" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-5 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)] flex items-center justify-center gap-2">⬇️ Download S-21</button>
                     <button onclick="window.ui.openModal('modal-add-publisher')" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)] flex items-center justify-center gap-2">
                         + Add Publisher
                     </button>
@@ -835,6 +814,21 @@
     </main>
 
     <!-- Modals -->
+    <!-- Super Admin: Notification Composer -->
+    <div id="modal-superadmin-notification" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-fuchsia-500/30">
+            <div class="bg-black/40 px-6 sm:px-8 py-5 flex justify-between items-center border-b border-white/10">
+                <div><h3 class="text-lg sm:text-xl font-bold text-fuchsia-300">Send System Notification</h3><p class="text-xs text-slate-400 mt-1" id="notification-recipient-count">0 selected</p></div>
+                <button type="button" onclick="window.ui.closeModal('modal-superadmin-notification')" class="text-teal-200/50 hover:text-white">✕</button>
+            </div>
+            <form onsubmit="window.ui.sendSuperAdminNotification(event)" class="p-6 sm:p-8 space-y-5">
+                <div><label class="text-xs text-fuchsia-200/80 font-bold uppercase tracking-wider">Title</label><input id="sa-notice-title" type="text" value="New Update" class="w-full mt-2 px-4 py-2.5 rounded-xl"></div>
+                <div><label class="text-xs text-fuchsia-200/80 font-bold uppercase tracking-wider">Message / News</label><textarea id="sa-notice-message" rows="6" required placeholder="Write the update or news for the selected congregations..." class="w-full mt-2 px-4 py-2.5 rounded-xl"></textarea></div>
+                <div class="flex justify-end gap-3"><button type="button" onclick="window.ui.closeModal('modal-superadmin-notification')" class="px-5 py-2.5 rounded-xl text-sm text-white/70 hover:bg-white/10">Cancel</button><button type="submit" class="bg-gradient-to-r from-fuchsia-500 to-amber-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold">Send Notification</button></div>
+            </form>
+        </div>
+    </div>
+
     <!-- Super Admin: Add Congregation -->
     <div id="modal-add-cong" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4 overflow-y-auto">
         <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30 my-8">
@@ -982,6 +976,24 @@
         </div>
     </div>
 
+    <!-- Admin: Congregation Profile Menu -->
+    <div id="modal-profile-menu" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[1000] flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-teal-400/20">
+            <div class="bg-black/40 px-6 py-5 flex items-center gap-3 border-b border-white/10">
+                <span id="profile-modal-avatar" class="w-11 h-11 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 flex items-center justify-center font-bold">C</span>
+                <div class="min-w-0">
+                    <div class="text-[10px] uppercase tracking-widest text-teal-300/60 font-bold">Congregation</div>
+                    <div id="profile-modal-name" class="text-lg font-bold text-white truncate">Congregation</div>
+                </div>
+                <button type="button" onclick="window.ui.closeModal('modal-profile-menu')" class="ml-auto text-teal-200/50 hover:text-white transition-colors">✕</button>
+            </div>
+            <div class="p-5 space-y-2">
+                <button type="button" onclick="window.ui.closeModal('modal-profile-menu'); window.ui.openModal('modal-settings')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-white font-medium flex items-center gap-3">⚙️ <span>System Settings</span></button>
+                <button type="button" onclick="window.ui.closeModal('modal-profile-menu'); window.ui.confirmLogout()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-rose-500/10 text-rose-300 font-medium flex items-center gap-3">↪️ <span>Log Out</span></button>
+            </div>
+        </div>
+    </div>
+
     <!-- Admin: System Settings -->
     <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[999] flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border border-white/20">
@@ -1024,6 +1036,29 @@
                         <button type="submit" id="btn-cp-save" disabled class="bg-teal-600 hover:bg-teal-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">Save Password</button>
                     </div>
                 </form>
+
+                <!-- Application Font -->
+                <div class="space-y-3 pb-5 border-b border-white/10">
+                    <h4 class="text-sm font-bold text-teal-300 uppercase tracking-wider">Application Font</h4>
+                    <select id="app-font-family" onchange="window.ui.setAppFont(this.value)" class="w-full px-4 py-2.5 rounded-xl text-sm">
+                        <option value="Noto Sans">Noto Sans</option>
+                        <option value="Poppins">Poppins</option>
+                    </select>
+                    <p class="text-[10px] text-teal-100/50">Changes the application interface only. S-21, S-3-E and S-88-E documents keep their original form fonts.</p>
+                </div>
+
+                <!-- Data Import / Export -->
+                <div class="space-y-3 pb-5 border-b border-white/10">
+                    <h4 class="text-sm font-bold text-teal-300 uppercase tracking-wider">Data Import / Export</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="document.getElementById('csv-file').click()" class="w-full glass-panel px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Import Contacts</button>
+                        <button type="button" onclick="window.ui.downloadContacts()" class="w-full glass-panel px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Export Contacts</button>
+                        <button type="button" onclick="document.getElementById('csv-report-file').click()" class="w-full glass-panel px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 border border-amber-500/30 text-amber-200">Import Reports</button>
+                        <button type="button" onclick="window.ui.downloadReports()" class="w-full glass-panel px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 border border-amber-500/30 text-amber-200">Export Reports</button>
+                    </div>
+                    <input type="file" id="csv-file" accept=".csv" class="hidden" onchange="window.db.importContacts(event)">
+                    <input type="file" id="csv-report-file" accept=".csv" class="hidden" onchange="window.db.importReports(event)">
+                </div>
 
                 <!-- Danger Zone -->
                 <div class="space-y-3">
@@ -1080,7 +1115,8 @@
                             <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-elder" class="accent-teal-500 rounded w-4 h-4"> Elder</label>
                             <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-ms" class="accent-teal-500 rounded w-4 h-4"> Min. Servant</label>
                             <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-rp" class="accent-teal-500 rounded w-4 h-4"> Reg. Pioneer</label>
-                            <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-sp" class="accent-teal-500 rounded w-4 h-4"> Spec. Pioneer</label>
+                            <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-sp" onchange="if(this.checked) document.getElementById('pub-sfts').checked=true" class="accent-teal-500 rounded w-4 h-4"> Spec. Pioneer</label>
+                            <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-sfts" class="accent-amber-500 rounded w-4 h-4"> SFTS</label>
                             <label class="flex items-center gap-2 text-sm text-white cursor-pointer"><input type="checkbox" id="pub-fm" class="accent-teal-500 rounded w-4 h-4"> Field Miss.</label>
                         </div>
                     </div>
@@ -1357,19 +1393,19 @@
                     if (data) {
                     window.db.currentCongData = data; 
                     if (data.status === 'trial') {
-                        const createdDate = data.created_at ? new Date(data.created_at) : new Date();
-                        const now = new Date();
-                        const diffTime = Math.abs(now - createdDate);
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        const maxTrial = data.trial_days || 7;
-                        
-                        if (diffDays > maxTrial) {
+                        const createdMs = data.created_at ? new Date(data.created_at).getTime() : Date.now();
+                        const maxTrial = parseInt(data.trial_days) || 7;
+                        const trialMs = maxTrial * 24 * 60 * 60 * 1000;
+                        const expired = (Date.now() - createdMs) >= trialMs;
+                        const daysLeft = Math.max(0, Math.ceil((createdMs + trialMs - Date.now()) / (24 * 60 * 60 * 1000)));
+                        if (expired) {
+                            await supabaseClient.from('congregations').update({ status: 'expired' }).eq('id', data.id);
                             window.ui.showToast(`Trial period of ${maxTrial} days has expired. Please contact SuperAdmin.`, "error");
                             btn.textContent = "Unlock Database"; btn.disabled = false;
                             return;
                         } else {
-                            localStorage.setItem('fs_trial_days', maxTrial - diffDays);
-                            window.ui.showToast(`Trial active: ${maxTrial - diffDays} days remaining.`);
+                            localStorage.setItem('fs_trial_days', String(daysLeft));
+                            window.ui.showToast(`Trial active: ${daysLeft} day${daysLeft===1?'':'s'} remaining.`);
                         }
                     } else if (data.status === 'expired') {
                         window.ui.showToast("Subscription expired. Admin access disabled.", "error");
@@ -1547,6 +1583,7 @@
             },
 
             initSuperAdmin: async () => {
+                window.ui.initAppFont();
                 document.body.classList.add('super-admin-theme'); 
                 document.getElementById('nav-superadmin').classList.remove('hidden');
                 window.ui.switchTab('superadmin');
@@ -1557,11 +1594,49 @@
                 }
             },
 
+            refreshSubscriptionAccess: async (forceFetch = true) => {
+                if (!window.currentCongId || !isCloudEnabled) return true;
+                try {
+                    if (forceFetch) {
+                        const { data } = await supabaseClient.from('congregations').select('*').eq('id', window.currentCongId).single();
+                        if (data) window.db.currentCongData = data;
+                    }
+                    const cong = window.db.currentCongData;
+                    if (!cong) return true;
+                    let expired = cong.status === 'expired';
+                    if (cong.status === 'trial') {
+                        const created = cong.created_at ? new Date(cong.created_at).getTime() : Date.now();
+                        const trialMs = (parseInt(cong.trial_days) || 7) * 24 * 60 * 60 * 1000;
+                        expired = (Date.now() - created) >= trialMs;
+                        const left = Math.max(0, Math.ceil((created + trialMs - Date.now()) / (24 * 60 * 60 * 1000)));
+                        localStorage.setItem('fs_trial_days', String(left));
+                        if (expired) {
+                            await supabaseClient.from('congregations').update({ status: 'expired' }).eq('id', window.currentCongId);
+                            cong.status = 'expired';
+                            localStorage.removeItem('fs_trial_days');
+                        }
+                    } else {
+                        localStorage.removeItem('fs_trial_days');
+                    }
+                    const overlay = document.getElementById('expired-overlay');
+                    if (expired) {
+                        overlay?.classList.remove('hidden');
+                        return false;
+                    }
+                    overlay?.classList.add('hidden');
+                    return true;
+                } catch (e) {
+                    console.error('Subscription check failed:', e);
+                    return window.db.currentCongData?.status !== 'expired';
+                }
+            },
+
             initAdmin: async (congId, congName) => {
                 window.currentCongId = congId;
                 document.getElementById('nav-admin').classList.remove('hidden');
                 document.getElementById('nav-cong-name').textContent = congName;
                 document.getElementById('nav-cong-name').classList.remove('hidden');
+                document.getElementById('nav-cong-avatar').textContent = (congName || 'C').trim().charAt(0).toUpperCase();
 
                 if (isCloudEnabled) {
                     try {
@@ -1580,10 +1655,9 @@
                         if (aData) window.db.attendance = aData;
                     } catch (e) { console.error("Cloud fetch failed:", e); }
                 }
+                const accessOk = await window.ui.refreshSubscriptionAccess(false);
                 window.ui.initAdminUI();
-                if (window.db.currentCongData && window.db.currentCongData.status === 'expired') {
-                    document.getElementById('expired-overlay').classList.remove('hidden');
-                }
+                if (!accessOk) document.getElementById('expired-overlay')?.classList.remove('hidden');
             },
 
             createCongregation: async (e) => {
@@ -1632,7 +1706,7 @@
                 const featAttendance = document.getElementById('edit-feat-attendance').checked;
                 const featEmergency = document.getElementById('edit-feat-emergency').checked;
                 const email = document.getElementById('edit-cong-email').value.trim();
-                const notes = document.getElementById('edit-cong-notes').value.trim();
+                const notes = window.ui.composeSystemNoticeNotes(document.getElementById('edit-cong-notes').value.trim(), window.ui.getSystemNotice(window.db.congregations.find(x=>x.id===oldId)?.notes || ''));
 
                 if (!window.utils.isValidPassword(pwd)) {
                     window.ui.showToast("Password does not meet requirements.", "error");
@@ -1644,8 +1718,10 @@
                     return;
                 }
 
+                const existingTenant = window.db.congregations.find(x => x.id === oldId);
                 const payload = { 
                     id: newId, name: name, admin_password: pwd, status: status, 
+                    ...(status === 'trial' && existingTenant?.status !== 'trial' ? { created_at: new Date().toISOString() } : {}),
                     trial_days: trial, payment_date: payment, feature_attendance: featAttendance,
                     feature_emergency_contacts: featEmergency,
                     email: email, notes: notes 
@@ -1762,8 +1838,21 @@
                 }
             },
 
+            getSFTSOverrides: () => {
+                try { return JSON.parse(localStorage.getItem(`sfts_overrides_${window.currentCongId || 'global'}`) || '{}') || {}; } catch(e) { return {}; }
+            },
+            isSFTS: (pubId, isSP=false) => {
+                if (isSP) return true;
+                const map = window.db.getSFTSOverrides();
+                return !!map[pubId];
+            },
+            setSFTS: (pubId, enabled) => {
+                const map = window.db.getSFTSOverrides();
+                if (enabled) map[pubId] = true; else delete map[pubId];
+                localStorage.setItem(`sfts_overrides_${window.currentCongId || 'global'}`, JSON.stringify(map));
+            },
             mapPubToDB: (p) => ({ id: p.id, cong_id: window.currentCongId, name: p.name, service_group: p.group, gender: p.gender, hope: p.hope, dob: p.dob || null, baptized: p.baptized || null, is_elder: p.isElder, is_ms: p.isMS, is_rp: p.isRP, is_sp: p.isSP, is_fm: p.isFM, phone: p.phone, address: p.address || null, emergency_name: p.emergencyName || null, emergency_relationship: p.emergencyRelationship || null, emergency_phone: p.emergencyPhone || null, spiritual_status: p.spiritualStatus || null, family_head_id: p.familyHeadId || null }),
-            mapPubFromDB: (r) => ({ id: r.id, name: r.name, group: r.service_group, gender: r.gender, hope: r.hope, dob: r.dob, baptized: r.baptized, isElder: r.is_elder, isMS: r.is_ms, isRP: r.is_rp, isSP: r.is_sp, isFM: r.is_fm, phone: r.phone, address: r.address, emergencyName: r.emergency_name, emergencyRelationship: r.emergency_relationship, emergencyPhone: r.emergency_phone, spiritualStatus: r.spiritual_status, familyHeadId: r.family_head_id }),
+            mapPubFromDB: (r) => ({ id: r.id, name: r.name, group: r.service_group, gender: r.gender, hope: r.hope, dob: r.dob, baptized: r.baptized, isElder: r.is_elder, isMS: r.is_ms, isRP: r.is_rp, isSP: r.is_sp, isSFTS: window.db.isSFTS(r.id, r.is_sp), isFM: r.is_fm, phone: r.phone, address: r.address, emergencyName: r.emergency_name, emergencyRelationship: r.emergency_relationship, emergencyPhone: r.emergency_phone, spiritualStatus: r.spiritual_status, familyHeadId: r.family_head_id }),
             mapRepToDB: (r) => ({ id: r.id, cong_id: window.currentCongId, pub_id: r.pubId, service_year: r.serviceYear, month: r.month, shared_in_ministry: r.shared_in_ministry, studies: r.studies ? parseInt(r.studies) : 0, hours: r.hours ? parseFloat(r.hours) : 0, comments: r.comments, is_ap: r.isAP }),
             mapRepFromDB: (r) => ({ id: r.id, pubId: r.pub_id, serviceYear: r.service_year, month: r.month, sharedInMinistry: r.shared_in_ministry, studies: r.studies, hours: r.hours, comments: r.comments, isAP: r.is_ap }),
 
@@ -1852,6 +1941,7 @@
                 reader.onload = async (event) => {
                     const lines = event.target.result.split('\n');
                     if (lines.length < 2) { window.ui.showToast('Invalid CSV format', 'error'); return; }
+                    const hasSFTSColumn = /(^|,)\s*SFTS\s*(,|$)/i.test(lines[0]);
                     let imported = 0; const dbPubsToUpsert = [];
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim(); if (!line) continue;
@@ -1877,16 +1967,17 @@
                             isRP: isTrue(values[6]), 
                             gender: isTrue(values[7]) ? 'Male' : 'Female', 
                             isSP: isTrue(values[9]), 
-                            isFM: isTrue(values[10]), 
-                            hope: isTrue(values[11]) ? 'Anointed' : 'Other Sheep', 
-                            group: values[13]?.trim() || ''
+                            isSFTS: hasSFTSColumn ? (isTrue(values[10]) || isTrue(values[9])) : isTrue(values[9]),
+                            isFM: isTrue(values[hasSFTSColumn ? 11 : 10]), 
+                            hope: isTrue(values[hasSFTSColumn ? 12 : 11]) ? 'Anointed' : 'Other Sheep', 
+                            group: values[hasSFTSColumn ? 14 : 13]?.trim() || ''
                         };
                         const existing = window.db.publishers.find(p => p.name.toLowerCase() === name.toLowerCase());
                         pubData.id = existing ? existing.id : window.utils.generateUUID();
                         
                         const idx = window.db.publishers.findIndex(p => p.id === pubData.id);
                         if (idx > -1) window.db.publishers[idx] = pubData; else window.db.publishers.push(pubData);
-                        dbPubsToUpsert.push(window.db.mapPubToDB(pubData)); imported++;
+                        window.db.setSFTS(pubData.id, !!pubData.isSFTS); dbPubsToUpsert.push(window.db.mapPubToDB(pubData)); imported++;
                     }
                     if (isCloudEnabled && dbPubsToUpsert.length > 0) await supabaseClient.from('publishers').upsert(dbPubsToUpsert);
                     window.ui.showToast(`Imported ${imported} profiles`); window.ui.renderPublishers(); window.ui.renderGroups(); e.target.value = ''; 
@@ -2143,7 +2234,7 @@
         `;
 
         window.ui = {
-            currentTab: 'dashboard', publicGroup: null, overseerGroup: null, currentPubFilter: 'ALL',
+            currentTab: 'dashboard', publicGroup: null, overseerGroup: null, currentPubFilter: 'ALL', currentPubFilterValue: '', superAdminSelected: new Set(),
             
             checkPassword: (pwd, listId, btnId) => {
                 const list = document.getElementById(listId);
@@ -2166,9 +2257,22 @@
                 }
             },
 
+            setAppFont: (font) => {
+                const value = font === 'Poppins' ? 'Poppins' : 'Noto Sans';
+                localStorage.setItem('fs_app_font', value);
+                document.documentElement.style.setProperty('--app-font', `'${value}', sans-serif`);
+                const select = document.getElementById('app-font-family');
+                if (select) select.value = value;
+            },
+            initAppFont: () => {
+                const value = localStorage.getItem('fs_app_font') === 'Poppins' ? 'Poppins' : 'Noto Sans';
+                window.ui.setAppFont(value);
+            },
+
             initAdminUI: () => {
+                window.ui.initAppFont();
                 const syInfo = window.utils.getCurrentServiceYearInfo(); const istInfo = window.utils.getISTPreviousMonthInfo();
-                const selects = ['dash-year', 's21-year-select', 'analytics-year', 'att-year'];
+                const selects = ['dash-year', 'analytics-year', 'att-year', 'pub-s21-year'];
                 selects.forEach(id => {
                     const el = document.getElementById(id);
                     if(el) {
@@ -2179,6 +2283,8 @@
                 });
                 const mSelects = ['dash-month', 'analytics-month', 'att-month']; 
                 mSelects.forEach(id => { const el = document.getElementById(id); if(el) el.value = istInfo.month; });
+                const pubMonth = document.getElementById('pub-filter-month');
+                if(pubMonth){ pubMonth.innerHTML = ''; window.utils.getMonths().forEach((name, idx) => { const calendarMonth = [8,9,10,11,0,1,2,3,4,5,6,7][idx]; pubMonth.innerHTML += `<option value="${calendarMonth}">${name}</option>`; }); pubMonth.value = istInfo.month; }
                 
                 const trialBadge = document.getElementById('nav-trial-timer');
                 const trialDays = localStorage.getItem('fs_trial_days');
@@ -2208,20 +2314,65 @@
 
                 // Show Mobile Nav
                 document.getElementById('mobile-nav').classList.remove('hidden');
+                const congName = window.db.currentCongData?.name || localStorage.getItem('fs_cong_name') || document.getElementById('nav-cong-name')?.textContent || 'Congregation';
+                const avatar = document.getElementById('nav-cong-avatar');
+                if (avatar) avatar.textContent = congName.trim().charAt(0).toUpperCase() || 'C';
+                const pAvatar = document.getElementById('profile-modal-avatar');
+                const pName = document.getElementById('profile-modal-name');
+                if (pAvatar) pAvatar.textContent = congName.trim().charAt(0).toUpperCase() || 'C';
+                if (pName) pName.textContent = congName;
+                const mobileTitle = document.getElementById('nav-mobile-title');
+                if (mobileTitle) mobileTitle.textContent = congName;
+                const pubYear = document.getElementById('pub-s21-year');
+                if (pubYear) pubYear.value = istInfo.serviceYear;
+                const pubMonthEl = document.getElementById('pub-filter-month');
+                if (pubMonthEl) pubMonthEl.value = String(istInfo.month);
+                window.ui.renderPublishers('ALL');
+                window.ui.showSystemNotice();
 
                 window.ui.switchTab('dashboard');
                 window.ui.renderWipeBanner();
                 window.addEventListener('resize', () => { window.ui.scaleS21Preview(); });
+                if (window.ui.subscriptionTimer) clearInterval(window.ui.subscriptionTimer);
+                window.ui.subscriptionTimer = setInterval(() => window.ui.refreshSubscriptionAccess(true), 60000);
             },
+
+            getSystemNotice: (notes) => {
+                if(!notes) return null;
+                const m=String(notes).match(/\[\[SA_NOTICE\]\]([\s\S]*?)\[\[\/SA_NOTICE\]\]/);
+                if(!m) return null;
+                try { return JSON.parse(m[1]); } catch(e) { return {title:'System Notice',message:m[1].trim(),sentAt:null}; }
+            },
+            stripSystemNotice: (notes) => String(notes||'').replace(/\[\[SA_NOTICE\]\][\s\S]*?\[\[\/SA_NOTICE\]\]/g,'').replace(/\n{3,}/g,'\n\n').trim(),
+            composeSystemNoticeNotes: (notes, notice) => {
+                const clean=window.ui.stripSystemNotice(notes); const marker=`[[SA_NOTICE]]${JSON.stringify(notice)}[[/SA_NOTICE]]`;
+                return clean ? `${clean}\n\n${marker}` : marker;
+            },
+            showSystemNotice: () => {
+                const notice=window.ui.getSystemNotice(window.db.currentCongData?.notes); const banner=document.getElementById('system-notice-banner');
+                if(!banner || !notice || !notice.message) return;
+                document.getElementById('system-notice-title').textContent=notice.title||'System Notice'; document.getElementById('system-notice-message').textContent=notice.message; banner.classList.remove('hidden');
+            },
+
+            toggleSuperAdminSelection: (id, checked) => { if(checked) window.ui.superAdminSelected.add(id); else window.ui.superAdminSelected.delete(id); },
+            selectAllSuperAdmin: (all=true) => { const filter=document.getElementById('saas-filter')?.value||'ALL'; const search=(document.getElementById('saas-search')?.value||'').toLowerCase(); const list=window.db.congregations.filter(c=>{const f=filter==='ALL'||(filter==='ACTIVE'&&c.status==='active')||(filter==='TRIAL'&&c.status==='trial')||(filter==='EXPIRED'&&c.status==='expired')||(filter==='ATTENDANCE'&&c.feature_attendance)||(filter==='EMERGENCY'&&c.feature_emergency_contacts); return f && (((c.name||'').toLowerCase().includes(search))||((c.id||'').toLowerCase().includes(search)));}); if(all) list.forEach(c=>window.ui.superAdminSelected.add(c.id)); else window.ui.superAdminSelected.clear(); window.ui.renderSuperAdmin(); },
+            openNotificationComposer: () => { document.getElementById('notification-recipient-count').textContent=`${window.ui.superAdminSelected.size} selected`; window.ui.openModal('modal-superadmin-notification'); },
+            sendSuperAdminNotification: async (e) => { e.preventDefault(); const title=document.getElementById('sa-notice-title').value.trim()||'System Notice'; const message=document.getElementById('sa-notice-message').value.trim(); if(!message){window.ui.showToast('Enter a notification message.','error');return;} const ids=[...window.ui.superAdminSelected]; if(!ids.length){window.ui.showToast('Select at least one congregation first.','error');return;} const notice={title,message,sentAt:new Date().toISOString()}; let ok=0; for(const id of ids){ const c=window.db.congregations.find(x=>x.id===id); const notes=window.ui.composeSystemNoticeNotes(window.ui.stripSystemNotice(c?.notes||''),notice); const {error}=await supabaseClient.from('congregations').update({notes}).eq('id',id); if(!error){ok++; c.notes=notes;} } window.ui.closeModal('modal-superadmin-notification'); window.ui.showToast(`Notification sent to ${ok} congregation${ok===1?'':'s'}.`); window.ui.renderSuperAdmin(); },
 
             renderSuperAdmin: () => {
                 const searchStr = (document.getElementById('saas-search')?.value || '').toLowerCase();
+                const filter = document.getElementById('saas-filter')?.value || 'ALL';
                 const grid = document.getElementById('saas-cong-grid');
                 grid.innerHTML = '';
-                
-                const filtered = window.db.congregations.filter(c => 
-                    c.name.toLowerCase().includes(searchStr) || c.id.toLowerCase().includes(searchStr)
-                );
+                const matchesFilter = (c) => {
+                    if(filter==='ACTIVE') return c.status==='active';
+                    if(filter==='TRIAL') return c.status==='trial';
+                    if(filter==='EXPIRED') return c.status==='expired';
+                    if(filter==='ATTENDANCE') return !!c.feature_attendance;
+                    if(filter==='EMERGENCY') return !!c.feature_emergency_contacts;
+                    return true;
+                };
+                const filtered = window.db.congregations.filter(c => matchesFilter(c) && (c.name||'').toLowerCase().includes(searchStr) || matchesFilter(c) && (c.id||'').toLowerCase().includes(searchStr));
 
                 if(filtered.length === 0) {
                     grid.innerHTML = '<div class="col-span-full text-center text-slate-500 py-10 font-medium">No tenants found matching your search.</div>';
@@ -2261,9 +2412,12 @@
                         <div class="saas-card relative group">
                             ${wipeAlertHtml}
                             <div class="flex justify-between items-start mb-4">
-                                <div>
+                                <div class="flex items-start gap-3">
+                                    <input type="checkbox" class="saas-cong-check mt-1 accent-amber-500 w-4 h-4" data-cong-id="${c.id}" ${window.ui.superAdminSelected.has(c.id)?'checked':''} onchange="window.ui.toggleSuperAdminSelection('${c.id}', this.checked)">
+                                    <div>
                                     <h3 class="font-bold text-xl leading-tight mb-1 text-white group-hover:text-amber-400 transition-colors">${c.name}</h3>
                                     <div class="font-mono text-xs text-slate-400 flex items-center gap-1"><span class="font-semibold text-slate-500">ID:</span> ${c.id}</div>
+                                    </div>
                                 </div>
                                 ${statusBadge}
                             </div>
@@ -2284,7 +2438,7 @@
                             </div>
 
                             <div class="flex justify-end gap-2 mt-auto pt-4 border-t border-white/5">
-                                <button onclick="window.ui.editCongregation('${c.id}')" class="px-4 py-1.5 bg-white/5 hover:bg-amber-500/20 hover:text-amber-300 text-slate-300 rounded-lg text-sm font-semibold transition-all border border-white/10 hover:border-amber-500/30">Edit</button>
+                                <button onclick="window.ui.editCongregation('${c.id}')" class="p-2 bg-white/5 hover:bg-amber-500/20 hover:text-amber-300 text-slate-300 rounded-lg transition-all border border-white/10 hover:border-amber-500/30" title="Edit congregation" aria-label="Edit congregation"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L8.25 18.463 4 19.5l1.037-4.25L16.862 3.487zM15.5 5l3.5 3.5" /></svg></button>
                                 <button onclick="window.db.deleteCongregation('${c.id}')" class="px-4 py-1.5 bg-rose-900/30 hover:bg-rose-900/60 text-rose-400 rounded-lg text-sm font-semibold transition-all border border-rose-500/20 hover:border-rose-500/50">Delete</button>
                             </div>
                         </div>
@@ -2304,7 +2458,7 @@
                 document.getElementById('edit-feat-attendance').checked = !!c.feature_attendance;
                 document.getElementById('edit-feat-emergency').checked = !!c.feature_emergency_contacts;
                 document.getElementById('edit-cong-email').value = c.email || '';
-                document.getElementById('edit-cong-notes').value = c.notes || '';
+                document.getElementById('edit-cong-notes').value = window.ui.stripSystemNotice(c.notes || '');
                 window.ui.checkPassword(c.admin_password, 'edit-cong-pwd-reqs', 'btn-edit-cong');
                 window.ui.openModal('modal-edit-cong');
             },
@@ -2324,9 +2478,10 @@
                 window.ui.currentTab = tabId;
 
                 // Update Mobile Title
-                const titles = { 'dashboard': 'Overview', 'groups': 'Groups', 's21': 'Document Printer', 'analytics': 'Analytics', 'publishers': 'Publishers', 'attendance': 'Meeting Attendance', 'superadmin': 'SaaS Control Center' };
+                const titles = { 'dashboard': 'Overview', 'groups': 'Groups', 'analytics': 'Analytics', 'publishers': 'Publishers', 'attendance': 'Meeting Attendance', 'superadmin': 'SaaS Control Center' };
                 const mTitle = document.getElementById('nav-mobile-title');
-                if(mTitle && titles[tabId]) mTitle.textContent = titles[tabId];
+                const congName = window.db?.currentCongData?.name || localStorage.getItem('fs_cong_name');
+                if(mTitle) mTitle.textContent = (tabId === 'superadmin' ? 'SaaS Control Center' : (congName || titles[tabId] || 'Secretary Assistant'));
 
                 // Ensure mobile menu is closed when switching tabs
                 window.ui.closeModal('modal-mobile-menu');
@@ -2337,7 +2492,6 @@
                 if (tabId === 's4') window.ui.setupS4Tab();
                 if (tabId === 'attendance') window.ui.renderAttendance();
                 if (tabId === 'public-attendance') window.ui.setupPublicAttendance();
-                if (tabId === 's21') { window.ui.setupS21Tab(); setTimeout(window.ui.scaleS21Preview, 100); }
                 if (tabId === 'analytics') { window.ui.renderAnalytics(); window.ui.renderDetailedRoster(); }
                 if (tabId === 'emergency') window.ui.renderEmergencyContacts();
             },
@@ -2452,6 +2606,7 @@
                     famSel.innerHTML = '<option value="">-- None (Head of own household) --</option>' + others.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
                 }
                 if(id === 'modal-settings') { 
+                    window.ui.initAppFont();
                     document.getElementById('cp-current').value = ''; document.getElementById('cp-new').value = ''; 
                     window.ui.checkPassword('', 'cp-new-pwd-reqs', 'btn-cp-save');
 
@@ -2735,6 +2890,7 @@
                     isMS: document.getElementById('pub-ms').checked, 
                     isRP: document.getElementById('pub-rp').checked, 
                     isSP: document.getElementById('pub-sp').checked, 
+                    isSFTS: document.getElementById('pub-sfts').checked || document.getElementById('pub-sp').checked,
                     isFM: document.getElementById('pub-fm').checked, 
                     phone: document.getElementById('pub-phone').value, 
                     group: document.getElementById('pub-group').value,
@@ -2745,6 +2901,7 @@
                     spiritualStatus: document.getElementById('pub-spiritual-status').value,
                     familyHeadId: document.getElementById('pub-family-head').value || null
                 };
+                window.db.setSFTS(pub.id, !!pub.isSFTS);
                 await window.db.savePublisher(pub); 
                 window.ui.showToast(id ? 'Profile updated!' : 'Profile successfully provisioned!'); 
                 window.ui.closeModal('modal-add-publisher'); 
@@ -2757,7 +2914,7 @@
                 const gSel = document.querySelector(`input[name="pub-gender"][value="${pub.gender==='Female'?'Female':'Male'}"]`); if(gSel) gSel.checked = true;
                 const hSel = document.querySelector(`input[name="pub-hope"][value="${pub.hope==='Anointed'?'Anointed':'Other Sheep'}"]`); if(hSel) hSel.checked = true;
                 document.getElementById('pub-dob').value = pub.dob || ''; document.getElementById('pub-baptized').value = pub.baptized || '';
-                document.getElementById('pub-elder').checked = !!pub.isElder; document.getElementById('pub-ms').checked = !!pub.isMS; document.getElementById('pub-rp').checked = !!pub.isRP; document.getElementById('pub-sp').checked = !!pub.isSP; document.getElementById('pub-fm').checked = !!pub.isFM;
+                document.getElementById('pub-elder').checked = !!pub.isElder; document.getElementById('pub-ms').checked = !!pub.isMS; document.getElementById('pub-rp').checked = !!pub.isRP; document.getElementById('pub-sp').checked = !!pub.isSP; document.getElementById('pub-sfts').checked = !!pub.isSFTS || !!pub.isSP; document.getElementById('pub-fm').checked = !!pub.isFM;
                 document.getElementById('pub-phone').value = pub.phone || ''; document.getElementById('pub-group').value = pub.group || '';
                 document.getElementById('pub-address').value = pub.address || ''; document.getElementById('pub-emergency-name').value = pub.emergencyName || '';
                 document.getElementById('pub-emergency-relationship').value = pub.emergencyRelationship || ''; document.getElementById('pub-emergency-phone').value = pub.emergencyPhone || '';
@@ -2768,8 +2925,8 @@
 
             downloadContacts: () => {
                 const pubs = window.db.getPublishers(); if (pubs.length === 0) { window.ui.showToast('No contacts to export', 'error'); return; }
-                let csv = 'Name,Phone,DOB,Baptized,Elder,MS,RP,Male,Female,Special Pioneer,Field Missionary,Anointed,Other Sheep,Group\n';
-                pubs.forEach(p => { csv += `"${p.name}","${p.phone || ''}","${p.dob || ''}","${p.baptized || ''}",${!!p.isElder?'TRUE':'FALSE'},${!!p.isMS?'TRUE':'FALSE'},${!!p.isRP?'TRUE':'FALSE'},${p.gender==='Male'?'TRUE':'FALSE'},${p.gender==='Female'?'TRUE':'FALSE'},${!!p.isSP?'TRUE':'FALSE'},${!!p.isFM?'TRUE':'FALSE'},${p.hope==='Anointed'?'TRUE':'FALSE'},${p.hope==='Other Sheep'?'TRUE':'FALSE'},"${p.group || ''}"\n`; });
+                let csv = 'Name,Phone,DOB,Baptized,Elder,MS,RP,Male,Female,Special Pioneer,SFTS,Field Missionary,Anointed,Other Sheep,Group\n';
+                pubs.forEach(p => { csv += `"${p.name}","${p.phone || ''}","${p.dob || ''}","${p.baptized || ''}",${!!p.isElder?'TRUE':'FALSE'},${!!p.isMS?'TRUE':'FALSE'},${!!p.isRP?'TRUE':'FALSE'},${p.gender==='Male'?'TRUE':'FALSE'},${p.gender==='Female'?'TRUE':'FALSE'},${!!p.isSP?'TRUE':'FALSE'},${!!p.isSFTS || !!p.isSP?'TRUE':'FALSE'},${!!p.isFM?'TRUE':'FALSE'},${p.hope==='Anointed'?'TRUE':'FALSE'},${p.hope==='Other Sheep'?'TRUE':'FALSE'},"${p.group || ''}"\n`; });
                 const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `${window.currentCongId}_Publishers_Backup.csv`; a.click();
             },
 
@@ -2861,84 +3018,120 @@
                 `;
             },
 
-            renderPublishers: (filterType = 'ALL') => {
+            renderPublishers: (filterType = 'ALL', filterValue = '') => {
                 window.ui.currentPubFilter = filterType;
+                window.ui.currentPubFilterValue = filterValue;
                 const tbody = document.getElementById('publisher-table-body'); if(!tbody) return;
                 const allPubs = window.db.getPublishers();
-                
-                let elders = 0, ms = 0, rps = 0, ubps = 0, baptized = 0, others = 0;
+                const syEl = document.getElementById('pub-filter-month');
+                const month = syEl ? parseInt(syEl.value) : window.utils.getISTPreviousMonthInfo().month;
+                const yearEl = document.getElementById('pub-s21-year');
+                const serviceYear = yearEl ? parseInt(yearEl.value) : window.utils.getISTPreviousMonthInfo().serviceYear;
+                const monthReports = window.db.getReports(serviceYear, month);
+                const apSet = new Set(monthReports.filter(r => r.isAP).map(r => r.pubId));
+
+                let elders = 0, ms = 0, rps = 0, ubps = 0, baptized = 0, sfts = 0, aps = 0;
+                const groups = [...new Set(allPubs.map(p => (p.group || '').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
                 allPubs.forEach(p => {
                     if(p.isElder) elders++;
                     if(p.isMS) ms++;
                     if(p.isRP) rps++;
+                    if(window.db.isSFTS(p.id, p.isSP)) sfts++;
+                    if(apSet.has(p.id)) aps++;
                     if(!p.baptized) ubps++;
-                    if(p.baptized) baptized++;
-                    if(!p.isElder && !p.isMS && !p.isRP) others++;
+                    else baptized++;
                 });
 
                 let displayPubs = allPubs;
                 if (filterType === 'ELDERS') displayPubs = allPubs.filter(p => p.isElder);
                 else if (filterType === 'MS') displayPubs = allPubs.filter(p => p.isMS);
                 else if (filterType === 'RPS') displayPubs = allPubs.filter(p => p.isRP);
+                else if (filterType === 'SFTS') displayPubs = allPubs.filter(p => window.db.isSFTS(p.id, p.isSP));
+                else if (filterType === 'AP') displayPubs = allPubs.filter(p => apSet.has(p.id));
                 else if (filterType === 'UBP') displayPubs = allPubs.filter(p => !p.baptized);
                 else if (filterType === 'BAPTIZED') displayPubs = allPubs.filter(p => !!p.baptized);
+                else if (filterType === 'GROUP') displayPubs = allPubs.filter(p => (p.group || '').trim() === filterValue);
 
+                const esc = (v) => String(v ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
                 const statsContainer = document.getElementById('pub-stats-container');
                 if (statsContainer) {
                     statsContainer.innerHTML = `
-                        <button onclick="window.ui.renderPublishers('ALL')" class="p-3 rounded-xl border ${filterType==='ALL'?'border-slate-400 bg-slate-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
-                            <div class="text-xl sm:text-2xl font-bold text-white">${allPubs.length}</div>
-                            <div class="text-[9px] sm:text-[10px] text-slate-300 uppercase tracking-widest mt-1">Total</div>
-                        </button>
-                        <button onclick="window.ui.renderPublishers('ELDERS')" class="p-3 rounded-xl border ${filterType==='ELDERS'?'border-cyan-400 bg-cyan-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
-                            <div class="text-xl sm:text-2xl font-bold text-cyan-400">${elders}</div>
-                            <div class="text-[9px] sm:text-[10px] text-cyan-200/70 uppercase tracking-widest mt-1">Elders</div>
-                        </button>
-                        <button onclick="window.ui.renderPublishers('MS')" class="p-3 rounded-xl border ${filterType==='MS'?'border-blue-400 bg-blue-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
-                            <div class="text-xl sm:text-2xl font-bold text-blue-400">${ms}</div>
-                            <div class="text-[9px] sm:text-[10px] text-blue-200/70 uppercase tracking-widest mt-1">Min. Serv.</div>
-                        </button>
-                        <button onclick="window.ui.renderPublishers('RPS')" class="p-3 rounded-xl border ${filterType==='RPS'?'border-emerald-400 bg-emerald-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
-                            <div class="text-xl sm:text-2xl font-bold text-emerald-400">${rps}</div>
-                            <div class="text-[9px] sm:text-[10px] text-emerald-200/70 uppercase tracking-widest mt-1">Reg. Pio.</div>
-                        </button>
-                        <button onclick="window.ui.renderPublishers('BAPTIZED')" class="p-3 rounded-xl border ${filterType==='BAPTIZED'?'border-teal-400 bg-teal-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
-                            <div class="text-xl sm:text-2xl font-bold text-teal-400">${baptized}</div>
-                            <div class="text-[9px] sm:text-[10px] text-teal-200/70 uppercase tracking-widest mt-1">Baptized</div>
-                        </button>
-                        <button onclick="window.ui.renderPublishers('UBP')" class="p-3 rounded-xl border ${filterType==='UBP'?'border-rose-400 bg-rose-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center">
-                            <div class="text-xl sm:text-2xl font-bold text-rose-400">${ubps}</div>
-                            <div class="text-[9px] sm:text-[10px] text-rose-200/70 uppercase tracking-widest mt-1">Unbaptized</div>
-                        </button>
+                        <button onclick="window.ui.renderPublishers('ALL')" class="p-3 rounded-xl border ${filterType==='ALL'?'border-slate-400 bg-slate-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-white">${allPubs.length}</div><div class="text-[9px] sm:text-[10px] text-slate-300 uppercase tracking-widest mt-1">Total</div></button>
+                        <button onclick="window.ui.renderPublishers('ELDERS')" class="p-3 rounded-xl border ${filterType==='ELDERS'?'border-cyan-400 bg-cyan-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-cyan-400">${elders}</div><div class="text-[9px] text-cyan-200/70 uppercase tracking-widest mt-1">Elders</div></button>
+                        <button onclick="window.ui.renderPublishers('MS')" class="p-3 rounded-xl border ${filterType==='MS'?'border-blue-400 bg-blue-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-blue-400">${ms}</div><div class="text-[9px] text-blue-200/70 uppercase tracking-widest mt-1">Min. Serv.</div></button>
+                        <button onclick="window.ui.renderPublishers('RPS')" class="p-3 rounded-xl border ${filterType==='RPS'?'border-emerald-400 bg-emerald-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-emerald-400">${rps}</div><div class="text-[9px] text-emerald-200/70 uppercase tracking-widest mt-1">Reg. Pio.</div></button>
+                        <button onclick="window.ui.renderPublishers('SFTS')" class="p-3 rounded-xl border ${filterType==='SFTS'?'border-amber-400 bg-amber-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-amber-400">${sfts}</div><div class="text-[9px] text-amber-200/70 uppercase tracking-widest mt-1">SFTS</div></button>
+                        <button onclick="window.ui.renderPublishers('AP')" class="p-3 rounded-xl border ${filterType==='AP'?'border-teal-400 bg-teal-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-teal-400">${aps}</div><div class="text-[9px] text-teal-200/70 uppercase tracking-widest mt-1">AP · ${window.utils.getMonthName(month)}</div></button>
+                        <button onclick="window.ui.renderPublishers('BAPTIZED')" class="p-3 rounded-xl border ${filterType==='BAPTIZED'?'border-teal-400 bg-teal-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-teal-400">${baptized}</div><div class="text-[9px] text-teal-200/70 uppercase tracking-widest mt-1">Baptized</div></button>
+                        <button onclick="window.ui.renderPublishers('UBP')" class="p-3 rounded-xl border ${filterType==='UBP'?'border-rose-400 bg-rose-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-rose-400">${ubps}</div><div class="text-[9px] text-rose-200/70 uppercase tracking-widest mt-1">Unbaptized</div></button>
+                        ${groups.map(g => `<button onclick="window.ui.renderPublishers('GROUP','${esc(g)}')" class="p-3 rounded-xl border ${filterType==='GROUP'&&filterValue===g?'border-violet-400 bg-violet-900/60':'border-white/10 bg-black/20'} hover:bg-white/10 transition flex flex-col items-center justify-center text-center"><div class="text-xl sm:text-2xl font-bold text-violet-300">${allPubs.filter(p=>(p.group||'').trim()===g).length}</div><div class="text-[9px] text-violet-200/70 uppercase tracking-widest mt-1">${g}</div></button>`).join('')}
                     `;
                 }
 
                 const chart = document.getElementById('pub-pie-chart');
                 if (chart && allPubs.length > 0) {
-                    const total = allPubs.length;
-                    const ePct = (elders/total)*100;
-                    const mPct = (ms/total)*100;
-                    const rPct = (rps/total)*100;
-                    
-                    chart.style.background = `conic-gradient(
-                        #22d3ee 0% ${ePct}%, 
-                        #60a5fa ${ePct}% ${ePct+mPct}%, 
-                        #34d399 ${ePct+mPct}% ${ePct+mPct+rPct}%, 
-                        #475569 ${ePct+mPct+rPct}% 100%
-                    )`;
+                    const total = allPubs.length; const ePct=(elders/total)*100; const mPct=(ms/total)*100; const rPct=(rps/total)*100;
+                    chart.style.background = `conic-gradient(#22d3ee 0% ${ePct}%, #60a5fa ${ePct}% ${ePct+mPct}%, #34d399 ${ePct+mPct}% ${ePct+mPct+rPct}%, #fbbf24 ${ePct+mPct+rPct}% ${ePct+mPct+rPct+(sfts/total)*100}%, #475569 ${ePct+mPct+rPct+(sfts/total)*100}% 100%)`;
                 }
 
                 tbody.innerHTML = '';
-                displayPubs.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p => {
-                    let badges = [];
-                    if(p.isElder) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">Elder</span>');
-                    if(p.isMS) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50 shadow-sm">MS</span>');
-                    if(p.isRP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50 shadow-sm">RP</span>');
-                    if(p.isSP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50 shadow-sm">SP</span>');
-                    const age = p.dob ? window.utils.calculateAge(p.dob) + ' yrs' : '-';
-                    const bapText = !p.baptized ? '<span class="text-rose-300 font-semibold border border-rose-500/40 bg-rose-900/50 px-1.5 py-0.5 rounded text-[10px] uppercase">UBP</span>' : p.baptized;
-                    tbody.innerHTML += `<tr class="hover:bg-white/5 transition-colors border-b border-white/5"><td class="px-4 sm:px-6 py-4"><div class="font-bold text-white text-base">${p.name}</div><div class="text-[11px] text-teal-300 mt-1 uppercase tracking-widest font-semibold">${p.group || 'UNASSIGNED'}</div></td><td class="px-4 sm:px-6 py-4"><div class="flex flex-wrap gap-2">${badges.join('')}</div></td><td class="px-4 sm:px-6 py-4 text-teal-100/90 font-mono text-sm">${age}<br><span class="text-[11px] font-sans text-teal-100/60 mt-1 block">${bapText}</span></td><td class="px-4 sm:px-6 py-4 text-right space-x-3"><button onclick="window.ui.editPublisher('${p.id}')" class="text-cyan-400 hover:text-cyan-300 transition-colors p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002-2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></button><button onclick="window.db.deletePublisher('${p.id}')" class="text-rose-400 hover:text-rose-300 transition-colors p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></td></tr>`;
+                displayPubs.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => {
+                    let badges=[];
+                    if(p.isElder) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50">Elder</span>');
+                    if(p.isMS) badges.push('<span class="bg-cyan-900/80 text-cyan-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-cyan-500/50">MS</span>');
+                    if(p.isRP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50">RP</span>');
+                    if(p.isSP) badges.push('<span class="bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-500/50">SP</span>');
+                    if(window.db.isSFTS(p.id,p.isSP)) badges.push('<span class="bg-amber-900/80 text-amber-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-amber-500/50">SFTS</span>');
+                    if(apSet.has(p.id)) badges.push(`<span class="bg-teal-900/80 text-teal-200 px-2.5 py-1 rounded-md text-[10px] font-bold border border-teal-500/50">AP · ${window.utils.getMonthName(month)}</span>`);
+                    const age=p.dob ? window.utils.calculateAge(p.dob)+' yrs':'-';
+                    const bapText=!p.baptized?'<span class="text-rose-300 font-semibold border border-rose-500/40 bg-rose-900/50 px-1.5 py-0.5 rounded text-[10px] uppercase">UBP</span>':p.baptized;
+                    const safeId=esc(p.id);
+                    tbody.innerHTML += `<tr class="hover:bg-white/5 transition-colors border-b border-white/5"><td class="px-4 sm:px-6 py-4"><div class="font-bold text-white text-base">${p.name}</div><div class="text-[11px] text-teal-300 mt-1 uppercase tracking-widest font-semibold">${p.group||'UNASSIGNED'}</div></td><td class="px-4 sm:px-6 py-4"><div class="flex flex-wrap gap-2">${badges.join('')}</div></td><td class="px-4 sm:px-6 py-4 text-teal-100/90 font-mono text-sm">${age}<br><span class="text-[11px] font-sans text-teal-100/60 mt-1 block">${bapText}</span></td><td class="px-4 sm:px-6 py-4 text-right"><div class="flex justify-end gap-2"><button onclick="window.ui.downloadS21Publisher('${safeId}')" class="text-teal-300 hover:text-teal-200 transition-colors px-2 py-1.5 rounded-lg bg-teal-900/30 border border-teal-500/30 text-xs font-bold" title="Download S-21">⬇️ S-21</button><button onclick="window.ui.editPublisher('${safeId}')" class="text-cyan-400 hover:text-cyan-300 transition-colors p-1" title="Edit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L8.25 18.463 4 19.5l1.037-4.25L16.862 3.487zM15.5 5l3.5 3.5" /></svg></button><button onclick="window.db.deletePublisher('${safeId}')" class="text-rose-400 hover:text-rose-300 transition-colors p-1" title="Delete"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div></td></tr>`;
                 });
+            },
+
+            getPublisherS21Pubs: () => {
+                const all=window.db.getPublishers(); const filter=window.ui.currentPubFilter||'ALL'; const value=window.ui.currentPubFilterValue||'';
+                const year=parseInt(document.getElementById('pub-s21-year')?.value || window.utils.getISTPreviousMonthInfo().serviceYear);
+                const month=parseInt(document.getElementById('pub-filter-month')?.value || window.utils.getISTPreviousMonthInfo().month);
+                const reports=window.db.getReports(year,month); const apSet=new Set(reports.filter(r=>r.isAP).map(r=>r.pubId));
+                if(filter==='ELDERS') return all.filter(p=>p.isElder);
+                if(filter==='MS') return all.filter(p=>p.isMS);
+                if(filter==='RPS') return all.filter(p=>p.isRP);
+                if(filter==='SFTS') return all.filter(p=>window.db.isSFTS(p.id,p.isSP));
+                if(filter==='AP') return all.filter(p=>apSet.has(p.id));
+                if(filter==='UBP') return all.filter(p=>!p.baptized);
+                if(filter==='BAPTIZED') return all.filter(p=>!!p.baptized);
+                if(filter==='GROUP') return all.filter(p=>(p.group||'').trim()===value);
+                return all;
+            },
+
+            downloadS21Publisher: async (id) => {
+                const pub=window.db.getPublishers().find(p=>p.id===id); if(!pub){window.ui.showToast('Publisher not found','error');return;}
+                const sy=parseInt(document.getElementById('pub-s21-year')?.value || window.utils.getISTPreviousMonthInfo().serviceYear);
+                try{ const bytes=await buildS21OriginalPdf([pub],sy); const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})); const a=document.createElement('a'); a.href=url; a.download=`S-21_${pub.name.replace(/[^a-z0-9_-]+/gi,'_')}_${sy-1}-${sy}.pdf`; a.click(); URL.revokeObjectURL(url); window.ui.showToast('S-21 downloaded.'); }
+                catch(e){console.error(e);window.ui.showToast('Failed to generate S-21.','error');}
+            },
+
+            downloadS21Filtered: async () => {
+                const pubs=window.ui.getPublisherS21Pubs(); if(!pubs.length){window.ui.showToast('No publishers match this filter.','error');return;}
+                const sy=parseInt(document.getElementById('pub-s21-year')?.value || window.utils.getISTPreviousMonthInfo().serviceYear);
+                const filter=window.ui.currentPubFilter||'ALL'; const value=window.ui.currentPubFilterValue||'';
+                let label=filter==='GROUP'?value:(filter==='AP'?`AP_${window.utils.getMonthName(parseInt(document.getElementById('pub-filter-month')?.value||0))}`:filter);
+                try{ const bytes=await buildS21OriginalPdf(pubs,sy); const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})); const a=document.createElement('a'); a.href=url; a.download=`S-21_${label}_${sy-1}-${sy}.pdf`; a.click(); URL.revokeObjectURL(url); window.ui.showToast(`${pubs.length} S-21 card${pubs.length===1?'':'s'} downloaded.`); }
+                catch(e){console.error(e);window.ui.showToast('Failed to generate S-21 PDF.','error');}
+            },
+
+            downloadS21Group: async (groupName) => {
+                const pubs = window.db.getPublishers().filter(p => (p.group || '').trim() === groupName);
+                if (!pubs.length) { window.ui.showToast('No publishers found in this group.', 'error'); return; }
+                const sy = parseInt(document.getElementById('pub-s21-year')?.value || window.utils.getISTPreviousMonthInfo().serviceYear);
+                try {
+                    const bytes = await buildS21OriginalPdf(pubs, sy);
+                    const url = URL.createObjectURL(new Blob([bytes], {type:'application/pdf'}));
+                    const a = document.createElement('a'); a.href = url; a.download = `S-21_${groupName.replace(/[^a-z0-9_-]+/gi,'_')}_${sy-1}-${sy}.pdf`; a.click();
+                    URL.revokeObjectURL(url); window.ui.showToast(`${pubs.length} group S-21 card${pubs.length===1?'':'s'} downloaded.`);
+                } catch(e) { console.error(e); window.ui.showToast('Failed to generate group S-21 PDF.', 'error'); }
             },
 
             renderGroups: () => {
@@ -2970,7 +3163,7 @@
                 });
                 
                 let pendingHtml = pending.length > 0 ? `<ol class="list-decimal pl-5 space-y-1 text-rose-300 text-sm">${pending.map(name => `<li>${name}</li>`).join('')}</ol>` : '<div class="text-emerald-400 text-sm">All submitted!</div>';
-                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex flex-wrap gap-2"><button onclick="window.ui.copyGroupLink('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy Form Link</button><button onclick="window.ui.openGroupPasswordModal('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all border border-rose-500/30">🔒 Overseer Password</button><button onclick="window.ui.copyOverseerLink('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all border border-rose-500/30">🔗 Copy Overseer Link</button></div></div><div class="grid grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
+                details.innerHTML = `<div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10 flex-wrap gap-4"><div><h3 class="text-2xl font-bold text-white">${groupName}</h3><div class="text-sm text-teal-200/60 mt-1">Data for ${istInfo.displayString}</div></div><div class="flex flex-wrap gap-2"><button onclick="window.ui.downloadS21Group('${groupName.replace(/'/g, "\\'")}')" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-900 px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center gap-2 transition-all">⬇️ Download S-21</button><button onclick="window.ui.copyGroupLink('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all">🔗 Copy Form Link</button><button onclick="window.ui.openGroupPasswordModal('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all border border-rose-500/30">🔒 Overseer Password</button><button onclick="window.ui.copyOverseerLink('${groupName.replace(/'/g, "\\'")}')" class="glass-panel hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-2 transition-all border border-rose-500/30">🔗 Copy Overseer Link</button></div></div><div class="grid grid-cols-4 gap-3 mb-6 text-center text-white"><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold">${pubs.length}</div><div class="text-xs text-teal-100/60">Members</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-cyan-300">${stats.elders}</div><div class="text-xs text-teal-100/60">Elders</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-teal-300">${stats.rps}</div><div class="text-xs text-teal-100/60">RPs</div></div><div class="bg-black/20 p-3 rounded-lg border border-white/5"><div class="text-2xl font-bold text-amber-300">${stats.aps}</div><div class="text-xs text-amber-100/60">APs</div></div></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Pending Reports</h4>${pendingHtml}</div><div class="bg-black/20 p-4 rounded-lg border border-white/5"><h4 class="font-medium text-white mb-2 text-sm border-b border-white/10 pb-1">Members</h4><div class="text-sm text-teal-100/70">${membersList.join('<br>')}</div></div></div><div class="bg-black/30 rounded-lg border border-white/5 overflow-hidden overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-black/40 text-teal-100/60"><tr><th class="px-3 py-2">Publisher</th><th class="px-3 py-2 text-center">Shared</th><th class="px-3 py-2 text-center">Studies</th><th class="px-3 py-2 text-center">Hours</th><th class="px-3 py-2 text-center">Remarks</th></tr></thead><tbody class="divide-y divide-white/5">${tableHtml}</tbody></table></div>`;
             },
 
             openGroupPasswordModal: (groupName) => {
@@ -3086,12 +3279,8 @@
                 area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">${box('Inactive (Marked No)', inactives, 'rose')} ${box('Regular Pioneers', rps, 'cyan')} ${box('Auxiliary Pioneers', aps, 'teal')} ${box('Publishers', normals, 'slate')}</div>`;
             },
 
-            setupS21Tab: () => {
-                const sel = document.getElementById('s21-publisher-select'); if(!sel) return;
-                sel.innerHTML = `<option value="ALL">-- All Publishers --</option><option value="BATCH_RP">All Regular Pioneers</option><option value="BATCH_AP">All Auxiliary Pioneers (Current)</option><option value="BATCH_ELDER">All Elders</option><option value="BATCH_MS">All Ministerial Servants</option><option value="BATCH_UBP">All Unbaptized</option><optgroup label="Individuals">`;
-                window.db.getPublishers().sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`); sel.innerHTML += `</optgroup>`;
-            },
-            
+            setupS21Tab: () => {},
+
             openMissingReportsModal: () => {
                 const istInfo = window.utils.getISTPreviousMonthInfo();
                 document.getElementById('missing-reports-month-label').textContent = `For ${istInfo.displayString}`;
@@ -3414,65 +3603,11 @@
             },
 
             renderS21: async () => {
-                const sy = parseInt(document.getElementById('s21-year-select').value);
-                const filter = document.getElementById('s21-publisher-select').value;
-                let pubs = window.db.getPublishers();
-                const currentMonth = window.utils.getISTPreviousMonthInfo().month;
-                const currentReports = window.db.getReports(sy, currentMonth);
-                if (filter === 'BATCH_RP') pubs = pubs.filter(p => p.isRP);
-                else if (filter === 'BATCH_AP') pubs = pubs.filter(p => { const r=currentReports.find(x=>x.pubId===p.id); return r&&r.isAP; });
-                else if (filter === 'BATCH_ELDER') pubs = pubs.filter(p => p.isElder);
-                else if (filter === 'BATCH_MS') pubs = pubs.filter(p => p.isMS);
-                else if (filter === 'BATCH_UBP') pubs = pubs.filter(p => !p.baptized);
-                else if (filter !== 'ALL') pubs = pubs.filter(p => p.id === filter);
-
-                const iframe=document.getElementById('s21-render-frame');
-                const wrapper=document.getElementById('s21-render-area');
-                if(!pubs.length){
-                    iframe.removeAttribute('src'); iframe.srcdoc='<html><body style="font-family:sans-serif;text-align:center;padding:50px">No records found.</body></html>';
-                    wrapper.style.height='220px'; wrapper.style.display='block'; return;
-                }
-                try{
-                    const pdfBytes=await buildS21OriginalPdf(pubs,sy);
-                    if(window.ui._s21PreviewUrl) URL.revokeObjectURL(window.ui._s21PreviewUrl);
-                    window.ui._s21PreviewUrl=URL.createObjectURL(new Blob([pdfBytes],{type:'application/pdf'}));
-                    iframe.srcdoc=''; iframe.src=window.ui._s21PreviewUrl;
-                    iframe.style.transform='none'; iframe.style.width='595px'; iframe.style.height='421px';
-                    wrapper.style.display='flex'; wrapper.style.height=Math.max(461, Math.ceil(421*Math.min(1,wrapper.clientWidth/595))+40)+'px';
-                }catch(err){ console.error('S-21 preview error:',err); window.ui.showToast('Failed to prepare S-21 preview.','error'); }
+                return window.ui.downloadS21Filtered();
             },
 
-            printAllCards: () => {
-                const sel=document.getElementById('s21-publisher-select');
-                sel.value='ALL';
-                window.ui.renderS21().then(()=>window.ui.printCards());
-            },
-
-            printCards: async () => {
-                const sel=document.getElementById('s21-publisher-select');
-                const sy=parseInt(document.getElementById('s21-year-select').value);
-                let pubs=window.db.getPublishers();
-                const currentMonth=window.utils.getISTPreviousMonthInfo().month;
-                const currentReports=window.db.getReports(sy,currentMonth);
-                if(sel.value==='BATCH_RP') pubs=pubs.filter(p=>p.isRP);
-                else if(sel.value==='BATCH_AP') pubs=pubs.filter(p=>{const r=currentReports.find(x=>x.pubId===p.id);return r&&r.isAP;});
-                else if(sel.value==='BATCH_ELDER') pubs=pubs.filter(p=>p.isElder);
-                else if(sel.value==='BATCH_MS') pubs=pubs.filter(p=>p.isMS);
-                else if(sel.value==='BATCH_UBP') pubs=pubs.filter(p=>!p.baptized);
-                else if(sel.value!=='ALL') pubs=pubs.filter(p=>p.id===sel.value);
-                if(!pubs.length){window.ui.showToast('Please select publishers to print.','error');return;}
-                const btn=document.getElementById('s21-print-btn'); const originalText=btn.innerHTML;
-                btn.innerHTML='Generating PDF...'; btn.disabled=true;
-                try{
-                    const pdfBytes=await buildS21OriginalPdf(pubs,sy);
-                    const blob=new Blob([pdfBytes],{type:'application/pdf'});
-                    const a=document.createElement('a'); const url=URL.createObjectURL(blob); a.href=url;
-                    const filterText=sel.options[sel.selectedIndex]?.text||'Publishers';
-                    a.download=`S-21_${filterText}_Publisher Cards_${sy-1}-${sy}.pdf`; a.click(); URL.revokeObjectURL(url);
-                    window.ui.showToast('Original S-21 templates compiled successfully!');
-                }catch(error){console.error('S-21 PDF Generation Error:',error);window.ui.showToast('Failed to compile S-21 PDF.','error');}
-                finally{btn.innerHTML=originalText;btn.disabled=false;}
-            },
+            printAllCards: () => window.ui.downloadS21Filtered(),
+            printCards: () => window.ui.downloadS21Filtered(),
 
             setupS4Tab: () => {
                 const pubs = window.db.getPublishers(); const sel = document.getElementById('s4-pub-select'); if (!sel) return;
