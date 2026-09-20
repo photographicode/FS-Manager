@@ -1638,6 +1638,12 @@
                 document.getElementById('nav-cong-name').classList.remove('hidden');
                 document.getElementById('nav-cong-avatar').textContent = (congName || 'C').trim().charAt(0).toUpperCase();
 
+                // Bring the application shell up immediately. Do not make the entire UI wait
+                // for Supabase/network requests; this was causing a blank mobile screen when a
+                // refresh happened while the cloud request was slow.
+                try { window.ui.initAdminUI(); }
+                catch (e) { console.error('Initial admin UI setup failed:', e); }
+
                 if (isCloudEnabled) {
                     try {
                         if (!window.db.currentCongData) {
@@ -1647,17 +1653,51 @@
 
                         const { data: pData } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
                         if (pData) window.db.publishers = pData.map(window.db.mapPubFromDB);
-                        
+
                         const { data: rData } = await supabaseClient.from('reports').select('*').eq('cong_id', congId);
                         if (rData) window.db.reports = rData.map(window.db.mapRepFromDB);
-                        
+
                         const { data: aData } = await supabaseClient.from('meeting_attendance').select('*').eq('cong_id', congId);
                         if (aData) window.db.attendance = aData;
                     } catch (e) { console.error("Cloud fetch failed:", e); }
                 }
+
+                // Re-apply feature-gated navigation after the congregation profile has
+                // arrived from Supabase (the shell is intentionally rendered before the fetch).
+                if (window.db.currentCongData?.feature_attendance === true) {
+                    document.getElementById('btn-tab-attendance')?.classList.remove('hidden');
+                    document.getElementById('menu-item-attendance')?.classList.remove('hidden');
+                }
+                if (window.db.currentCongData?.feature_emergency_contacts === true) {
+                    document.getElementById('btn-tab-emergency')?.classList.remove('hidden');
+                    document.getElementById('menu-item-emergency')?.classList.remove('hidden');
+                }
+
                 const accessOk = await window.ui.refreshSubscriptionAccess(false);
-                window.ui.initAdminUI();
                 if (!accessOk) document.getElementById('expired-overlay')?.classList.remove('hidden');
+                window.ui.showSystemNotice();
+
+                // If the saved tab is a feature that became available only after the cloud
+                // profile loaded, restore it now.
+                const savedTabAfterLoad = localStorage.getItem(`fs_last_tab_${window.currentCongId}`);
+                if (savedTabAfterLoad === 'attendance' && window.db.currentCongData?.feature_attendance === true) {
+                    window.ui.switchTab('attendance', true);
+                } else if (savedTabAfterLoad === 'emergency' && window.db.currentCongData?.feature_emergency_contacts === true) {
+                    window.ui.switchTab('emergency', true);
+                }
+
+                // Re-render the currently selected tab after cloud data arrives, without
+                // forcing the user back to Home.
+                try {
+                    const tab = window.ui.currentTab || 'dashboard';
+                    if (tab === 'dashboard') window.ui.renderDashboard();
+                    if (tab === 'publishers') window.ui.renderPublishers(window.ui.currentPubFilter || 'ALL', window.ui.currentPubFilterValue || '');
+                    if (tab === 'groups') window.ui.renderGroups();
+                    if (tab === 'attendance') window.ui.renderAttendance();
+                    if (tab === 'analytics') { window.ui.renderAnalytics(); window.ui.renderDetailedRoster(); }
+                    if (tab === 'emergency') window.ui.renderEmergencyContacts();
+                    window.ui.renderWipeBanner();
+                } catch (e) { console.error('Post-load UI render failed:', e); }
             },
 
             createCongregation: async (e) => {
@@ -2272,6 +2312,8 @@
             initAdminUI: () => {
                 window.ui.initAppFont();
                 const syInfo = window.utils.getCurrentServiceYearInfo(); const istInfo = window.utils.getISTPreviousMonthInfo();
+                // Always rebuild the application's service-year/month selectors on startup.
+                // This keeps the Publisher S-21 selectors available even after a mobile refresh.
                 const selects = ['dash-year', 'analytics-year', 'att-year', 'pub-s21-year'];
                 selects.forEach(id => {
                     const el = document.getElementById(id);
@@ -2327,10 +2369,23 @@
                 if (pubYear) pubYear.value = istInfo.serviceYear;
                 const pubMonthEl = document.getElementById('pub-filter-month');
                 if (pubMonthEl) pubMonthEl.value = String(istInfo.month);
-                window.ui.renderPublishers('ALL');
+                // Render the publisher database defensively. A failure here must never leave
+                // the application with every tab hidden on mobile/slow connections.
+                try { window.ui.renderPublishers(window.ui.currentPubFilter || 'ALL', window.ui.currentPubFilterValue || ''); }
+                catch (e) { console.error('Initial publisher render failed:', e); }
                 window.ui.showSystemNotice();
 
-                window.ui.switchTab('dashboard');
+                // Restore the last application tab for this congregation. If none was saved,
+                // Home is the default. Feature-gated tabs fall back to Home.
+                const lastKey = `fs_last_tab_${window.currentCongId || 'global'}`;
+                const savedTab = localStorage.getItem(lastKey) || 'dashboard';
+                const featureAttendance = window.db.currentCongData?.feature_attendance === true;
+                const featureEmergency = window.db.currentCongData?.feature_emergency_contacts === true;
+                const validTabs = ['dashboard','groups','publishers','analytics'];
+                if (featureAttendance) validTabs.push('attendance');
+                if (featureEmergency) validTabs.push('emergency');
+                const initialTab = validTabs.includes(savedTab) ? savedTab : 'dashboard';
+                window.ui.switchTab(initialTab, true);
                 window.ui.renderWipeBanner();
                 window.addEventListener('resize', () => { window.ui.scaleS21Preview(); });
                 if (window.ui.subscriptionTimer) clearInterval(window.ui.subscriptionTimer);
@@ -2463,7 +2518,7 @@
                 window.ui.openModal('modal-edit-cong');
             },
 
-            switchTab: (tabId) => {
+            switchTab: (tabId, restoring = false) => {
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
                 const targetTab = document.getElementById(`tab-${tabId}`); if (targetTab) targetTab.classList.add('active');
                 
@@ -2476,6 +2531,11 @@
                 const mBtn = document.getElementById(`m-btn-tab-${tabId}`); if (mBtn) { mBtn.classList.remove('text-teal-50/50'); mBtn.classList.add('text-teal-300'); }
 
                 window.ui.currentTab = tabId;
+                // Remember the user's last working tab so refresh/re-open returns there.
+                // Public/overseer links use their own explicit routing and are not persisted here.
+                if (!window.ui.publicGroup && !window.ui.overseerGroup && window.currentCongId) {
+                    localStorage.setItem(`fs_last_tab_${window.currentCongId}`, tabId);
+                }
 
                 // Update Mobile Title
                 const titles = { 'dashboard': 'Overview', 'groups': 'Groups', 'analytics': 'Analytics', 'publishers': 'Publishers', 'attendance': 'Meeting Attendance', 'superadmin': 'SaaS Control Center' };
