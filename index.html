@@ -1906,9 +1906,23 @@
 
             savePublisher: async (pub) => {
                 if (!pub.id) pub.id = window.utils.generateUUID();
+                const previous = window.db.publishers.find(p => p.id === pub.id);
                 const idx = window.db.publishers.findIndex(p => p.id === pub.id);
                 if (idx > -1) window.db.publishers[idx] = pub; else window.db.publishers.push(pub);
-                if (isCloudEnabled) await supabaseClient.from('publishers').upsert(window.db.mapPubToDB(pub)); 
+
+                if (isCloudEnabled) {
+                    const payload = window.db.mapPubToDB(pub);
+                    const { error } = await supabaseClient.from('publishers').upsert([payload], { onConflict: 'id' });
+                    if (error) {
+                        // Do not report success when Supabase rejected the write. Roll the
+                        // optimistic local change back so a failed cloud save cannot look real.
+                        if (idx > -1 && previous) window.db.publishers[idx] = previous;
+                        else window.db.publishers = window.db.publishers.filter(p => p.id !== pub.id);
+                        console.error('Publisher cloud save failed:', error);
+                        window.ui.showToast(`Publisher was not synced: ${error.message || 'Supabase rejected the record.'}`, 'error');
+                        throw error;
+                    }
+                }
             },
 
             saveReport: async (report) => {
