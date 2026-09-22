@@ -78,6 +78,8 @@
 
         body.public-mode #app-header, body.public-mode #mobile-nav, body.public-mode #mobile-top-header, body.public-mode #ca-desktop-topbar, body.public-mode #global-loader { display: none !important; }
         body.overseer-mode #app-header, body.overseer-mode #mobile-nav, body.overseer-mode #mobile-top-header, body.overseer-mode #ca-desktop-topbar { display: none !important; }
+        body.overseer-mode .main-content { margin-left: 0 !important; max-width: 100% !important; width: 100% !important; padding-left: 24px !important; padding-right: 24px !important; }
+        body.overseer-mode #tab-overseer > div { max-width: 980px !important; margin-left: auto !important; margin-right: auto !important; width: 100% !important; }
         body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; width: 100%; }
         body.public-mode .tab-content { display: none !important; }
         body.public-mode .tab-content.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; }
@@ -590,7 +592,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     <div class="ca-nav-divider"></div>
                     <div class="ca-nav-section">
                         <div class="ca-nav-section-title">Coming Soon</div>
-                        <button onclick="window.ui.switchTab('oclm')" id="btn-tab-oclm" class="ca-nav-item ca-coming-soon" aria-label="OCLM Scheduler"><span class="ca-nav-icon" aria-hidden="true">◷</span><span class="ca-nav-label">OCLM Scheduler</span></button>
+                        <button onclick="window.ui.openOCLM()" id="btn-tab-oclm" class="ca-nav-item ca-coming-soon" aria-label="OCLM Scheduler"><span class="ca-nav-icon" aria-hidden="true">◷</span><span class="ca-nav-label">OCLM Scheduler</span></button>
                         <button onclick="window.ui.showComingSoon('Territory Management Application')" id="btn-tab-territory" class="ca-nav-item ca-coming-soon" aria-disabled="true"><span class="ca-nav-icon" aria-hidden="true">⌖</span><span class="ca-nav-label">Territory Management</span></button>
                     </div>
                     <div class="ca-nav-divider"></div>
@@ -880,7 +882,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             <div class="glass-panel p-5 sm:p-6 rounded-2xl border border-cyan-500/20">
                 <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                     <div><h2 class="text-2xl sm:text-3xl font-bold text-white">OCLM Scheduling</h2><p class="text-teal-200/70 mt-1">Plan weekly assignments using the publishers already in your database.</p></div>
-                    <div class="text-xs text-cyan-100/60 bg-cyan-950/30 border border-cyan-500/20 rounded-xl px-4 py-3 max-w-xl"><strong class="text-cyan-200">What to expect:</strong> Set the parts each publisher can handle, create weekly assignments, use Auto-Assign to distribute eligible publishers, and generate a personal public link so each publisher can view current and upcoming assignments.</div>
+                    <div class="text-xs text-cyan-100/60 bg-cyan-950/30 border border-cyan-500/20 rounded-xl px-4 py-3 max-w-xl"><strong class="text-cyan-200">What to expect:</strong> Set the parts each publisher can handle, create weekly assignments, The assigner can use Auto-Assign for a week to distribute eligible publishers, and to make sure everyone get\'s equal chances and generate a public link so each publisher can view current and upcoming assignments.</div>
                 </div>
             </div>
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
@@ -1308,6 +1310,10 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                             <input type="checkbox" id="saas-feat-emergency" class="accent-amber-500 rounded w-4 h-4"> 
                             <span>Emergency Contacts Module</span>
                         </label>
+                        <label class="flex items-center gap-3 text-sm text-white cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors">
+                            <input type="checkbox" id="saas-feat-oclm" class="accent-amber-500 rounded w-4 h-4"> 
+                            <span>OCLM Scheduling Module</span>
+                        </label>
                     </div>
                 </div>
                 <div class="space-y-2">
@@ -1378,6 +1384,10 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                         <label class="flex items-center gap-3 text-sm text-white cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors">
                             <input type="checkbox" id="edit-feat-emergency" class="accent-amber-500 rounded w-4 h-4"> 
                             <span>Emergency Contacts Module</span>
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-white cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors">
+                            <input type="checkbox" id="edit-feat-oclm" class="accent-amber-500 rounded w-4 h-4"> 
+                            <span>OCLM Scheduling Module</span>
                         </label>
                     </div>
                 </div>
@@ -2144,6 +2154,12 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     document.getElementById('btn-tab-emergency')?.classList.remove('hidden');
                     document.getElementById('menu-item-emergency')?.classList.remove('hidden');
                 }
+                const oclmBtn = document.getElementById('btn-tab-oclm');
+                if (oclmBtn) {
+                    const oclmEnabled = window.db.currentCongData?.feature_oclm === true;
+                    oclmBtn.classList.toggle('ca-coming-soon', !oclmEnabled);
+                    oclmBtn.setAttribute('aria-disabled', oclmEnabled ? 'false' : 'true');
+                }
 
                 const accessOk = await window.ui.refreshSubscriptionAccess(false);
                 if (!accessOk) document.getElementById('expired-overlay')?.classList.remove('hidden');
@@ -2152,7 +2168,9 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 // If the saved tab is a feature that became available only after the cloud
                 // profile loaded, restore it now.
                 const savedTabAfterLoad = localStorage.getItem(`fs_last_tab_${window.currentCongId}`);
-                if (savedTabAfterLoad === 'attendance' && window.db.currentCongData?.feature_attendance === true) {
+                if (savedTabAfterLoad === 'oclm' && window.db.currentCongData?.feature_oclm === true) {
+                    window.ui.switchTab('oclm', true);
+                } else if (savedTabAfterLoad === 'attendance' && window.db.currentCongData?.feature_attendance === true) {
                     window.ui.switchTab('attendance', true);
                 } else if (savedTabAfterLoad === 'emergency' && window.db.currentCongData?.feature_emergency_contacts === true) {
                     window.ui.switchTab('emergency', true);
@@ -2182,6 +2200,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const payment = document.getElementById('saas-cong-payment').value || null;
                 const featAttendance = document.getElementById('saas-feat-attendance').checked;
                 const featEmergency = document.getElementById('saas-feat-emergency').checked;
+                const featOclm = document.getElementById('saas-feat-oclm').checked;
                 const email = document.getElementById('saas-cong-email').value.trim();
                 const notes = document.getElementById('saas-cong-notes').value.trim();
 
@@ -2198,7 +2217,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const payload = { 
                     id: id, name: name, admin_password: pwd, status: 'trial', 
                     trial_days: trial, payment_date: payment, feature_attendance: featAttendance,
-                    feature_emergency_contacts: featEmergency,
+                    feature_emergency_contacts: featEmergency, feature_oclm: featOclm,
                     email: email, notes: notes 
                 };
 
@@ -2218,6 +2237,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const payment = document.getElementById('edit-cong-payment').value || null;
                 const featAttendance = document.getElementById('edit-feat-attendance').checked;
                 const featEmergency = document.getElementById('edit-feat-emergency').checked;
+                const featOclm = document.getElementById('edit-feat-oclm').checked;
                 const email = document.getElementById('edit-cong-email').value.trim();
                 const notes = window.ui.composeSystemNoticeNotes(document.getElementById('edit-cong-notes').value.trim(), window.ui.getSystemNotice(window.db.congregations.find(x=>x.id===oldId)?.notes || ''));
 
@@ -2236,7 +2256,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     id: newId, name: name, admin_password: pwd, status: status, 
                     ...(status === 'trial' && existingTenant?.status !== 'trial' ? { created_at: new Date().toISOString() } : {}),
                     trial_days: trial, payment_date: payment, feature_attendance: featAttendance,
-                    feature_emergency_contacts: featEmergency,
+                    feature_emergency_contacts: featEmergency, feature_oclm: featOclm,
                     email: email, notes: notes 
                 };
 
@@ -2748,7 +2768,10 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             for(let i=1;i<=5;i++){ const a=printObj(rec[`w${i}_mid`]), b=printObj(rec[`w${i}_end`]); if(!a.str&&a.num){mTotal+=a.num;mCount++;} if(!b.str&&b.num){eTotal+=b.num;eCount++;} w.push({mid:a,end:b}); }
             const center=(text,cx,top,bottom,size=9,bold=false,raise=2.0)=>{ if(text===''||text==null)return; const f=bold?fontBold:font; const width=f.widthOfTextAtSize(String(text),size); const cellH=bottom-top; const y=h-bottom+(cellH-size)/2+raise; page.drawText(String(text),{x:cx-width/2,y,size,font:f,color:dark}); };
             const left=(text,x,top,size=8.5)=>{if(text===''||text==null)return; page.drawText(String(text),{x,y:h-top+1.5,size,font,color:dark});};
-            left(congName,60.0,95.5,8.5); left(monthName,239.0,95.5,8.5);
+            // The official template already prints the labels and dotted lines.
+            // Start both entered values at the left edge of their corresponding lines and
+            // place them slightly lower so they sit cleanly on the baseline.
+            left(congName,83.0,98.0,8.5); left(monthName,239.0,98.0,8.5);
             const xs=[69.61,106.46,143.30,180.15,217.10];
             const rowTops=[127.57,127.57,127.57,127.57,127.57];
             const rowBottoms=[166.91,166.91,166.91,166.91,166.91];
@@ -2983,6 +3006,8 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     document.getElementById('btn-tab-emergency')?.classList.remove('hidden');
                     document.getElementById('menu-item-emergency')?.classList.remove('hidden');
                 }
+                const oclmNav = document.getElementById('btn-tab-oclm');
+                if (oclmNav) oclmNav.classList.toggle('ca-coming-soon', window.db.currentCongData?.feature_oclm !== true);
 
                 // Show Mobile Nav
                 document.getElementById('mobile-nav').classList.remove('hidden');
@@ -3015,7 +3040,9 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const savedTab = localStorage.getItem(lastKey) || 'dashboard';
                 const featureAttendance = window.db.currentCongData?.feature_attendance === true;
                 const featureEmergency = window.db.currentCongData?.feature_emergency_contacts === true;
-                const validTabs = ['dashboard','groups','publishers','analytics','oclm'];
+                const featureOclm = window.db.currentCongData?.feature_oclm === true;
+                const validTabs = ['dashboard','groups','publishers','analytics'];
+                if (featureOclm) validTabs.push('oclm');
                 if (featureAttendance) validTabs.push('attendance');
                 if (featureEmergency) validTabs.push('emergency');
                 const initialTab = validTabs.includes(savedTab) ? savedTab : 'dashboard';
@@ -3146,13 +3173,31 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 document.getElementById('edit-cong-payment').value = c.payment_date || '';
                 document.getElementById('edit-feat-attendance').checked = !!c.feature_attendance;
                 document.getElementById('edit-feat-emergency').checked = !!c.feature_emergency_contacts;
+                document.getElementById('edit-feat-oclm').checked = !!c.feature_oclm;
                 document.getElementById('edit-cong-email').value = c.email || '';
                 document.getElementById('edit-cong-notes').value = window.ui.stripSystemNotice(c.notes || '');
                 window.ui.checkPassword(c.admin_password, 'edit-cong-pwd-reqs', 'btn-edit-cong');
                 window.ui.openModal('modal-edit-cong');
             },
 
+            openOCLM: () => {
+                if (window.db.currentCongData?.feature_oclm !== true) {
+                    window.ui.showOCLMComingSoon();
+                    return;
+                }
+                window.ui.switchTab('oclm');
+            },
+
+            showOCLMComingSoon: () => {
+                const t = document.getElementById('coming-soon-title');
+                const p = document.querySelector('#modal-coming-soon p');
+                if (t) t.textContent = 'OCLM Scheduling';
+                if (p) p.textContent = 'What to expect: Set the parts each publisher can handle, create weekly assignments, The assigner can use Auto-Assign for a week to distribute eligible publishers, and to make sure everyone get\'s equal chances and generate a public link so each publisher can view current and upcoming assignments.';
+                window.ui.openModal('modal-coming-soon');
+            },
+
             switchTab: (tabId, restoring = false) => {
+                if (tabId === 'oclm' && window.db.currentCongData?.feature_oclm !== true) { window.ui.showOCLMComingSoon(); return; }
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
                 const targetTab = document.getElementById(`tab-${tabId}`); if (targetTab) targetTab.classList.add('active');
                 
@@ -4221,8 +4266,9 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     const leftYearLabel = `${syLeft-1}-${syLeft}`;
                     const rightYearLabel = `${syRight-1}-${syRight}`;
                     const drawYearLabel = (text, centerX, topY) => { const width = font.widthOfTextAtSize(text, 9); page.drawText(text, { x: centerX - width / 2, y: pageHeight - topY + 3, size: 9, font, color: rgb(0.05, 0.05, 0.05) }); };
-                    drawYearLabel(leftYearLabel, 58, 112.5); drawYearLabel(rightYearLabel, 339, 112.5);
-                    drawYearLabel(leftYearLabel, 58, 461.3); drawYearLabel(rightYearLabel, 339, 461.3);
+                    // Keep the year text centered vertically inside the Service Year cells.
+                    drawYearLabel(leftYearLabel, 58, 120.5); drawYearLabel(rightYearLabel, 339, 120.5);
+                    drawYearLabel(leftYearLabel, 58, 469.8); drawYearLabel(rightYearLabel, 339, 469.8);
 
                     const pdfBytes = await pdfDoc.save();
                     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
