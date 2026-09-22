@@ -76,8 +76,8 @@
             background-attachment: fixed;
         }
 
-        body.public-mode #app-header, body.public-mode #mobile-nav, body.public-mode #mobile-top-header { display: none !important; }
-        body.overseer-mode #app-header, body.overseer-mode #mobile-nav, body.overseer-mode #mobile-top-header { display: none !important; }
+        body.public-mode #app-header, body.public-mode #mobile-nav, body.public-mode #mobile-top-header, body.public-mode #ca-desktop-topbar, body.public-mode #global-loader { display: none !important; }
+        body.overseer-mode #app-header, body.overseer-mode #mobile-nav, body.overseer-mode #mobile-top-header, body.overseer-mode #ca-desktop-topbar { display: none !important; }
         body.public-mode .main-content { padding: 0 !important; margin: 0 !important; max-width: 100% !important; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; width: 100%; }
         body.public-mode .tab-content { display: none !important; }
         body.public-mode .tab-content.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; }
@@ -375,8 +375,8 @@ body[data-theme="dark"] #app-header{background:linear-gradient(180deg,rgba(2,6,2
 #app-header>div{padding:18px 12px!important;gap:14px!important;}
 #app-header .ca-sidebar-brand .ca-brand-text{font-size:18px!important;}
 #app-header .ca-sidebar-brand>div:first-child{box-shadow:0 8px 24px rgba(20,184,166,.20),inset 0 1px 0 rgba(255,255,255,.14)!important;}
-#nav-admin{display:flex!important;flex:0 0 auto!important;min-height:0!important;margin:0!important;}
-.ca-nav-scroll{display:flex;flex-direction:column;gap:7px;width:100%;min-height:0;overflow-y:auto;overflow-x:hidden;padding:2px 2px 8px;justify-content:flex-start;}
+#nav-admin{display:flex!important;flex:1 1 auto!important;min-height:0!important;margin:0!important;}
+.ca-nav-scroll{display:flex;flex:1 1 auto;flex-direction:column;gap:7px;width:100%;min-height:0;height:100%;overflow-y:auto;overflow-x:hidden;padding:2px 2px 8px;justify-content:flex-start;}
 .ca-nav-section{display:flex;flex-direction:column;gap:4px;}
 .ca-nav-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:800;color:rgba(226,232,240,.48);padding:9px 12px 5px;}
 .ca-nav-item{width:100%;min-height:46px;display:flex!important;align-items:center;gap:12px;padding:10px 13px!important;border:1px solid transparent!important;border-radius:14px!important;background:transparent!important;color:rgba(226,232,240,.78)!important;font-size:13px!important;font-weight:700!important;cursor:pointer;position:relative;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease,color .18s ease!important;}
@@ -444,9 +444,9 @@ body[data-theme="light"] .ca-announcement-card h4{color:#0f172a;} body[data-them
 </style>
 <style>
 /* ===== Requested four-theme and navigation refinement ===== */
-body[data-theme="default"]{background:radial-gradient(circle at top left,#111827 0%,#020617 55%,#0f172a 100%)!important;color:#f8fafc!important;}
-body[data-theme="default"] .glass-panel{background:rgba(15,23,42,.92)!important;border-color:rgba(148,163,184,.22)!important;color:#f8fafc!important;}
-body[data-theme="default"] input,body[data-theme="default"] select,body[data-theme="default"] textarea{background:#0b1220!important;color:#f8fafc!important;border-color:#475569!important;}
+body[data-theme="default"]{background:radial-gradient(circle at top left,#064e3b 0%,#020617 50%,#083344 100%)!important;color:#f8fafc!important;}
+body[data-theme="default"] .glass-panel{background:rgba(13,148,136,.15)!important;border-color:rgba(255,255,255,.08)!important;color:#f8fafc!important;box-shadow:0 8px 32px rgba(0,0,0,.30)!important;}
+body[data-theme="default"] input,body[data-theme="default"] select,body[data-theme="default"] textarea{background:rgba(0,0,0,.20)!important;color:#f8fafc!important;border-color:rgba(255,255,255,.10)!important;}
 body[data-theme="default"] .ca-nav-item{color:#e2e8f0!important;}
 body[data-theme="default"] .ca-nav-item.ca-nav-active{background:linear-gradient(135deg,#0f766e,#155e75)!important;color:#fff!important;border-color:#2dd4bf!important;}
 body[data-theme="default"] .ca-nav-icon{color:#99f6e4!important;}
@@ -465,19 +465,17 @@ body[data-theme="crimson"] input,body[data-theme="crimson"] select,body[data-the
 body[data-theme="crimson"] .ca-nav-item{color:#ffe4e8!important;}
 body[data-theme="crimson"] .ca-nav-item.ca-nav-active{background:linear-gradient(135deg,#8f1731,#5d0d20)!important;border-color:#e05b78!important;color:#fff!important;}
 body[data-theme="crimson"] .ca-nav-icon{color:#ffb4c2!important;background:#34121b!important;border-color:#743247!important;}
-body[data-theme="dark"]{background:#000!important;color:#f5f5f5!important;}
-body[data-theme="dark"]::before{display:none!important;}
-body[data-theme="dark"] .glass-panel{background:#171717!important;border-color:#4b4b4b!important;color:#f5f5f5!important;box-shadow:none!important;}
-body[data-theme="dark"] input,body[data-theme="dark"] select,body[data-theme="dark"] textarea{background:#0d0d0d!important;color:#fff!important;border-color:#666!important;}
-body[data-theme="dark"] .ca-nav-item{color:#e5e5e5!important;}
-body[data-theme="dark"] .ca-nav-item.ca-nav-active{background:#333!important;border-color:#aaa!important;color:#fff!important;box-shadow:none!important;}
-body[data-theme="dark"] .ca-nav-icon{color:#fff!important;background:#222!important;border-color:#666!important;}
-body[data-theme="dark"] .text-teal-300,body[data-theme="dark"] .text-cyan-300,body[data-theme="dark"] .text-amber-300,body[data-theme="dark"] .text-emerald-300,body[data-theme="dark"] .text-rose-300{color:#f0f0f0!important;}
-body[data-theme="dark"] .bg-teal-500,body[data-theme="dark"] .bg-teal-600,body[data-theme="dark"] [class*="bg-gradient-to-r"]{background:#333!important;color:#fff!important;}
-body[data-theme="dark"] .border-teal-500\/20,body[data-theme="dark"] .border-teal-400\/20{border-color:#555!important;}
+body[data-theme="green"]{background:#06110d!important;color:#f1fff7!important;position:relative;}
+body[data-theme="green"]::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse 58% 38% at 50% 53%,rgba(16,122,78,.58) 0%,rgba(8,78,52,.42) 30%,rgba(3,38,27,.25) 50%,rgba(0,0,0,0) 74%);}
+body[data-theme="green"] .glass-panel{background:#0a1b14!important;border-color:#245d48!important;color:#f1fff7!important;}
+body[data-theme="green"] input,body[data-theme="green"] select,body[data-theme="green"] textarea{background:#07140f!important;color:#f1fff7!important;border-color:#356c55!important;}
+body[data-theme="green"] .ca-nav-item{color:#dcfff0!important;}
+body[data-theme="green"] .ca-nav-item.ca-nav-active{background:linear-gradient(135deg,#116b48,#08472f)!important;border-color:#43c58b!important;color:#fff!important;}
+body[data-theme="green"] .ca-nav-icon{color:#a8f5cd!important;background:#123526!important;border-color:#34785a!important;}
+
 /* Strong focus indicators across every theme. */
-body[data-theme="default"] *,body[data-theme="blue"] *,body[data-theme="crimson"] *,body[data-theme="dark"] *{scrollbar-color:#64748b transparent;}
-body[data-theme="default"] button:focus-visible,body[data-theme="default"] input:focus-visible,body[data-theme="default"] select:focus-visible,body[data-theme="default"] textarea:focus-visible,body[data-theme="blue"] button:focus-visible,body[data-theme="blue"] input:focus-visible,body[data-theme="blue"] select:focus-visible,body[data-theme="blue"] textarea:focus-visible,body[data-theme="crimson"] button:focus-visible,body[data-theme="crimson"] input:focus-visible,body[data-theme="crimson"] select:focus-visible,body[data-theme="crimson"] textarea:focus-visible,body[data-theme="dark"] button:focus-visible,body[data-theme="dark"] input:focus-visible,body[data-theme="dark"] select:focus-visible,body[data-theme="dark"] textarea:focus-visible{outline:3px solid currentColor!important;outline-offset:2px!important;}
+body[data-theme="default"] *,body[data-theme="blue"] *,body[data-theme="crimson"] *,body[data-theme="green"] *{scrollbar-color:#64748b transparent;}
+body[data-theme="default"] button:focus-visible,body[data-theme="default"] input:focus-visible,body[data-theme="default"] select:focus-visible,body[data-theme="default"] textarea:focus-visible,body[data-theme="blue"] button:focus-visible,body[data-theme="blue"] input:focus-visible,body[data-theme="blue"] select:focus-visible,body[data-theme="blue"] textarea:focus-visible,body[data-theme="crimson"] button:focus-visible,body[data-theme="crimson"] input:focus-visible,body[data-theme="crimson"] select:focus-visible,body[data-theme="crimson"] textarea:focus-visible,body[data-theme="green"] button:focus-visible,body[data-theme="green"] input:focus-visible,body[data-theme="green"] select:focus-visible,body[data-theme="green"] textarea:focus-visible{outline:3px solid currentColor!important;outline-offset:2px!important;}
 /* SuperAdmin uses the normal full-width workspace, not the congregation sidebar. */
 body.super-admin-theme #app-header{display:none!important;}
 body.super-admin-theme .main-content{margin-left:0!important;padding-top:28px!important;max-width:1400px!important;}
@@ -487,7 +485,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
 /* Main + Coming Soon stay at the top; More follows directly underneath. */
 #nav-admin .ca-nav-scroll{justify-content:flex-start!important;}
 #nav-admin .ca-nav-scroll .ca-nav-section{flex:0 0 auto!important;}
-#nav-admin .ca-nav-scroll .ca-nav-section:nth-of-type(3){margin-top:0!important;}
+#nav-admin .ca-nav-scroll .ca-nav-section:nth-of-type(3){margin-top:auto!important;}
 /* Broadcasts are read from Announcements; do not auto-open a banner. */
 #system-notice-banner{display:none!important;}
 </style>
@@ -1068,6 +1066,11 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     <p class="subtitle">Securely submit your monthly activity below.</p>
 
                     <div class="s4-form-group">
+                        <label class="s4-label">Service Group</label>
+                        <select id="s4-group-select" onchange="window.ui.changePublicS4Group(this.value)" class="s4-input cursor-pointer"></select>
+                    </div>
+
+                    <div class="s4-form-group">
                         <label class="s4-label">Publisher Name</label>
                         <select id="s4-pub-select" onchange="window.ui.loadS4()" class="s4-input cursor-pointer"></select>
                     </div>
@@ -1435,10 +1438,10 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 <div class="space-y-3 pb-5 border-b border-white/10">
                     <h4 class="text-sm font-bold text-teal-300 uppercase tracking-wider">Appearance</h4>
                     <div id="ca-theme-grid">
-                        <button type="button" class="ca-theme-option" data-theme-option="default" onclick="window.ui.setTheme('default')"><div class="ca-theme-swatch" style="background:linear-gradient(135deg,#111827,#020617,#0f172a)"></div><small>Default</small></button>
+                        <button type="button" class="ca-theme-option" data-theme-option="default" onclick="window.ui.setTheme('default')"><div class="ca-theme-swatch" style="background:radial-gradient(circle at top left,#064e3b 0%,#020617 55%,#083344 100%)"></div><small>Default</small></button>
                         <button type="button" class="ca-theme-option" data-theme-option="blue" onclick="window.ui.setTheme('blue')"><div class="ca-theme-swatch" style="background:radial-gradient(circle at 50% 58%,#1b40aa 0%,#0b1b4e 38%,#05070d 78%)"></div><small>Blue</small></button>
                         <button type="button" class="ca-theme-option" data-theme-option="crimson" onclick="window.ui.setTheme('crimson')"><div class="ca-theme-swatch" style="background:radial-gradient(circle at 50% 58%,#a10f2b 0%,#4b0717 38%,#090909 78%)"></div><small>Crimson</small></button>
-                        <button type="button" class="ca-theme-option" data-theme-option="dark" onclick="window.ui.setTheme('dark')"><div class="ca-theme-swatch" style="background:linear-gradient(135deg,#000,#202020,#777)"></div><small>Dark</small></button>
+                        <button type="button" class="ca-theme-option" data-theme-option="green" onclick="window.ui.setTheme('green')"><div class="ca-theme-swatch" style="background:radial-gradient(circle at 50% 58%,#107a4e 0%,#082f22 38%,#06110d 78%)"></div><small>Green</small></button>
                     </div>
                     <p class="text-[10px] text-teal-100/50">Theme colors apply to the application interface only. Document and form appearance remains unchanged.</p>
                 </div>
@@ -1933,9 +1936,19 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             publishers: [], reports: [], congregations: [], currentCongData: null, attendance: [],
 
             initPublicS4: async (congId) => {
+                window.currentCongId = congId;
                 if (isCloudEnabled) {
-                    const { data } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
-                    if (data) window.db.publishers = data.map(window.db.mapPubFromDB);
+                    try {
+                        let query = supabaseClient.from('publishers').select('*').eq('cong_id', congId);
+                        if (window.ui.publicGroup) query = query.eq('service_group', window.ui.publicGroup);
+                        const { data, error } = await query;
+                        if (error) throw error;
+                        window.db.publishers = (data || []).map(window.db.mapPubFromDB);
+                    } catch (e) {
+                        console.error('Public publisher fetch failed:', e);
+                        window.db.publishers = [];
+                        window.ui.showToast('Unable to load publisher names. Please check the public database permissions.', 'error');
+                    }
                 }
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('mode') === 'attendance') {
@@ -2234,11 +2247,18 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 };
 
                 const idx = window.db.attendance.findIndex(a => a.id === id);
+                const previous = idx > -1 ? window.db.attendance[idx] : null;
                 if (idx > -1) window.db.attendance[idx] = payload; else window.db.attendance.push(payload);
-                
+
                 if (isCloudEnabled) {
-                    const { error } = await supabaseClient.from('meeting_attendance').upsert([payload]);
-                    if (error) { window.ui.showToast('Failed to save attendance', 'error'); console.error(error); return; }
+                    const { error } = await supabaseClient.from('meeting_attendance').upsert([payload], { onConflict: 'id' });
+                    if (error) {
+                        if (idx > -1 && previous) window.db.attendance[idx] = previous;
+                        else window.db.attendance = window.db.attendance.filter(a => a.id !== id);
+                        window.ui.showToast(`Attendance was not saved: ${error.message || 'Supabase rejected the record.'}`, 'error');
+                        console.error(error);
+                        return;
+                    }
                 }
                 
                 window.ui.showToast('Attendance Saved Successfully');
@@ -2267,7 +2287,8 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     };
                     
                     if (isCloudEnabled) {
-                        const { data, error } = await supabaseClient.from('meeting_attendance').select('*').eq('id', id).single();
+                        const { data, error } = await supabaseClient.from('meeting_attendance').select('*').eq('id', id).maybeSingle();
+                        if (error) throw error;
                         if (data) existingData = data;
                     }
 
@@ -2275,9 +2296,13 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     existingData[`w${week}_end`] = eVal;
 
                     if (isCloudEnabled) {
-                        const { error } = await supabaseClient.from('meeting_attendance').upsert([existingData]);
+                        const { error } = await supabaseClient.from('meeting_attendance').upsert([existingData], { onConflict: 'id' });
                         if (error) throw error;
                     }
+
+                    const localIdx = window.db.attendance.findIndex(a => a.id === id);
+                    if (localIdx > -1) window.db.attendance[localIdx] = existingData;
+                    else window.db.attendance.push(existingData);
 
                     document.getElementById('pub-att-form-area').classList.add('hidden');
                     document.getElementById('pub-att-success-msg').classList.remove('hidden');
@@ -2304,7 +2329,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             },
             mapPubToDB: (p) => ({ id: p.id, cong_id: window.currentCongId, name: p.name, service_group: p.group, gender: p.gender, hope: p.hope, dob: p.dob || null, baptized: p.baptized || null, is_elder: p.isElder, is_ms: p.isMS, is_rp: p.isRP, is_sp: p.isSP, is_fm: p.isFM, phone: p.phone, address: p.address || null, emergency_name: p.emergencyName || null, emergency_relationship: p.emergencyRelationship || null, emergency_phone: p.emergencyPhone || null, spiritual_status: p.spiritualStatus || null, family_head_id: p.familyHeadId || null }),
             mapPubFromDB: (r) => ({ id: r.id, name: r.name, group: r.service_group, gender: r.gender, hope: r.hope, dob: r.dob, baptized: r.baptized, isElder: r.is_elder, isMS: r.is_ms, isRP: r.is_rp, isSP: r.is_sp, isSFTS: window.db.isSFTS(r.id, r.is_sp), isFM: r.is_fm, phone: r.phone, address: r.address, emergencyName: r.emergency_name, emergencyRelationship: r.emergency_relationship, emergencyPhone: r.emergency_phone, spiritualStatus: r.spiritual_status, familyHeadId: r.family_head_id }),
-            mapRepToDB: (r) => ({ id: r.id, cong_id: window.currentCongId, pub_id: r.pubId, service_year: r.serviceYear, month: r.month, shared_in_ministry: r.shared_in_ministry, studies: r.studies ? parseInt(r.studies) : 0, hours: r.hours ? parseFloat(r.hours) : 0, comments: r.comments, is_ap: r.isAP }),
+            mapRepToDB: (r) => ({ id: r.id, cong_id: window.currentCongId, pub_id: r.pubId, service_year: r.serviceYear, month: r.month, shared_in_ministry: !!r.sharedInMinistry, studies: r.studies ? parseInt(r.studies) : 0, hours: r.hours ? parseFloat(r.hours) : 0, comments: r.comments || '', is_ap: !!r.isAP }),
             mapRepFromDB: (r) => ({ id: r.id, pubId: r.pub_id, serviceYear: r.service_year, month: r.month, sharedInMinistry: r.shared_in_ministry, studies: r.studies, hours: r.hours, comments: r.comments, isAP: r.is_ap }),
 
             getPublishers: () => window.db.publishers,
@@ -2339,8 +2364,19 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             saveReport: async (report) => {
                 report.id = `${report.pubId}_${report.serviceYear}_${report.month}`;
                 const idx = window.db.reports.findIndex(r => r.id === report.id);
+                const previous = idx > -1 ? window.db.reports[idx] : null;
                 if (idx > -1) window.db.reports[idx] = report; else window.db.reports.push(report);
-                if (isCloudEnabled) await supabaseClient.from('reports').upsert(window.db.mapRepToDB(report)); 
+
+                if (isCloudEnabled) {
+                    const { error } = await supabaseClient.from('reports').upsert(window.db.mapRepToDB(report), { onConflict: 'id' });
+                    if (error) {
+                        if (idx > -1 && previous) window.db.reports[idx] = previous;
+                        else window.db.reports = window.db.reports.filter(r => r.id !== report.id);
+                        console.error('Report cloud save failed:', error);
+                        window.ui.showToast(`Field service report was not saved: ${error.message || 'Supabase rejected the record.'}`, 'error');
+                        throw error;
+                    }
+                }
             },
 
             deletePublisher: async (id) => {
@@ -2703,8 +2739,8 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             /* ===== UI refresh helpers ===== */
             escapeHtml: (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])),
             applyTheme: (theme) => {
-                const allowed = ['default','blue','crimson','dark'];
-                if (theme === 'light' || theme === 'colorful' || theme === 'bw-light' || theme === 'bw-dark') theme = 'default';
+                const allowed = ['default','blue','crimson','green'];
+                if (theme === 'light' || theme === 'colorful' || theme === 'bw-light' || theme === 'bw-dark' || theme === 'dark') theme = 'default';
                 theme = allowed.includes(theme) ? theme : 'default';
                 document.body.dataset.theme = theme;
                 localStorage.setItem('ca_theme', theme);
@@ -2810,7 +2846,8 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 ];
                 const pubs = names.map((n,i)=>{
                     const role=n[4]||''; const id=`demo-pub-${String(i+1).padStart(2,'0')}`;
-                    const p={id,name:n[0],gender:n[1],hope:n[2],group:n[3],dob:n[5],baptized:n[6],
+                    const demoGroup = i < 8 ? 'Group A' : (i < 15 ? 'Group B' : (i < 22 ? 'Group C' : 'Group D'));
+                    const p={id,name:n[0],gender:n[1],hope:n[2],group:demoGroup,dob:n[5],baptized:n[6],
                         isElder:role.includes('Elder'),isMS:role.includes('MS'),isRP:role.includes('RP'),isSP:role.includes('SP'),isSFTS:role.includes('SFTS'),isFM:role.includes('FM'),
                         phone:`+91 90000 ${String(10001+i)}`,address:`${10+i} Demo Colony, Bengaluru`,emergencyName:'',emergencyRelationship:'',emergencyPhone:'',
                         spiritualStatus:n[6]?'Baptised':'Unbaptised',familyHeadId:null};
@@ -2847,13 +2884,25 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             },
             ensureDemoData: async () => {
                 if(String(window.currentCongId||'').toLowerCase() !== 'demo-cong') return;
-                if(window.db.publishers.length === 0){
+
+                const expectedGroups = new Set(['Group A','Group B','Group C','Group D']);
+                const actualGroups = new Set(window.db.publishers.map(p => (p.group || '').trim()).filter(Boolean));
+                const needsSeed = window.db.publishers.length !== 30 ||
+                    actualGroups.size !== 4 ||
+                    [...actualGroups].some(g => !expectedGroups.has(g));
+
+                if(needsSeed){
                     const seed=window.ui.buildDemoSeed();
-                    window.db.publishers=seed.publishers; window.db.reports=seed.reports;
+                    window.db.publishers=seed.publishers;
+                    window.db.reports=seed.reports;
                     if(isCloudEnabled){
                         try{
-                            await supabaseClient.from('publishers').upsert(window.db.publishers.map(window.db.mapPubToDB));
-                            await supabaseClient.from('reports').upsert(window.db.reports.map(window.db.mapRepToDB));
+                            await supabaseClient.from('reports').delete().eq('cong_id',window.currentCongId);
+                            await supabaseClient.from('publishers').delete().eq('cong_id',window.currentCongId);
+                            const { error: pubError } = await supabaseClient.from('publishers').upsert(window.db.publishers.map(window.db.mapPubToDB), { onConflict: 'id' });
+                            if(pubError) throw pubError;
+                            const { error: reportError } = await supabaseClient.from('reports').upsert(window.db.reports.map(window.db.mapRepToDB), { onConflict: 'id' });
+                            if(reportError) throw reportError;
                         }catch(e){console.warn('Demo seed failed:',e);}
                     }
                 }
@@ -3170,13 +3219,36 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 window.sysPromptState.actionCallback = null;
             },
             
-            handleSysPromptConfirm: () => {
+            handleSysPromptConfirm: async () => {
                 if (window.sysPromptState.requiresPassword) {
                     const p = document.getElementById('sys-prompt-input').value;
-                    const storedPwd = window.db.congregations?.find(c => c.id === window.currentCongId)?.admin_password;
-                    if (p !== window.config.MASTER_PASSWORD) { window.ui.showToast("Incorrect Password", "error"); return; }
+                    let storedPwd = window.db.currentCongData?.admin_password || '';
+
+                    if (isCloudEnabled && window.currentCongId) {
+                        try {
+                            const { data, error } = await supabaseClient
+                                .from('congregations')
+                                .select('admin_password')
+                                .eq('id', window.currentCongId)
+                                .single();
+                            if (error) throw error;
+                            storedPwd = data?.admin_password || '';
+                        } catch (e) {
+                            console.error('Congregation password verification failed:', e);
+                            window.ui.showToast('Could not verify the congregation password. Please try again.', 'error');
+                            return;
+                        }
+                    }
+
+                    if (!storedPwd || p !== storedPwd) {
+                        window.ui.showToast("Incorrect Congregation Password", "error");
+                        return;
+                    }
                 }
-                if (typeof window.sysPromptState.actionCallback === 'function') { window.sysPromptState.actionCallback(); }
+
+                if (typeof window.sysPromptState.actionCallback === 'function') {
+                    await window.sysPromptState.actionCallback();
+                }
                 window.ui.closeSysPrompt();
             },
 
@@ -3198,7 +3270,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     window.ui.renderWipeBanner();
                     return;
                 }
-                window.ui.openSysPrompt("DANGER: Schedule Data Wipe", "This will schedule a PERMANENT deletion of ALL publishers and reports for this congregation in 24 hours. It can be cancelled anytime before then. Enter the SuperAdmin Password to proceed.", true, async () => {
+                window.ui.openSysPrompt("DANGER: Schedule Data Wipe", "This will schedule a PERMANENT deletion of ALL publishers and reports for this congregation in 24 hours. It can be cancelled anytime before then. Enter the Congregation Password used to log in.", true, async () => {
                     const deviceInfo = `${navigator.platform || 'Unknown Platform'} · ${navigator.userAgent}`;
                     const nowIso = new Date().toISOString();
                     if (isCloudEnabled) {
@@ -4264,23 +4336,53 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             printCards: () => window.ui.downloadS21Filtered(),
 
             setupS4Tab: () => {
-                const pubs = window.db.getPublishers(); const sel = document.getElementById('s4-pub-select'); if (!sel) return;
-                sel.innerHTML = '<option value="">-- Please select your name --</option>';
-                
-                let filtered = pubs;
-                if (window.ui.publicGroup) {
-                    filtered = pubs.filter(p => p.group && p.group.trim().toLowerCase() === window.ui.publicGroup.trim().toLowerCase());
+                const pubs = window.db.getPublishers();
+                const sel = document.getElementById('s4-pub-select');
+                const groupSel = document.getElementById('s4-group-select');
+                if (!sel) return;
+
+                const groups = [...new Set(pubs.map(p => (p.group || '').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+                const requestedGroup = (window.ui.publicGroup || '').trim();
+                const selectedGroup = requestedGroup && groups.some(g => g.toLowerCase() === requestedGroup.toLowerCase())
+                    ? groups.find(g => g.toLowerCase() === requestedGroup.toLowerCase())
+                    : '';
+
+                if (groupSel) {
+                    groupSel.innerHTML = '<option value="">-- Select your group --</option>' +
+                        groups.map(g => `<option value="${window.ui.escapeHtml(g)}">${window.ui.escapeHtml(g)}</option>`).join('');
+                    groupSel.value = selectedGroup;
+                    groupSel.disabled = !!selectedGroup && !!requestedGroup;
+                    groupSel.title = groupSel.disabled ? 'This public link is restricted to this group.' : '';
                 }
-                
-                filtered.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
-                document.getElementById('s4-month-display').value = window.utils.getISTPreviousMonthInfo().displayString;
-                
+
+                const activeGroup = selectedGroup || ((groupSel?.value || '').trim());
+                const filtered = activeGroup
+                    ? pubs.filter(p => (p.group || '').trim().toLowerCase() === activeGroup.toLowerCase())
+                    : [];
+
+                sel.innerHTML = '<option value="">-- Please select your name --</option>';
+                filtered.sort((a,b)=>a.name.localeCompare(b.name))
+                    .forEach(p => sel.innerHTML += `<option value="${window.ui.escapeHtml(p.id)}">${window.ui.escapeHtml(p.name)}</option>`);
+
+                const monthDisplay = document.getElementById('s4-month-display');
+                if (monthDisplay) monthDisplay.value = window.utils.getISTPreviousMonthInfo().displayString;
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const pId = urlParams.get('pub');
-                if(pId && pubs.find(x => x.id === pId)) {
+                if (pId && filtered.some(x => x.id === pId)) {
                     sel.value = pId;
                     window.ui.loadS4();
+                } else {
+                    window.ui.loadS4();
                 }
+            },
+
+            changePublicS4Group: (groupName) => {
+                const cleanGroup = String(groupName || '').trim();
+                window.ui.publicGroup = cleanGroup || null;
+                const sel = document.getElementById('s4-pub-select');
+                if (sel) sel.value = '';
+                window.ui.setupS4Tab();
             },
 
             enforceS4Logic: () => {
@@ -4330,7 +4432,15 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             }
         };
 
-        window.addEventListener('load', () => window.db.initPublicS4OrLogin());
+        window.addEventListener('load', () => {
+            const settingsModal = document.getElementById('modal-settings');
+            if (settingsModal) {
+                settingsModal.addEventListener('pointerdown', (event) => {
+                    if (event.target === settingsModal) window.ui.closeModal('modal-settings');
+                });
+            }
+            window.db.initPublicS4OrLogin();
+        });
 
         // Setup the initial load logic explicitly
         window.db.initPublicS4OrLogin = () => {
