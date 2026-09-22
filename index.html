@@ -701,7 +701,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><b class="text-teal-300">2. Record monthly reports</b><p class="text-sm text-white/65 mt-1">From Home, use the monthly submissions area to review reports. Missing reports can be identified and reminders can be sent.</p></div>
                 <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><b class="text-teal-300">3. Use Groups &amp; Analytics</b><p class="text-sm text-white/65 mt-1">Groups keeps people organised, while Analytics provides roster and service summaries.</p></div>
                 <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><b class="text-teal-300">4. Attendance &amp; Emergency Contacts</b><p class="text-sm text-white/65 mt-1">When enabled for your congregation, these modules appear automatically in the navigation.</p></div>
-                <div class="rounded-2xl bg-teal-500/10 border border-teal-400/20 p-4"><b class="text-teal-300">Trial / demo data</b><p class="text-sm text-white/65 mt-1">The demo congregation is pre-populated with sample publishers, reports and emergency contacts so trial users can explore the workflow without starting from an empty database.</p></div>
+                <div class="rounded-2xl bg-teal-500/10 border border-teal-400/20 p-4"><b class="text-teal-300">Demo congregation</b><p class="text-sm text-white/65 mt-1">The demo congregation follows the same empty-database behavior as a normal congregation. Add publishers and records to build its data.</p></div>
                 <div class="flex justify-end gap-2 pt-2"><button type="button" onclick="window.ui.closeModal('modal-how-to-use')" class="px-4 py-2 rounded-xl bg-white/10 text-white font-bold">Close</button><button type="button" onclick="window.ui.closeModal('modal-how-to-use'); window.ui.startGuidedTour()" class="px-4 py-2 rounded-xl bg-teal-500 text-slate-950 font-bold">Start guided tour</button></div>
             </div>
         </div>
@@ -1030,6 +1030,9 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 <div class="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 w-full" id="pub-stats-container"></div>
             </div>
             
+            <div class="mb-4">
+                <input id="publisher-search" type="search" oninput="window.ui.renderPublishers(window.ui.currentPubFilter || 'ALL', window.ui.currentPubFilterValue || '')" placeholder="🔍 Search publishers by name or group..." class="w-full px-4 py-3 rounded-xl text-sm glass-panel">
+            </div>
             <div class="glass-panel rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
@@ -1065,7 +1068,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     <h2>Field Service Report</h2>
                     <p class="subtitle">Securely submit your monthly activity below.</p>
 
-                    <div class="s4-form-group">
+                    <div id="s4-group-field" class="s4-form-group">
                         <label class="s4-label">Service Group</label>
                         <select id="s4-group-select" onchange="window.ui.changePublicS4Group(this.value)" class="s4-input cursor-pointer"></select>
                     </div>
@@ -1627,6 +1630,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             <div class="px-6 sm:px-8 py-4 border-b border-white/10 flex flex-wrap gap-3 items-center shrink-0">
                 <label class="text-xs text-teal-200/80 font-bold uppercase tracking-wider">Filter Group</label>
                 <select id="bulk-entry-group-filter" onchange="window.ui.openBulkEntry()" class="px-3 py-2 rounded-xl text-sm"></select>
+                <input id="bulk-entry-search" type="search" oninput="window.ui.openBulkEntry()" placeholder="🔍 Search publisher..." class="px-3 py-2 rounded-xl text-sm min-w-[220px] flex-1">
             </div>
             <div class="overflow-y-auto custom-scrollbar p-6 sm:p-8 flex-1">
                 <table class="w-full text-left text-sm whitespace-nowrap">
@@ -1842,7 +1846,6 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             },
             logout: () => {
                 window.ui.openSysPrompt("Secure Logout", "Are you sure you want to exit the management portal?", false, async () => {
-                    try { await window.ui.resetDemoSession(); } catch(e) { console.warn('Demo session reset failed:', e); }
                     localStorage.removeItem('fs_auth');
                     localStorage.removeItem('fs_auth_type');
                     localStorage.removeItem('fs_cong_id');
@@ -2062,27 +2065,37 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const legacyAvatar = document.getElementById('nav-cong-avatar');
                 if (legacyAvatar) legacyAvatar.textContent = (congName || 'C').trim().charAt(0).toUpperCase();
 
+                window.db.restoreLocalCaches();
                 if (isCloudEnabled) {
                     try {
                         if (!window.db.currentCongData) {
-                            const { data: congData } = await supabaseClient.from('congregations').select('*').eq('id', congId).single();
+                            const { data: congData, error: congError } = await supabaseClient.from('congregations').select('*').eq('id', congId).single();
+                            if (congError) throw congError;
                             if (congData) window.db.currentCongData = congData;
                         }
 
-                        const { data: pData } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
-                        if (pData) window.db.publishers = pData.map(window.db.mapPubFromDB);
+                        const { data: pData, error: pError } = await supabaseClient.from('publishers').select('*').eq('cong_id', congId);
+                        if (pError) throw pError;
+                        window.db.publishers = (pData || []).map(window.db.mapPubFromDB);
+                        window.db.writeLocalCache('publishers');
 
-                        const { data: rData } = await supabaseClient.from('reports').select('*').eq('cong_id', congId);
-                        if (rData) window.db.reports = rData.map(window.db.mapRepFromDB);
+                        const { data: rData, error: rError } = await supabaseClient.from('reports').select('*').eq('cong_id', congId);
+                        if (rError) throw rError;
+                        window.db.reports = (rData || []).map(window.db.mapRepFromDB);
+                        window.db.writeLocalCache('reports');
 
-                        const { data: aData } = await supabaseClient.from('meeting_attendance').select('*').eq('cong_id', congId);
-                        if (aData) window.db.attendance = aData;
-                    } catch (e) { console.error("Cloud fetch failed:", e); window.ui.setSyncStatus('error','Sync unavailable'); }
+                        const { data: aData, error: aError } = await supabaseClient.from('meeting_attendance').select('*').eq('cong_id', congId);
+                        if (aError) throw aError;
+                        window.db.attendance = aData || [];
+                        window.db.writeLocalCache('attendance');
+                        window.ui.setSyncStatus('synced','Synced');
+                    } catch (e) {
+                        console.error('Cloud fetch failed; using local cache:', e);
+                        window.ui.setSyncStatus('error','Sync unavailable');
+                    }
                 }
+                try { await window.db.cleanupLegacyDemoData(); } catch (e) { console.warn('Legacy demo cleanup failed:', e); }
 
-                // Seed the dedicated demo congregation before the first render, so trial users
-                // never see an empty/zero state while the demo is being initialised.
-                try { await window.ui.ensureDemoData(); } catch (e) { console.error('Demo seed failed:', e); }
                 try { window.ui.initAdminUI(); } catch (e) { console.error('Initial admin UI setup failed:', e); }
                 window.ui.setSyncStatus('synced','Synced');
 
@@ -2303,6 +2316,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     const localIdx = window.db.attendance.findIndex(a => a.id === id);
                     if (localIdx > -1) window.db.attendance[localIdx] = existingData;
                     else window.db.attendance.push(existingData);
+                    window.db.writeLocalCache('attendance');
 
                     document.getElementById('pub-att-form-area').classList.add('hidden');
                     document.getElementById('pub-att-success-msg').classList.remove('hidden');
@@ -2332,6 +2346,27 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             mapRepToDB: (r) => ({ id: r.id, cong_id: window.currentCongId, pub_id: r.pubId, service_year: r.serviceYear, month: r.month, shared_in_ministry: !!r.sharedInMinistry, studies: r.studies ? parseInt(r.studies) : 0, hours: r.hours ? parseFloat(r.hours) : 0, comments: r.comments || '', is_ap: !!r.isAP }),
             mapRepFromDB: (r) => ({ id: r.id, pubId: r.pub_id, serviceYear: r.service_year, month: r.month, sharedInMinistry: r.shared_in_ministry, studies: r.studies, hours: r.hours, comments: r.comments, isAP: r.is_ap }),
 
+            cacheKey: (type) => `ca_cache_${type}_${window.currentCongId || 'global'}`,
+            writeLocalCache: (type) => {
+                try {
+                    const value = type === 'publishers' ? window.db.publishers : type === 'reports' ? window.db.reports : window.db.attendance;
+                    localStorage.setItem(window.db.cacheKey(type), JSON.stringify(value || []));
+                } catch (e) { console.warn(`Local ${type} cache write failed:`, e); }
+            },
+            readLocalCache: (type) => {
+                try {
+                    const raw = localStorage.getItem(window.db.cacheKey(type));
+                    return raw ? JSON.parse(raw) : null;
+                } catch (e) { console.warn(`Local ${type} cache read failed:`, e); return null; }
+            },
+            restoreLocalCaches: () => {
+                const pubs = window.db.readLocalCache('publishers');
+                const reps = window.db.readLocalCache('reports');
+                const att = window.db.readLocalCache('attendance');
+                if (Array.isArray(pubs)) window.db.publishers = pubs;
+                if (Array.isArray(reps)) window.db.reports = reps;
+                if (Array.isArray(att)) window.db.attendance = att;
+            },
             getPublishers: () => window.db.publishers,
             getReports: (sy, month) => {
                 let r = window.db.reports;
@@ -2346,6 +2381,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const idx = window.db.publishers.findIndex(p => p.id === pub.id);
                 if (idx > -1) window.db.publishers[idx] = pub; else window.db.publishers.push(pub);
 
+                window.db.writeLocalCache('publishers');
                 if (isCloudEnabled) {
                     const payload = window.db.mapPubToDB(pub);
                     const { error } = await supabaseClient.from('publishers').upsert([payload], { onConflict: 'id' });
@@ -2355,9 +2391,11 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                         if (idx > -1 && previous) window.db.publishers[idx] = previous;
                         else window.db.publishers = window.db.publishers.filter(p => p.id !== pub.id);
                         console.error('Publisher cloud save failed:', error);
+                        window.db.writeLocalCache('publishers');
                         window.ui.showToast(`Publisher was not synced: ${error.message || 'Supabase rejected the record.'}`, 'error');
                         throw error;
                     }
+                    window.db.writeLocalCache('publishers');
                 }
             },
 
@@ -2367,15 +2405,18 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const previous = idx > -1 ? window.db.reports[idx] : null;
                 if (idx > -1) window.db.reports[idx] = report; else window.db.reports.push(report);
 
+                window.db.writeLocalCache('reports');
                 if (isCloudEnabled) {
                     const { error } = await supabaseClient.from('reports').upsert(window.db.mapRepToDB(report), { onConflict: 'id' });
                     if (error) {
                         if (idx > -1 && previous) window.db.reports[idx] = previous;
                         else window.db.reports = window.db.reports.filter(r => r.id !== report.id);
                         console.error('Report cloud save failed:', error);
+                        window.db.writeLocalCache('reports');
                         window.ui.showToast(`Field service report was not saved: ${error.message || 'Supabase rejected the record.'}`, 'error');
                         throw error;
                     }
+                    window.db.writeLocalCache('reports');
                 }
             },
 
@@ -2671,7 +2712,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
             for(let i=1;i<=5;i++){ const a=printObj(rec[`w${i}_mid`]), b=printObj(rec[`w${i}_end`]); if(!a.str&&a.num){mTotal+=a.num;mCount++;} if(!b.str&&b.num){eTotal+=b.num;eCount++;} w.push({mid:a,end:b}); }
             const center=(text,cx,top,bottom,size=9,bold=false,raise=2.0)=>{ if(text===''||text==null)return; const f=bold?fontBold:font; const width=f.widthOfTextAtSize(String(text),size); const cellH=bottom-top; const y=h-bottom+(cellH-size)/2+raise; page.drawText(String(text),{x:cx-width/2,y,size,font:f,color:dark}); };
             const left=(text,x,top,size=8.5)=>{if(text===''||text==null)return; page.drawText(String(text),{x,y:h-top+1.5,size,font,color:dark});};
-            left(congName,86.5,97.0,8.5); left(monthName,239.0,97.0,8.5);
+            left(congName,86.5,97.0,8.5); left(monthName,258.0,97.0,8.5);
             const xs=[69.61,106.46,143.30,180.15,217.10];
             const rowTops=[127.57,127.57,127.57,127.57,127.57];
             const rowBottoms=[166.91,166.91,166.91,166.91,166.91];
@@ -2805,109 +2846,25 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 pill.className=`ca-sync-pill ${state||''}`;
                 pill.innerHTML=`<span>●</span>${label || (state==='syncing'?'Syncing…':state==='error'?'Sync issue':'Synced')}`;
             },
-            buildDemoSeed: () => {
-                const names = [
-                    ['Alex Morgan','Male','Other Sheep','Group A','Elder','1985-03-12','2004-06-19'],
-                    ['Priya Nair','Female','Other Sheep','Group A','RP','1992-08-22','2012-02-11'],
-                    ['Daniel Thomas','Male','Other Sheep','Group B','MS','1978-11-04','1999-09-03'],
-                    ['Meera Joseph','Female','Other Sheep','Group B','','1988-01-18','2008-12-06'],
-                    ['Samuel George','Male','Other Sheep','Group C','Elder+RP','1974-05-09','1995-03-18'],
-                    ['Anita George','Female','Other Sheep','Group C','','1977-09-21','1997-11-22'],
-                    ['Rahul Menon','Male','Other Sheep','Group C','FM','1981-02-14','2002-07-13'],
-                    ['Grace Mathew','Female','Other Sheep','Group D','RP','1990-12-03','2010-04-17'],
-                    ['Joseph Mathew','Male','Other Sheep','Group D','MS','1987-06-27','2009-10-10'],
-                    ['Leah Samuel','Female','Anointed','Group D','', '1968-01-30','1989-08-19'],
-                    ['Noah Samuel','Male','Other Sheep','Group E','Elder','1966-10-05','1988-02-06'],
-                    ['Esther Samuel','Female','Other Sheep','Group E','', '1970-03-15','1990-06-23'],
-                    ['Arun Kumar','Male','Other Sheep','Group E','RP','1995-07-08','2016-01-16'],
-                    ['Divya Kumar','Female','Other Sheep','Group E','', '1997-04-19','2018-09-29'],
-                    ['Michael Dsouza','Male','Other Sheep','Group F','SP+SFTS','1983-11-11','2005-05-14'],
-                    ['Ruth Dsouza','Female','Other Sheep','Group F','', '1986-02-25','2007-12-01'],
-                    ['John Pereira','Male','Other Sheep','Group F','Elder+FM','1972-08-16','1993-10-30'],
-                    ['Martha Pereira','Female','Other Sheep','Group F','', '1975-12-29','1996-03-09'],
-                    ['Kevin Roy','Male','Other Sheep','Group G','MS','1991-05-20','2013-07-20'],
-                    ['Sonia Roy','Female','Other Sheep','Group G','', '1994-09-02','2015-11-07'],
-                    ['Benjamin Lee','Male','Other Sheep','Group G','RP','1989-01-13','2011-02-26'],
-                    ['Hannah Lee','Female','Other Sheep','Group G','', '1991-06-06','2012-08-18'],
-                    ['Isaac Varghese','Male','Other Sheep','Group H','Elder','1969-04-04','1991-01-12'],
-                    ['Mary Varghese','Female','Other Sheep','Group H','', '1973-10-28','1994-05-21'],
-                    ['Nathan Varghese','Male','Other Sheep','Group H','', '2001-03-17',''],
-                    ['Olivia Varghese','Female','Other Sheep','Group H','', '2004-07-23',''],
-                    ['Ethan Wilson','Male','Other Sheep','Group I','FM','1984-09-09','2006-11-18'],
-                    ['Sarah Wilson','Female','Other Sheep','Group I','RP','1987-12-12','2008-05-24'],
-                    ['Jacob Thomas','Male','Other Sheep','Group I','', '2008-02-02',''],
-                    ['Mia Thomas','Female','Other Sheep','Group I','', '2011-10-14','']
-                ];
-                const emergency = [
-                    ['Ravi Morgan','Brother','+91 90000 11001','12 Demo Street'],['Anita Nair','Sister','+91 90000 11002','24 Sample Avenue'],
-                    ['Helen Thomas','Wife','+91 90000 11003','8 Example Road'],['Joseph Mathew','Spouse','+91 90000 11004','17 Grace Lane'],
-                    ['Noah Samuel','Father','+91 90000 11005','4 Hope Street'],['Samuel George','Brother','+91 90000 11006','31 Peace Avenue'],
-                    ['Ruth Dsouza','Spouse','+91 90000 11007','5 Unity Road'],['Mary Varghese','Mother','+91 90000 11008','19 Faith Street']
-                ];
-                const pubs = names.map((n,i)=>{
-                    const role=n[4]||''; const id=`demo-pub-${String(i+1).padStart(2,'0')}`;
-                    const demoGroup = i < 8 ? 'Group A' : (i < 15 ? 'Group B' : (i < 22 ? 'Group C' : 'Group D'));
-                    const p={id,name:n[0],gender:n[1],hope:n[2],group:demoGroup,dob:n[5],baptized:n[6],
-                        isElder:role.includes('Elder'),isMS:role.includes('MS'),isRP:role.includes('RP'),isSP:role.includes('SP'),isSFTS:role.includes('SFTS'),isFM:role.includes('FM'),
-                        phone:`+91 90000 ${String(10001+i)}`,address:`${10+i} Demo Colony, Bengaluru`,emergencyName:'',emergencyRelationship:'',emergencyPhone:'',
-                        spiritualStatus:n[6]?'Baptised':'Unbaptised',familyHeadId:null};
-                    if(i===5) p.spiritualStatus='Unbaptised';
-                    if(i===6) p.spiritualStatus='Unbaptised';
-                    if(i===13) p.spiritualStatus='Unbaptised';
-                    if(i===24 || i===25 || i===28 || i===29) p.spiritualStatus='Unbaptised';
-                    if(emergency[i]) { [p.emergencyName,p.emergencyRelationship,p.emergencyPhone,p.address]=emergency[i]; }
-                    return p;
-                });
-                [24,25].forEach(i=>pubs[i].familyHeadId=pubs[22].id);
-                [28,29].forEach(i=>pubs[i].familyHeadId=pubs[26].id);
-                const now=new Date(); const sy=now.getMonth()>=8?now.getFullYear()+1:now.getFullYear();
-                const months=[Math.max(0,now.getMonth()-1),Math.max(0,now.getMonth()-2),Math.max(0,now.getMonth()-3)];
-                const reports=[];
-                pubs.forEach((p,i)=>{
-                    months.slice(0, i%5===0?1:2).forEach((month,j)=>reports.push({id:`${p.id}_${sy}_${month}`,pubId:p.id,serviceYear:sy,month,sharedInMinistry:i%7!==6,studies:(i+j)%4===0?0:1+(i+j)%3,hours:(i%6===5?0:5+(i*2+j*3)%14),comments:(i%7===6?'Pending report':i%9===0?'AP month sample':'Demo sample report'),isAP:p.isRP||p.isSP}));
-                });
-                return {publishers:pubs,reports};
-            },
-            resetDemoSession: async () => {
-                if(String(window.currentCongId||'').toLowerCase() !== 'demo-cong') return;
-                const seed=window.ui.buildDemoSeed();
-                window.db.publishers=seed.publishers.map(x=>({...x}));
-                window.db.reports=seed.reports.map(x=>({...x}));
-                if(isCloudEnabled){
-                    try{
-                        await supabaseClient.from('reports').delete().eq('cong_id',window.currentCongId);
-                        await supabaseClient.from('publishers').delete().eq('cong_id',window.currentCongId);
-                        await supabaseClient.from('publishers').upsert(window.db.publishers.map(window.db.mapPubToDB));
-                        await supabaseClient.from('reports').upsert(window.db.reports.map(window.db.mapRepToDB));
-                    }catch(e){console.warn('Demo reset failed:',e);}
+            cleanupLegacyDemoData: async () => {
+                // Remove only records created by the previous seeded demo build.
+                // demo-cong is otherwise treated exactly like a normal congregation.
+                if (String(window.currentCongId || '').toLowerCase() !== 'demo-cong') return;
+                const legacyIds = window.db.publishers.map(p => p.id).filter(id => String(id).startsWith('demo-pub-'));
+                if (!legacyIds.length) return;
+                window.db.reports = window.db.reports.filter(r => !legacyIds.includes(r.pubId));
+                window.db.publishers = window.db.publishers.filter(p => !legacyIds.includes(p.id));
+                if (isCloudEnabled) {
+                    try {
+                        const { error: reportError } = await supabaseClient.from('reports').delete().eq('cong_id', window.currentCongId).in('pub_id', legacyIds);
+                        if (reportError) throw reportError;
+                        const { error: pubError } = await supabaseClient.from('publishers').delete().eq('cong_id', window.currentCongId).in('id', legacyIds);
+                        if (pubError) throw pubError;
+                    } catch (e) { console.warn('Legacy demo cleanup failed:', e); }
                 }
+                window.db.writeLocalCache('publishers');
+                window.db.writeLocalCache('reports');
             },
-            ensureDemoData: async () => {
-                if(String(window.currentCongId||'').toLowerCase() !== 'demo-cong') return;
-
-                const expectedGroups = new Set(['Group A','Group B','Group C','Group D']);
-                const actualGroups = new Set(window.db.publishers.map(p => (p.group || '').trim()).filter(Boolean));
-                const needsSeed = window.db.publishers.length !== 30 ||
-                    actualGroups.size !== 4 ||
-                    [...actualGroups].some(g => !expectedGroups.has(g));
-
-                if(needsSeed){
-                    const seed=window.ui.buildDemoSeed();
-                    window.db.publishers=seed.publishers;
-                    window.db.reports=seed.reports;
-                    if(isCloudEnabled){
-                        try{
-                            await supabaseClient.from('reports').delete().eq('cong_id',window.currentCongId);
-                            await supabaseClient.from('publishers').delete().eq('cong_id',window.currentCongId);
-                            const { error: pubError } = await supabaseClient.from('publishers').upsert(window.db.publishers.map(window.db.mapPubToDB), { onConflict: 'id' });
-                            if(pubError) throw pubError;
-                            const { error: reportError } = await supabaseClient.from('reports').upsert(window.db.reports.map(window.db.mapRepToDB), { onConflict: 'id' });
-                            if(reportError) throw reportError;
-                        }catch(e){console.warn('Demo seed failed:',e);}
-                    }
-                }
-            },
-
             currentTab: 'dashboard', publicGroup: null, overseerGroup: null, currentPubFilter: 'ALL', currentPubFilterValue: '', superAdminSelected: new Set(),
             
             checkPassword: (pwd, listId, btnId) => {
@@ -3254,7 +3211,6 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
 
             confirmLogout: () => {
                 window.ui.openSysPrompt("Secure Logout", "Are you sure you want to exit the management portal?", false, async () => {
-                    try { await window.ui.resetDemoSession(); } catch(e) { console.warn('Demo session reset failed:', e); }
                     localStorage.removeItem('fs_auth');
                     localStorage.removeItem('fs_auth_type');
                     localStorage.removeItem('fs_cong_id');
@@ -3778,6 +3734,9 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 else if (filterType === 'BAPTIZED') displayPubs = allPubs.filter(p => !!p.baptized);
                 else if (filterType === 'GROUP') displayPubs = allPubs.filter(p => (p.group || '').trim() === filterValue);
 
+                const publisherSearch = (document.getElementById('publisher-search')?.value || '').trim().toLowerCase();
+                if (publisherSearch) displayPubs = displayPubs.filter(p => `${p.name || ''} ${p.group || ''}`.toLowerCase().includes(publisherSearch));
+
                 const esc = (v) => String(v ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
                 const statsContainer = document.getElementById('pub-stats-container');
                 if (statsContainer) {
@@ -4051,6 +4010,8 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
 
                 let pubs = window.db.getPublishers();
                 if (selectedGroup !== 'ALL') pubs = pubs.filter(p => p.group === selectedGroup);
+                const bulkSearch = (document.getElementById('bulk-entry-search')?.value || '').trim().toLowerCase();
+                if (bulkSearch) pubs = pubs.filter(p => `${p.name || ''} ${p.group || ''}`.toLowerCase().includes(bulkSearch));
                 pubs = pubs.sort((a,b)=>a.name.localeCompare(b.name));
 
                 const reports = window.db.getReports(sy, month);
@@ -4061,16 +4022,19 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-teal-100/40 italic">No publishers found for this group.</td></tr>';
                 } else {
                     pubs.forEach(p => {
-                        const r = reports.find(x => x.pubId === p.id) || {};
-                        const isShared = r.sharedInMinistry !== false;
+                        const r = reports.find(x => x.pubId === p.id);
+                        const hasExisting = !!r;
+                        const isShared = hasExisting ? !!r.sharedInMinistry : false;
                         const disAttr = isShared ? '' : 'disabled style="opacity:0.35"';
-                        const commentsVal = isShared ? (r.comments || '') : 'Not Participated';
+                        const studiesVal = hasExisting && isShared ? (r.studies ?? '') : '';
+                        const hoursVal = hasExisting && isShared ? (r.hours ?? '') : '';
+                        const commentsVal = hasExisting && isShared ? (r.comments || '') : '';
                         tbody.innerHTML += `
                             <tr class="border-b border-white/5 hover:bg-white/5" data-pubid="${p.id}">
                                 <td class="px-3 py-2 font-medium text-white">${p.name}</td>
                                 <td class="px-3 py-2 text-center"><input type="checkbox" class="bulk-shared accent-teal-500 w-4 h-4" onchange="window.ui.toggleBulkRow(this)" ${isShared ? 'checked' : ''}></td>
-                                <td class="px-3 py-2 text-center"><input type="number" min="0" class="bulk-studies att-input" style="width:70px" value="${r.studies || ''}" ${disAttr}></td>
-                                <td class="px-3 py-2 text-center"><input type="number" min="0" step="0.25" class="bulk-hours att-input" style="width:70px" value="${r.hours || ''}" ${disAttr}></td>
+                                <td class="px-3 py-2 text-center"><input type="number" min="0" class="bulk-studies att-input" style="width:70px" value="${studiesVal}" ${disAttr}></td>
+                                <td class="px-3 py-2 text-center"><input type="number" min="0" step="0.25" class="bulk-hours att-input" style="width:70px" value="${hoursVal}" ${disAttr}></td>
                                 <td class="px-3 py-2 text-center"><input type="checkbox" class="bulk-ap accent-emerald-500 w-4 h-4" ${r.isAP ? 'checked' : ''} ${disAttr}></td>
                                 <td class="px-3 py-2"><input type="text" class="bulk-comments att-input" style="text-align:left" value="${commentsVal.replace(/"/g,'&quot;')}" ${disAttr}></td>
                             </tr>
@@ -4089,6 +4053,8 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     const pubId = row.getAttribute('data-pubid');
                     const pub = window.db.getPublishers().find(p => p.id === pubId);
                     const shared = row.querySelector('.bulk-shared').checked;
+                    const existing = window.db.getReports(sy, month).find(r => r.pubId === pubId);
+                    if (!shared && !existing) continue;
                     let studies = parseInt(row.querySelector('.bulk-studies').value) || 0;
                     let hours = parseFloat(row.querySelector('.bulk-hours').value) || 0;
                     let isAP = row.querySelector('.bulk-ap').checked;
@@ -4248,84 +4214,63 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                 const iframe = document.getElementById('emergency-render-frame');
                 const wrapper = document.getElementById('emergency-render-area');
                 const allPubs = window.db.getPublishers();
+                if (!allPubs.length) { window.ui.showToast('No publishers to export.', 'error'); return; }
                 const families = window.utils.buildFamilies(allPubs);
 
-                let rowsHtml = families.map(fam => {
-                    const familyHeaderRow = `<tr class="ec-family-row"><td colspan="7">🏠 ${fam.headName} Family</td></tr>`;
-                    const memberRows = fam.members.map(p => `
-                        <tr>
-                            <td>${p.name}</td>
-                            <td>${p.phone || '-'}</td>
-                            <td>${p.address || '-'}</td>
-                            <td>${p.emergencyName || '-'}</td>
-                            <td>${p.emergencyRelationship || '-'}</td>
-                            <td>${p.emergencyPhone || '-'}</td>
-                            <td>${p.spiritualStatus || (p.baptized ? 'Baptised' : 'Unbaptised')}</td>
-                        </tr>
-                    `).join('');
-                    return familyHeaderRow + memberRows;
-                }).join('');
+                const rows = [];
+                families.forEach(fam => {
+                    rows.push({ type: 'family', html: `<tr class="ec-family-row"><td colspan="7">🏠 ${window.ui.escapeHtml(fam.headName)} Family</td></tr>` });
+                    fam.members.forEach(p => rows.push({ type: 'member', html: `<tr><td>${window.ui.escapeHtml(p.name)}</td><td>${window.ui.escapeHtml(p.phone || '-')}</td><td>${window.ui.escapeHtml(p.address || '-')}</td><td>${window.ui.escapeHtml(p.emergencyName || '-')}</td><td>${window.ui.escapeHtml(p.emergencyRelationship || '-')}</td><td>${window.ui.escapeHtml(p.emergencyPhone || '-')}</td><td>${window.ui.escapeHtml(p.spiritualStatus || (p.baptized ? 'Baptised' : 'Unbaptised'))}</td></tr>` }));
+                });
 
-                const htmlContent = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <style>
-                        html, body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background: #fff; color: #000; }
-                        .ec-wrapper { width: 1000px; padding: 40px; box-sizing: border-box; }
-                        .ec-title { font-size: 26px; font-weight: bold; text-align: center; margin-bottom: 6px; }
-                        .ec-subtitle { font-size: 14px; text-align: center; color: #555; margin-bottom: 24px; }
-                        table { width: 100%; border-collapse: collapse; }
-                        th, td { border: 1px solid #333; padding: 8px 10px; font-size: 13px; text-align: left; }
-                        th { background: #f0f0f0; font-weight: bold; }
-                        .ec-family-row td { background: #fde8e8; font-weight: bold; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; color: #9f1239; }
-                    </style>
-                </head>
-                <body>
-                    <div class="ec-wrapper">
-                        <div class="ec-title">Emergency Contacts Directory</div>
-                        <div class="ec-subtitle">Generated ${new Date().toLocaleDateString()} · Grouped by Family</div>
-                        <table>
-                            <thead><tr><th>Publisher</th><th>Phone</th><th>Address</th><th>Emergency Contact</th><th>Relationship</th><th>Emergency Phone</th><th>Status</th></tr></thead>
-                            <tbody>${rowsHtml}</tbody>
-                        </table>
-                    </div>
-                </body>
-                </html>`;
+                const chunks = [];
+                let chunk = [], memberCount = 0;
+                const maxMembersPerPage = 10;
+                rows.forEach((row, index) => {
+                    if (row.type === 'family' && memberCount >= maxMembersPerPage) { chunks.push(chunk); chunk = []; memberCount = 0; }
+                    chunk.push(row);
+                    if (row.type === 'member') memberCount++;
+                    const next = rows[index + 1];
+                    if (memberCount >= maxMembersPerPage && next?.type === 'member') { chunks.push(chunk); chunk = []; memberCount = 0; }
+                });
+                if (chunk.length) chunks.push(chunk);
 
-                iframe.srcdoc = htmlContent;
+                const makePage = (pageRows, pageNo, totalPages) => `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>html,body{margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#000}.ec-wrapper{width:1000px;min-height:700px;padding:38px 34px;box-sizing:border-box;background:#fff}.ec-title{font-size:26px;font-weight:700;text-align:center;margin-bottom:5px}.ec-subtitle{font-size:13px;text-align:center;color:#555;margin-bottom:18px}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #333;padding:9px 7px;font-size:12px;text-align:center;vertical-align:middle;word-break:break-word}th{background:#f0f0f0;font-weight:700}.ec-family-row td{background:#fde8e8;font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.5px;color:#9f1239}.ec-page{margin-top:12px;font-size:11px;color:#666;text-align:center}</style></head><body><div class="ec-wrapper"><div class="ec-title">Emergency Contacts Directory</div><div class="ec-subtitle">${window.ui.escapeHtml(window.db.currentCongData?.name || localStorage.getItem('fs_cong_name') || 'Congregation')} · Generated ${new Date().toLocaleDateString()}</div><table><thead><tr><th>Publisher</th><th>Phone</th><th>Address</th><th>Emergency Contact</th><th>Relationship</th><th>Emergency Phone</th><th>Status</th></tr></thead><tbody>${pageRows.map(r=>r.html).join('')}</tbody></table><div class="ec-page">Page ${pageNo} of ${totalPages}</div></div></body></html>`;
+
                 wrapper.classList.remove('hidden');
                 wrapper.style.display = 'block';
+                iframe.style.width = '1000px';
+                iframe.style.height = '800px';
 
-                setTimeout(async () => {
+                (async () => {
                     try {
                         const { jsPDF } = window.jspdf;
-                        const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1080, 1400], hotfixes: ["px_scaling"] });
-                        const canvas = await window.html2canvas(iframe.contentDocument.querySelector('.ec-wrapper'), {
-                            scale: 2, logging: false, useCORS: true, width: 1080, windowWidth: 1080
-                        });
-                        const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                        const imgHeight = (canvas.height * 1080) / canvas.width;
-                        doc.addImage(imgData, 'JPEG', 0, 0, 1080, imgHeight);
+                        const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1080, 763], hotfixes: ['px_scaling'] });
+                        const totalPages = chunks.length;
+                        for (let i = 0; i < chunks.length; i++) {
+                            iframe.srcdoc = makePage(chunks[i], i + 1, totalPages);
+                            await new Promise(resolve => { let done=false; const finish=()=>{if(done)return;done=true;resolve();}; iframe.onload=finish; setTimeout(finish,180); });
+                            const target = iframe.contentDocument?.querySelector('.ec-wrapper');
+                            if (!target) throw new Error('Emergency PDF render target unavailable.');
+                            const canvas = await window.html2canvas(target, { scale: 2, logging: false, useCORS: true, backgroundColor: '#ffffff' });
+                            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                            const maxW = 1040, maxH = 735;
+                            const scale = Math.min(maxW / canvas.width, maxH / canvas.height);
+                            const drawW = canvas.width * scale, drawH = canvas.height * scale;
+                            const x = (1080 - drawW) / 2, y = (763 - drawH) / 2;
+                            if (i > 0) doc.addPage([1080, 763], 'landscape');
+                            doc.addImage(imgData, 'JPEG', x, y, drawW, drawH);
+                        }
                         doc.save(`Emergency_Contacts_${window.currentCongId}.pdf`);
-                        window.ui.showToast('Emergency Contacts PDF Generated!');
+                        window.ui.showToast(`Emergency Contacts PDF generated (${totalPages} page${totalPages === 1 ? '' : 's'}).`);
                     } catch (err) {
-                        console.error("PDF Error: ", err);
-                        window.ui.showToast('Failed to compile PDF.', 'error');
+                        console.error('Emergency PDF error:', err);
+                        window.ui.showToast('Failed to compile Emergency Contacts PDF.', 'error');
                     } finally {
                         wrapper.classList.add('hidden');
                         wrapper.style.display = 'none';
                     }
-                }, 400);
-            },
-
-            scaleS21Preview: () => {
-                const frame=document.getElementById('s21-render-frame'); const wrapper=document.getElementById('s21-render-area');
-                if(!frame||!wrapper) return;
-                frame.style.transform='none';
-                frame.style.width='595px'; frame.style.height='421px';
-                wrapper.style.display='flex'; wrapper.style.alignItems='flex-start';
+                })();
             },
 
             renderS21: async () => {
@@ -4347,6 +4292,7 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     ? groups.find(g => g.toLowerCase() === requestedGroup.toLowerCase())
                     : '';
 
+                const groupField = document.getElementById('s4-group-field');
                 if (groupSel) {
                     groupSel.innerHTML = '<option value="">-- Select your group --</option>' +
                         groups.map(g => `<option value="${window.ui.escapeHtml(g)}">${window.ui.escapeHtml(g)}</option>`).join('');
@@ -4354,8 +4300,9 @@ body.super-admin-theme .ca-topbar-actions::after{content:"SUPERADMIN";font-size:
                     groupSel.disabled = !!selectedGroup && !!requestedGroup;
                     groupSel.title = groupSel.disabled ? 'This public link is restricted to this group.' : '';
                 }
+                if (groupField) groupField.classList.toggle('hidden', !!requestedGroup);
 
-                const activeGroup = selectedGroup || ((groupSel?.value || '').trim());
+                const activeGroup = requestedGroup ? selectedGroup : (selectedGroup || ((groupSel?.value || '').trim()));
                 const filtered = activeGroup
                     ? pubs.filter(p => (p.group || '').trim().toLowerCase() === activeGroup.toLowerCase())
                     : [];
